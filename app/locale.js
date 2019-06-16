@@ -19,6 +19,7 @@ i18next
 			'dashboard',
 			'exchange',
 			'forgot-password',
+			'home',
 			'login',
 			'menu',
 			'nav',
