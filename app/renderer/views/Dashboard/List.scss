@@ -50,11 +50,13 @@
 	.coin-button {
 		display: flex;
 		align-items: center;
-		height: 96px;
-		padding: 20px;
-		border-left: 2px solid transparent;
+		height: 58px;
+		padding: 15px 20px;
+		border: 1px solid rgb(112,112,112);
+		border-radius: 3px;		
 		user-select: none;
 		cursor: default;
+		margin-bottom: 10px;
 
 		.right {
 			margin-left: 18px;
@@ -81,6 +83,40 @@
 				&__label {
 					width: 30px;
 					text-align: left;
+				}
+			}
+		}
+
+		.currency {
+			display: flex;
+			width: 40%;
+
+			.right {
+				h2 {
+					margin-top: 10px;
+				}
+			}
+		}
+
+		.balance {
+			width: 30%;
+
+			.right {
+				margin-left: 0px;
+			}
+		}
+		
+		.withdraw-deposit {
+			width: 30%;
+			display: flex;
+
+			button {
+				height: 28px;
+				line-height: 25px;
+				cursor: pointer;
+				margin-right: 10px;
+				span {
+					color: #54A1DA;
 				}
 			}
 		}

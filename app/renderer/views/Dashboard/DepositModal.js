@@ -4,15 +4,20 @@ import Modal from 'components/Modal';
 import Button from 'components/Button';
 import CopyCurrencyAddress from 'components/CopyCurrencyAddress';
 import dashboardContainer from 'containers/Dashboard';
+import CopiedIcon from 'icons/Copied';
 import {translate} from '../../translate';
 import './DepositModal.scss';
 
 const t = translate('dashboard');
 
 class DepositModal extends React.Component {
-	state = {
-		isOpen: false,
-	};
+	constructor(props) {
+		super(props);
+		this.state = {
+			isOpen: false,
+			isCopied: false,
+		};
+	}
 
 	open = () => {
 		this.setState({isOpen: true});
@@ -22,14 +27,22 @@ class DepositModal extends React.Component {
 		this.setState({isOpen: false});
 	};
 
-	render() {
-		const currencyInfo = dashboardContainer.activeCurrency;
+	onCopied = () => {
+		const self = this;
+		this.setState({isCopied: true});
+		setTimeout(() => {
+			self.setState({isCopied: false});
+		}, 2000);
+	}
 
+	render() {
+		// const currencyInfo = dashboardContainer.activeCurrency;
+		const { currencyInfo } = this.props;
 		return (
 			<div className="modal-wrapper">
 				<Modal
 					className="DepositModal"
-					title={t('deposit.title', {name: currencyInfo.name, symbol: currencyInfo.symbol})}
+					title={t('deposit.title')}
 					open={this.state.isOpen}
 					width="445px"
 					onClose={this.close}
@@ -38,17 +51,22 @@ class DepositModal extends React.Component {
 						<div className="section qrcode">
 							<QRCode value={currencyInfo.address}/>
 						</div>
+						<p className="symbol-name">{t('deposit.symbolName', {symbol: currencyInfo.symbol})}</p>
 						<div className="section">
-							<CopyCurrencyAddress value={currencyInfo.address}/>
+							<CopyCurrencyAddress value={currencyInfo.address} onCopied={this.onCopied}/>
 						</div>
-						<div className="section infobox">
-							<img src="/assets/info-icon.svg" width="26" height="26"/>
-							<p>{t('deposit.warning', {symbol: currencyInfo.symbol})}</p>
-						</div>
+						{
+							this.state.isCopied &&
+							<div className="copy">
+								<div className="copied-icon"><CopiedIcon/></div>
+								<p>Copied</p>
+							</div>
+						}
 					</>
 				</Modal>
 				<Button
 					className="OpenModalButton"
+					color="transparent"
 					value={t('deposit.label')}
 					onClick={this.open}
 				/>

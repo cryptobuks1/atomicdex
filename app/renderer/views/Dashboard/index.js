@@ -19,11 +19,11 @@ const Dashboard = () => {
 				if (state.activeView === 'Portfolio') {
 					return (
 						<TabView className="Dashboard Dashboard--Portfolio">
-							<Intro/>
+							{/* <Intro/> */}
 							<List/>
-							<Chart/>
+							{/* <Chart/>
 							<Activity/>
-							<PieChart/>
+							<PieChart/> */}
 						</TabView>
 					);
 				}
@@ -31,8 +31,8 @@ const Dashboard = () => {
 				return (
 					<TabView className="Dashboard">
 						<List/>
-						<Chart/>
-						<Wallet/>
+						{/* <Chart/> */}
+						{/* <Wallet/> */}
 					</TabView>
 				);
 			}}

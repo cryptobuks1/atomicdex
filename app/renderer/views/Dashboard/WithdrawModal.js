@@ -5,18 +5,21 @@ import Button from 'components/Button';
 import Input from 'components/Input';
 import appContainer from 'containers/App';
 import dashboardContainer from 'containers/Dashboard';
-import {formatCurrency} from '../../util';
-import {getCurrency} from '../../../marketmaker/supported-currencies';
-import {translate} from '../../translate';
+import { formatCurrency } from '../../util';
+import { getCurrency } from '../../../marketmaker/supported-currencies';
+import { translate } from '../../translate';
 import './WithdrawModal.scss';
 
 const t = translate('dashboard');
+const t_login = translate('login');
 
 const getInitialProps = () => ({
 	isOpen: false,
 	recipientAddress: '',
 	amount: '',
 	amountInUsd: '',
+	password: '',
+	isShowPassword: false,
 	isWithdrawing: false,
 	isBroadcasting: false,
 	txFeeCurrencySymbol: '',
@@ -34,7 +37,7 @@ class WithdrawModal extends React.Component {
 	}
 
 	open = () => {
-		this.setState({isOpen: true});
+		this.setState({ isOpen: true });
 	};
 
 	close = () => {
@@ -42,12 +45,13 @@ class WithdrawModal extends React.Component {
 	};
 
 	withdrawButtonHandler = async () => {
-		this.setState({isWithdrawing: true});
+		this.setState({ isWithdrawing: true });
 
-		const {symbol} = dashboardContainer.activeCurrency;
-		const {recipientAddress: address, amount} = this.state;
+		// const {symbol} = dashboardContainer.activeCurrency;
+		const { symbol } = this.props.currencyInfo;
+		const { recipientAddress: address, amount } = this.state;
 
-		const {txFee, broadcast} = await appContainer.api.withdraw({
+		const { txFee, broadcast } = await appContainer.api.withdraw({
 			symbol,
 			address,
 			amount: Number(amount),
@@ -55,29 +59,35 @@ class WithdrawModal extends React.Component {
 
 		const currency = getCurrency(symbol);
 		const txFeeCurrencySymbol = currency.etomic ? 'ETH' : symbol;
-		const {cmcPriceUsd} = appContainer.getCurrencyPrice(txFeeCurrencySymbol);
+		const { cmcPriceUsd } = appContainer.getCurrencyPrice(txFeeCurrencySymbol);
 		const txFeeUsd = formatCurrency(txFee * cmcPriceUsd);
 
-		this.setState({txFeeCurrencySymbol, txFee, txFeeUsd, broadcast});
+		this.setState({ txFeeCurrencySymbol, txFee, txFeeUsd, broadcast });
 	};
 
 	confirmButtonHandler = async () => {
-		this.setState({isBroadcasting: true});
-		const {txid, amount, symbol, address} = await this.state.broadcast();
-		console.log({txid, amount, symbol, address});
+		this.setState({ isBroadcasting: true });
+		const { txid, amount, symbol, address } = await this.state.broadcast();
+		console.log({ txid, amount, symbol, address });
 
 		// TODO: The notification should be clickable and open a block explorer for the currency.
 		// We'll need to have a list of block explorers for each currency.
 		// eslint-disable-next-line no-new
 		new Notification(t('withdraw.successTitle'), {
-			body: t('withdraw.successDescription', {address, amount, symbol}),
+			body: t('withdraw.successDescription', { address, amount, symbol }),
 		});
 
 		this.close();
 	};
 
+	showPassword = () => {
+		const isShowPassword = this.state.isShowPassword;
+		this.setState({ isShowPassword: !isShowPassword });
+	}
+
 	render() {
-		const currencyInfo = dashboardContainer.activeCurrency;
+		// const currencyInfo = dashboardContainer.activeCurrency;
+		const { currencyInfo } = this.props;
 		const maxAmount = currencyInfo.balance;
 		const remainingBalance = roundTo(maxAmount - (Number(this.state.amount) + this.state.txFee), 8);
 
@@ -92,48 +102,50 @@ class WithdrawModal extends React.Component {
 			<div className="modal-wrapper">
 				<Modal
 					className="WithdrawModal"
-					title={t('withdraw.title', {name: currencyInfo.name, symbol: currencyInfo.symbol})}
+					title={t('withdraw.title', { name: currencyInfo.name, symbol: currencyInfo.symbol })}
 					open={this.state.isOpen}
 					onClose={this.close}
 				>
 					<>
+						<p className="symbol-name">{t('withdraw.symbolName', { symbol: currencyInfo.symbol })}</p>
+						<p className="balance">{t('withdraw.balance')}<span>{currencyInfo.balance}</span></p>
 						<div className="section">
-							<label>{t('withdraw.recipientLabel')}:</label>
+							<label>{t('withdraw.recipientLabel')}</label>
 							<Input
 								required
 								value={this.state.recipientAddress}
-								placeholder={t('withdraw.recipientPlaceholder', {symbol: currencyInfo.symbol})}
+								placeholder={t('withdraw.recipientPlaceholder')}
 								disabled={this.state.isWithdrawing}
 								onChange={value => {
-									this.setState({recipientAddress: value});
+									this.setState({ recipientAddress: value });
 								}}
 							/>
 						</div>
 						<div className="section">
 							<p>
 								{/* TODO: Remove this when #302 is fixed */}
-								<small>{'Note: HyperDEX doesn\'t yet calculate the TX fee, so you can\'t withdraw the whole balance. Try withdrawing slightly less.'}</small>
+								{/* <small>{'Note: HyperDEX doesn\'t yet calculate the TX fee, so you can\'t withdraw the whole balance. Try withdrawing slightly less.'}</small> */}
 							</p>
-							<label>{t('withdraw.amountLabel')}:</label>
-							<div className="amount-inputs">
-								<Input
-									required
-									onlyNumeric
-									value={this.state.amount}
-									fractionalDigits={8}
-									disabled={this.state.isWithdrawing}
-									view={() => (
-										<span
-											className={currencyInfo.symbol.length > 3 ? 'long-symbol' : ''}
-										>
-											{currencyInfo.symbol}
-										</span>
-									)}
-									onChange={value => {
-										setAmount(value);
-									}}
-								/>
-								<span className="separator">≈</span>
+							<label>{t('withdraw.amountLabel')}</label>
+							<Input
+								required
+								onlyNumeric
+								value={this.state.amount}
+								fractionalDigits={8}
+								disabled={this.state.isWithdrawing}
+								placeholder={t('withdraw.amountPlaceholder')}
+								// view={() => (
+								// 	<span
+								// 		className={currencyInfo.symbol.length > 3 ? 'long-symbol' : ''}
+								// 	>
+								// 		{currencyInfo.symbol}
+								// 	</span>
+								// )}
+								onChange={value => {
+									setAmount(value);
+								}}
+							/>
+							{/* <span className="separator">≈</span>
 								<Input
 									required
 									onlyNumeric
@@ -149,8 +161,8 @@ class WithdrawModal extends React.Component {
 											amount: String(Number.parseFloat(value || '0') * currencyInfo.cmcPriceUsd),
 										});
 									}}
-								/>
-								{/* Hidden because of #302
+								/> */}
+							{/* Hidden because of #302
 								<Link
 									onClick={() => {
 										setAmount(maxAmount);
@@ -159,9 +171,19 @@ class WithdrawModal extends React.Component {
 									({t('withdraw.maxAmount')})
 								</Link>
 								*/}
-							</div>
 						</div>
 						<div className="section">
+							<label>{t_login('password')}</label>
+							<Input
+								className="user-password"
+								type={this.state.isShowPassword ? 'text' : 'password'}
+								placeholder={t_login('passwordPlaceHolder')}
+								value={this.state.password}
+								showpassword={this.showPassword}
+								suffixString="SHOW"
+							/>
+						</div>
+						{/* <div className="section">
 							<div className="info">
 								<span>{t('withdraw.remainingBalance')}:</span>
 								<span className={remainingBalance < 0 ? 'negative-balance' : ''}>{remainingBalance} {currencyInfo.symbol}</span>
@@ -170,35 +192,36 @@ class WithdrawModal extends React.Component {
 								<span>{t('withdraw.networkFee')}:</span>
 								<span>{this.state.txFee} {this.state.txFeeCurrencySymbol} ({this.state.txFeeUsd})</span>
 							</div>
-						</div>
+						</div> */}
 						{this.state.broadcast ? (
 							<Button
-								primary
 								className="confirm-button"
+								color="transparent"
 								value={t('withdraw.confirmNetworkFee')}
 								disabled={this.state.isBroadcasting}
 								onClick={this.confirmButtonHandler}
 							/>
 						) : (
-							<Button
-								primary
-								className="withdraw-button"
-								value={t('withdraw.label')}
-								disabled={
-									!this.state.recipientAddress ||
-									!this.state.amount ||
-									remainingBalance < 0 ||
-									this.state.isWithdrawing
-								}
-								onClick={this.withdrawButtonHandler}
-							/>
-						)}
+								<Button
+									className="withdraw-button"
+									color="transparent"
+									value={t('withdraw.label')}
+									disabled={
+										!this.state.recipientAddress ||
+										!this.state.amount ||
+										remainingBalance < 0 ||
+										this.state.isWithdrawing
+									}
+									onClick={this.withdrawButtonHandler}
+								/>
+							)}
 					</>
 				</Modal>
 				<Button
 					className="OpenModalButton"
 					value={t('withdraw.label')}
-					disabled={!currencyInfo.balance}
+					color="transparent"
+					// disabled={!currencyInfo.balance}
 					onClick={this.open}
 				/>
 			</div>

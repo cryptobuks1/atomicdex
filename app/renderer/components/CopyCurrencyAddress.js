@@ -4,11 +4,11 @@ import Input from 'components/Input';
 import CopyIconButton from 'components/CopyIconButton';
 import './CopyCurrencyAddress.scss';
 
-const CopyCurrencyAddress = ({value}) => (
+const CopyCurrencyAddress = ({value, onCopied}) => (
 	<Input
 		className="CopyCurrencyAddress"
 		value={value}
-		button={() => <CopyIconButton value={value}/>}
+		button={() => <CopyIconButton value={value} onCopied={onCopied} />}
 	/>
 );
 

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import appContainer from 'containers/App';
 import DashboardIcon from 'icons/Dashboard';
-/// import SwapIcon from 'icons/Swap';
+// import SwapIcon from 'icons/Swap';
 import ExchangeIcon from 'icons/Exchange';
 import TradesIcon from 'icons/Trades';
 import SettingsIcon from 'icons/Settings';

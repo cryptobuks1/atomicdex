@@ -10,13 +10,15 @@ import Avatar from 'components/Avatar';
 import Input from 'components/Input';
 import Progress from 'components/Progress';
 import PlusIcon from 'icons/Plus';
+import WithdrawModal from './WithdrawModal';
+import DepositModal from './DepositModal';
 import {formatCurrency} from '../../util';
 import {translate} from '../../translate';
 import './List.scss';
 
 const config = remote.require('./config');
 const t = translate('dashboard');
-
+const t_nav = translate('nav');
 const handleCurrencies = currencies => {
 	const {state} = dashboardContainer;
 
@@ -40,7 +42,7 @@ const List = () => {
 
 	return (
 		<div className="Dashboard--List">
-			<div className="top">
+			{/* <div className="top">
 				<div
 					className={`coin-button ${state.activeView === 'Portfolio' ? 'active' : ''}`}
 					onClick={() => dashboardContainer.setActiveView('Portfolio')}
@@ -67,8 +69,14 @@ const List = () => {
 						</div>
 					</div>
 				)}
-			</div>
+			</div> */}
 			<div className="center">
+				<p className="title">{t_nav('dashboard')}</p>
+				<p className="description">{t('intro.description')}</p>
+				<div className="table-header">
+					<p className="tb-currency">{t('list.headerCurrency')}</p>
+					<p className="tb-balance">{t('list.headerBalance')}</p>
+				</div>
 				{(() => (
 					filteredCurrencies.map(currency => {
 						let balance = `${roundTo(currency.balance, 8)} ≈ ${formatCurrency(currency.cmcBalanceUsd)}`;
@@ -86,26 +94,37 @@ const List = () => {
 							<div
 								key={currency.symbol}
 								className={`coin-button ${state.activeView === currency.symbol ? 'active' : ''}`}
-								onClick={() => dashboardContainer.setActiveView(currency.symbol)}
+								// onClick={() => dashboardContainer.setActiveView(currency.symbol)}
 							>
-								<div className="left">
-									<CurrencyIcon symbol={currency.symbol} size="38"/>
+								<div className="currency">
+									<div className="left">
+										<CurrencyIcon symbol={currency.symbol} size="38"/>
+									</div>
+									<div className="right">
+										<h2>{currency.name} ({currency.symbol})</h2>
+										{/* <p>{balance}</p> */}
+										{/* <Progress
+											showLabel
+											hideWhenZero
+											value={percentageOfTotalBalance}
+										/> */}
+									</div>
 								</div>
-								<div className="right">
-									<h2>{currency.name} ({currency.symbol})</h2>
-									<p>{balance}</p>
-									<Progress
-										showLabel
-										hideWhenZero
-										value={percentageOfTotalBalance}
-									/>
+								<div className="balance">
+									<div className="right">
+										<p>{balance}</p>
+									</div>
+								</div>
+								<div className="withdraw-deposit">
+									<WithdrawModal currencyInfo={currency}/>
+									<DepositModal currencyInfo={currency}/>	
 								</div>
 							</div>
 						);
 					})
 				))()}
 			</div>
-			{currencies.length > 5 &&
+			{/* {currencies.length > 5 &&
 				<div className="bottom">
 					<Input
 						placeholder={t('list.search')}
@@ -126,7 +145,7 @@ const List = () => {
 						}}
 					/>
 				</div>
-			}
+			} */}
 		</div>
 	);
 };

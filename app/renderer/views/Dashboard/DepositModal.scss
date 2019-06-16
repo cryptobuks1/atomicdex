@@ -1,10 +1,19 @@
 .DepositModal main {
+	position: relative;
 	.section {
 		margin: 10px 0;
 
 		&:last-of-type {
 			margin-bottom: 0;
 		}
+	}
+
+	.symbol-name {
+		text-align: center;
+		margin-top: 40px;
+		margin-bottom: 0px;
+		font-size: 18px;
+		color: white;
 	}
 
 	.qrcode {
@@ -29,6 +38,19 @@
 			color: var(--text-color2);
 			margin: 0;
 			font-size: 14px;
+		}
+	}
+
+	.copy {
+		p {
+			color: #72CE56;
+			text-align: right;
+			margin-bottom: 0px;
+		}
+		.copied-icon {
+			position: absolute;
+			width: 20px;
+			right: 50px;
 		}
 	}
 }
