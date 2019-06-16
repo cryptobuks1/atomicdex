@@ -25,7 +25,7 @@ const excludedTestCurrencies = new Set([
 class AppContainer extends SuperContainer {
 	state = {
 		theme: config.get('theme'),
-		activeView: 'Login',
+		activeView: 'Home',
 		enabledCoins: alwaysEnabledCurrencies,
 		currencies: [],
 		swapHistory: [],

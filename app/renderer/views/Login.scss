@@ -9,18 +9,28 @@
 }
 
 .Login {
-	animation-name: Login-fade-in;
-	animation-duration: 1s;
-	animation-timing-function: ease-in;
+	// animation-name: Login-fade-in;
+	// animation-duration: 1s;
+	// animation-timing-function: ease-in;
 	text-align: center;
 	display: flex;
 	justify-content: center;
-	padding-top: 50px;
-	padding-bottom: 50px;
+	padding: 20px 20px;
+
+	.is-centered {
+		width: 100%;
+	}
 
 	.is-centered > * {
 		margin-left: auto;
 		margin-right: auto;
+	}
+
+	p {
+		color: white;
+		font-size: 18px;
+		margin-top: 150px;
+		margin-bottom: 80px;
 	}
 
 	.window-draggable-area {
@@ -44,7 +54,6 @@
 	}
 
 	.form-group {
-		width: 245px;
 		margin-left: auto;
 		margin-right: auto;
 	}

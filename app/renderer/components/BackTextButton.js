@@ -20,7 +20,9 @@ const BackTextButton = props => (
 					transition: color 0.2s ease-in;
 					font-size: 14px;
 					user-select: none;
-					cursor: default;
+					cursor: pointer;
+					left: 20px;
+					top: 40px;
 				}
 
 				div:hover {

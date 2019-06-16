@@ -73,6 +73,16 @@
 		}
 	}
 
+	&__suffix {
+		display: block;
+		cursor: pointer;
+		@include center-vertically;
+		left: 230px;
+		color: #54A1DA;
+		background-color: var(--input-background-color);
+		width: var(--icon-container-width);
+	}
+
 	&--view {
 		input {
 			padding-right: calc(var(--view-width) + 4px);
@@ -115,7 +125,7 @@
 			right: 0;
 			bottom: 1px;
 			left: 0;
-			border-left: 1px solid var(--input-border-color);
+			// border-left: 1px solid var(--input-border-color);
 		}
 	}
 
