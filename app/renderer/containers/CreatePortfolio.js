@@ -17,6 +17,7 @@ class CreatePortfolioContainer extends Container {
 		confirmedSeedPhrase: '',
 		seedPhraseError: null,
 		isCreatingPortfolio: false,
+		step: 1,
 	};
 
 	constructor() {
@@ -53,32 +54,12 @@ class CreatePortfolioContainer extends Container {
 		}
 
 		await this.setState({confirmedPasswordError: null});
-
-		loginContainer.setActiveView('CreatePortfolioStep2');
-		loginContainer.setProgress(0.50);
+		this.setState({step: 2});
+		// loginContainer.setActiveView('CreatePortfolioStep2');
+		// loginContainer.setProgress(0.50);
 	};
 
-	handleStep2ClickNext = () => {
-		loginContainer.setActiveView('CreatePortfolioStep3');
-		loginContainer.setProgress(0.75);
-	};
-
-	checkSeedPhrase = () => {
-		const isMatch = this.state.generatedSeedPhrase === this.state.confirmedSeedPhrase;
-		const seedPhraseError = isMatch ? null : t('create.seedPhraseNoMatch');
-		this.setState({seedPhraseError});
-		return isMatch;
-	};
-
-	handleConfirmSeedPhraseInputChange = async value => {
-		await this.setState({confirmedSeedPhrase: value});
-
-		if (this.step3confirmButtonClicked) {
-			this.checkSeedPhrase();
-		}
-	};
-
-	handleStep3Submit = async event => {
+	handleStep2ClickNext = async event => {
 		event.preventDefault();
 
 		this.step3confirmButtonClicked = true;
@@ -101,6 +82,21 @@ class CreatePortfolioContainer extends Container {
 
 		await loginContainer.loadPortfolios();
 		await loginContainer.handleLogin(portfolioId, this.state.portfolioPassword);
+	};
+
+	checkSeedPhrase = () => {
+		const isMatch = this.state.generatedSeedPhrase === this.state.confirmedSeedPhrase;
+		const seedPhraseError = isMatch ? null : t('create.seedPhraseNoMatch');
+		this.setState({seedPhraseError});
+		return isMatch;
+	};
+
+	handleConfirmSeedPhraseInputChange = async value => {
+		await this.setState({confirmedSeedPhrase: value});
+
+		if (this.step3confirmButtonClicked) {
+			this.checkSeedPhrase();
+		}
 	};
 }
 

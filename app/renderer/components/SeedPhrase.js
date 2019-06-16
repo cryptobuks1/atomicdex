@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import CopyButton from 'components/CopyButton';
+import {clipboard} from 'electron';
 import ReloadButton from 'components/ReloadButton';
-import Tooltip from 'components/Tooltip';
+import Button from 'components/Button';
 import WrapWidth from 'components/WrapWidth';
 import {translate} from '../translate';
 import './SeedPhrase.scss';
@@ -32,7 +32,9 @@ class SeedPhrase extends React.Component {
 	}
 
 	handleCopy = () => {
+		const {value} = this.props;
 		this.setState({isCopied: true});
+		clipboard.writeText(value);
 	}
 
 	handleReload = event => {
@@ -42,34 +44,26 @@ class SeedPhrase extends React.Component {
 	}
 
 	render() {
-		const {value, showCopy, showReload} = this.props;
-		const {isCopied} = this.state;
+		const {value, showReload} = this.props;
 
 		return (
-			<div className="SeedPhrase">
-				{showReload && (
-					<div className="section section--reload">
-						<ReloadButton onClick={this.handleReload}/>
+			<div>
+				<div className="SeedPhrase">
+					{showReload && (
+						<div className="section section--reload">
+							<ReloadButton onClick={this.handleReload}/>
+						</div>
+					)}
+					<div className="section section--value">
+						<WrapWidth wordsPerLine={5}>
+							{value}
+						</WrapWidth>
 					</div>
-				)}
-				<div className="section section--value">
-					<WrapWidth wordsPerLine={6}>
-						{value}
-					</WrapWidth>
 				</div>
-				{showCopy && (
-					<div className="section section--copy">
-						<Tooltip
-							content={isCopied ? t('copied') : t('copy')}
-							onClose={this.handleClose}
-						>
-							<CopyButton
-								value={value}
-								onClick={this.handleCopy}
-							/>
-						</Tooltip>
-					</div>
-				)}
+				<div className="section--copy--generate">
+					<Button className="copy-btn" color="transparent" value="Copy" onClick={this.handleCopy}/>
+					<Button className="generate-btn" color="transparent" value="Generate" onClick={this.handleReload}/>
+				</div>
 			</div>
 		);
 	}

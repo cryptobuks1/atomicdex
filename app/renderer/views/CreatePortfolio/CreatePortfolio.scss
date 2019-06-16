@@ -1,27 +1,43 @@
 @import '../../styles/variables';
 
 .CreatePortfolio {
-	.warning-box {
-		display: flex;
-		margin-top: 18px;
-		text-align: left;
+	padding: 20px 20px;
 
-		.icon {
-			margin: 6px;
+	.signup-title {
+		text-align: center;
+		margin-top: 100px;
+		margin-bottom: 50px;
+		color: white;
+		font-size: 18px;
+	}
+
+	h1 {
+		font-size: 22px;
+		text-align: center;
+		margin-top: 70px;
+		margin-bottom: 32px;
+	}
+
+	.user-name, .user-password, .user-confirmpassword {
+		margin: 0px 0px 20px 0px;
+
+		input {
+			height: 42px;
 		}
+	}
 
-		.content {
-			flex: 1;
-			margin-left: 7px;
-
-			h3 {
-				margin-bottom: 0;
-			}
-
-			p {
-				font-size: 14px;
-				margin-bottom: 0;
-			}
+	.signup-btn, .save-code-btn{
+		cursor: pointer;
+		width: 100%;
+		height: 44px;
+		span {
+			color: white;
 		}
+	}
+
+	.warning-text {
+		font-size: 11px;
+		color: #F0C931;
+		text-align: center;
 	}
 }
