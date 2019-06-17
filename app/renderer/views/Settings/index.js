@@ -45,23 +45,23 @@ class Settings extends React.Component {
 						</header>
 						<main>
 							<div className="section">
-								<h3>{t('portfolio')}</h3>
-								<RenamePortfolio/>
+								{/* <h3>{t('portfolio')}</h3> */}
+								{/* <RenamePortfolio/> */}
 								<CurrencySetting/>
-								<Export/>
+								{/* <Export/>
 								<div className="form-group">
 									<label>{t('manage')}</label>
 									<SeedPhraseModal/>
 									<DeleteModal/>
-								</div>
+								</div> */}
 							</div>
-							<div className="section">
+							{/* <div className="section">
 								<h3>{t('app')}</h3>
 								<ThemeSetting/>
 								<Trans i18n={instance} i18nKey="logOutAppSettings" t={t}>
 									<p><Link onClick={this.handleLogOutLinkClick}>Log out</Link> to see more app settings.</p>
 								</Trans>
-							</div>
+							</div> */}
 						</main>
 					</TabView>
 				)}

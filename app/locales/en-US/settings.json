@@ -5,7 +5,7 @@
 		"description": "<0>Unless you save your seed phrase, this action cannot be undone and will permanently delete the <1><0>{{name}}</0></1> portfolio.</0><1>Please type in the name of the portfolio to confirm.</1>",
 		"title": "Delete Portfolio"
 	},
-	"enabledCurrencies": "Enabled currencies",
+	"enabledCurrencies": "Add all the currencies you want to be shown in the overview page",
 	"logOutAppSettings": "<0><0>Log out</0> to see more app settings.</0>",
 	"name": "Name",
 	"manage": "Manage",
