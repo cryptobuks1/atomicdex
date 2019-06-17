@@ -5,6 +5,7 @@
 		"confirmPasswordNoMatch": "Confirmed password doesn't match password",
 		"confirmSeedPhrase": "Confirm Your Seed Phrase",
 		"exampleSeedPhrase": "Example: {{seedPhrase}} …",
+		"email": "Email",
 		"name": "Username",
 		"next": "Create New Account",
 		"saveCode": "I Saved The Code",

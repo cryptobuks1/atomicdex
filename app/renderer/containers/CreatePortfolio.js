@@ -9,6 +9,7 @@ const t = translate('portfolio');
 
 class CreatePortfolioContainer extends Container {
 	state = {
+		portfolioEmail: '',
 		portfolioName: '',
 		portfolioPassword: '',
 		confirmedPassword: '',
@@ -28,6 +29,10 @@ class CreatePortfolioContainer extends Container {
 	generateSeedPhrase = () => {
 		this.setState({generatedSeedPhrase: bip39.generateMnemonic()});
 	};
+
+	handlePortfolioEmailInputChange = value => {
+		this.setState({portfolioEmail: value});
+	}
 
 	handlePortfolioNameInputChange = value => {
 		this.setState({portfolioName: value});
@@ -64,21 +69,21 @@ class CreatePortfolioContainer extends Container {
 
 		this.step3confirmButtonClicked = true;
 
-		if (!this.checkSeedPhrase()) {
-			this.confirmSeedPhraseTextArea.focus();
-			return;
-		}
+		// if (!this.checkSeedPhrase()) {
+		// 	this.confirmSeedPhraseTextArea.focus();
+		// 	return;
+		// }
 
 		await this.setState({isCreatingPortfolio: true});
-
 		const portfolioId = await createPortfolio({
+			email: this.state.portfolioEmail,
 			name: this.state.portfolioName,
 			password: this.state.portfolioPassword,
 			seedPhrase: this.state.generatedSeedPhrase,
 		});
 
-		loginContainer.setActiveView('CreatePortfolioStep4');
-		loginContainer.setProgress(1);
+		// loginContainer.setActiveView('CreatePortfolioStep4');
+		// loginContainer.setProgress(1);
 
 		await loginContainer.loadPortfolios();
 		await loginContainer.handleLogin(portfolioId, this.state.portfolioPassword);

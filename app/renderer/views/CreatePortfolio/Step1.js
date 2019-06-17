@@ -23,6 +23,18 @@ const CreatePortfolioStep1 = () => {
 			<form style={{marginTop: '20px'}} onSubmit={container.handleStep1Submit}>
 				<div className="form-group">
 					<Input
+						type="email"
+						className="user-email"
+						autoFocus
+						required
+						placeholder={t('create.email')}
+						value={state.portfolioEmail}
+						maxLength="50"
+						onChange={container.handlePortfolioEmailInputChange}
+					/>
+				</div>
+				<div className="form-group">
+					<Input
 						className="user-name"
 						autoFocus
 						required

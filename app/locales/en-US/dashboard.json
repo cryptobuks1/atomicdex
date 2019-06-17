@@ -55,6 +55,12 @@
 		"successTitle": "Successful withdrawal!",
 		"title": "UMBRELLA",
 		"symbolName": "Withdrawal {{symbol}}",
-		"balance": "Balance: "
+		"balance": "Balance: ",
+		"confirmWithdraw": "Confirm Withdrawal",
+		"confirmDescription": "You'll shortly receive a code in your inbox. Enter it in the field below to confirm your withdrawal.",
+		"confirmCode": "Enter code",
+		"confirmCodeQuiz": "Didn’t get the code? ",
+		"confirmCodeResend": "Re-send",
+		"confirmWithdrawSuccess": "Your withdrawal was succesful!"
 	}
 }
