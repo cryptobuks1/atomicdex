@@ -49,7 +49,7 @@ const Trades = props => (
 
 			return (
 				<AppTabView title="Trades" className="Trades">
-					<header>
+					{/* <header>
 						<nav>
 							<TabButton
 								isActive={tradesContainer.state.activeView === OpenOrders.name}
@@ -75,9 +75,9 @@ const Trades = props => (
 								</p>
 							}
 						</div>
-					</header>
+					</header> */}
 					<main>
-						<TabView component={OpenOrders}/>
+						{/* <TabView component={OpenOrders}/> */}
 						<TabView component={TradeHistory}/>
 					</main>
 				</AppTabView>

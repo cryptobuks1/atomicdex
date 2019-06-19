@@ -31,5 +31,14 @@
 		"all": "All",
 		"title": "Open Orders",
 		"historyButtonTitle": "History"
+	},
+	"exchange": {
+		"title": "Atomic Exchange",
+		"exchangeTab": "Exchange",
+		"openorderTab": "Open Orders",
+		"exchangeRatePlaceholder": "Enter Rate",
+		"exchangeButton": "Exchange",
+		"buyTab": "Buy",
+		"sellTab": "Sell"
 	}
 }

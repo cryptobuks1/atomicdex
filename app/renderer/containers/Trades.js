@@ -2,7 +2,7 @@ import {Container} from 'unstated';
 
 class TradesContainer extends Container {
 	state = {
-		activeView: 'OpenOrders',
+		activeView: 'TradeHistory',
 		isSwapCancelling: {},
 	};
 

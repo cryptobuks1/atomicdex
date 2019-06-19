@@ -3,7 +3,17 @@ import Svg from 'components/Svg';
 
 const Swap = props => (
 	<Svg {...props} viewBox="0 0 35 35">
-		<path d="M24.1.98a.5.5 0 1 0-.703.712l2.143 2.11H7.832a7.172 7.172 0 0 0 0 14.344h19.785a6.172 6.172 0 0 1 0 12.344H9.91l2.142-2.11a.5.5 0 1 0-.702-.712l-3.01 2.966a.5.5 0 0 0 0 .712l3.011 2.965a.5.5 0 0 0 .702-.712l-2.142-2.11h17.707a7.172 7.172 0 0 0 0-14.343H7.832a6.172 6.172 0 0 1 0-12.345H25.54l-2.143 2.11a.5.5 0 0 0 .702.712l3.012-2.965a.5.5 0 0 0 0-.713z"/>
+		<rect id="Rectangle" width="24" height="24" fill="none" />
+		<g id="arrows" transform="translate(1 2)">
+			<g id="Group_2" data-name="Group 2">
+				<path id="Path" d="M0,.5H19.38" transform="translate(0.241 3.825)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1" />
+				<path id="Path_2" data-name="Path 2" d="M0,0,3.376,3.376,0,6.753" transform="translate(16.807 0.975)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1" />
+			</g>
+			<g id="Group_2-2" data-name="Group 2" transform="translate(21 20) rotate(-180)">
+				<path id="Path-2" data-name="Path" d="M0,.5H19.38" transform="translate(0.241 3.825)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1" />
+				<path id="Path_2-2" data-name="Path 2" d="M0,0,3.376,3.376,0,6.753" transform="translate(16.807 0.975)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1" />
+			</g>
+		</g>
 	</Svg>
 );
 

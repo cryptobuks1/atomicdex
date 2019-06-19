@@ -14,7 +14,7 @@ class ExchangeContainer extends SuperContainer {
 		return {
 			baseCurrency: 'CHIPS',
 			quoteCurrency: 'KMD',
-			activeSwapsView: 'OpenOrders',
+			activeSwapsView: 'Atomic',
 			orderBook: {
 				bids: [],
 				asks: [],
