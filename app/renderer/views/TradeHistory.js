@@ -1,46 +1,44 @@
 import React from 'react';
-import appContainer from 'containers/App';
 import CurrencyIcon from 'components/CurrencyIcon';
-import { translate } from '../../translate';
-import './OpenOrders.scss';
+import './TradeHistory.scss';
 import NextArrow from 'icons/NextArrow';
-import Oval from 'icons/Oval';
-import {getCurrencyName} from '../../../marketmaker/supported-currencies';
+import Success from 'icons/Success';
+import Fail from 'icons/Fail';
+import {getCurrencyName} from '../../marketmaker/supported-currencies';
 
-const t = translate('exchange');
-
-const orderData = [
+const tradeData = [
 	{
 		fromCurrency: 'BTC',
 		fromAmount: "3.2",
 		toCurrency: 'LTC',
-		toAmount: "0.000000043"
+        toAmount: "0.000000043",
+        date: '20 Oct 2018, 22:00',
+        status: 1
 	},
 	{
 		fromCurrency: 'BTC',
 		fromAmount: "3.2",
 		toCurrency: 'LTC',
-		toAmount: "0.000000043"
+        toAmount: "0.000000043",
+        date: '20 Oct 2018, 22:00',
+        status: 0
 	},
 	{
 		fromCurrency: 'BTC',
 		fromAmount: "3.2",
 		toCurrency: 'LTC',
-		toAmount: "0.000000043"
+        toAmount: "0.000000043",
+        date: '20 Oct 2018, 22:00',
+        status: 0
 	},
 ];
 
-const getOpenOrders = () => appContainer.state.swapHistory.filter(swap => swap.isActive);
-
-class OpenOrders extends React.Component {
-
+class TradeHistory extends React.Component {
 	render() {
-		const openOrders = getOpenOrders();
-
 		return (
-			<div className="order-list">
+			<div className="trade-list">
 				{
-					orderData.map((item, index) => {
+					tradeData.map((item, index) => {
 						return (
 							<div className="item" key={index} >
 								<div className="item-from">
@@ -48,7 +46,7 @@ class OpenOrders extends React.Component {
 										<CurrencyIcon symbol={item.fromCurrency} size="24" />
 									</div>
 									<div className="right">
-										<p className="amount">{item.toAmount}</p>
+										<p className="amount">{item.fromAmount}</p>
 										<p className="currency">
 											{item.fromCurrency}
 											&nbsp;{getCurrencyName(item.fromCurrency)}
@@ -69,8 +67,13 @@ class OpenOrders extends React.Component {
 									</div>
 								</div>
 								<div className="item-status">
-									<Oval />
-									<span>Transaction</span>
+                                    <div className="trade-date">
+                                        {item.date}
+                                    </div>
+                                    <div className={`trade-status ${item.status === 1 ? 'success' : 'fail'}`}>
+                                        {item.status === 1 && <div><Success /><span>SUCCESSFUL</span></div>}
+                                        {item.status === 0 && <div><Fail /><span>NO MATCH</span></div>}
+                                    </div>
 								</div>
 							</div>
 						)
@@ -81,4 +84,4 @@ class OpenOrders extends React.Component {
 	}
 }
 
-export default OpenOrders;
+export default TradeHistory;
