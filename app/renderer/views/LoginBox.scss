@@ -30,6 +30,11 @@
 		}
 	}
 
+	.error-msg {
+		text-align: center;
+		color: var(--red-color);
+	}
+
 	.signin-btn {
 		height: 44px;
 		span {

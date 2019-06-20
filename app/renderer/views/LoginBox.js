@@ -55,13 +55,12 @@ class LoginBox extends React.Component {
 				await this.setState({
 					isLoggingIn: false,
 					passwordInputValue: '',
-					passwordError: error.message,
+					passwordError: 'Username or password is not correct',
 				});
 
 				this.passwordInputRef.current.focus();
 				return;
 			}
-
 			loginContainer.setActiveView(LoginBox.name);
 			unhandled.logError(error, {title: 'Login Failed'});
 		}
@@ -102,7 +101,6 @@ class LoginBox extends React.Component {
 							placeholder={t('user')}
 							value={this.state.usernameInputValue}
 							disabled={this.state.isLoggingIn}
-							errorMessage={this.state.passwordError}
 							onChange={this.handleUsernameInputChange}
 						/>
 					</div>
@@ -115,12 +113,12 @@ class LoginBox extends React.Component {
 							placeholder={t('password')}
 							value={this.state.passwordInputValue}
 							disabled={this.state.isLoggingIn}
-							errorMessage={this.state.passwordError}
 							onChange={this.handlePasswordInputChange}
 							showpassword={this.showPassword}
 							suffixString="SHOW"
 						/>
 					</div>
+					<p className="error-msg">{this.state.passwordError}</p>
 					<div className="form-group form-group-2">
 						<Button className="signin-btn" fullwidth type="submit" color="blue" value={t('login')} disabled={!this.state.passwordInputValue || this.state.isLoggingIn}/>
 						{/* <Link

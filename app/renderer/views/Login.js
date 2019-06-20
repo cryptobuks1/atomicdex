@@ -25,7 +25,7 @@ class Login extends React.Component {
 							<div className="window-draggable-area"/>
 							<Progress className="login-progress" value={login.state.progress}/>
 							<div className="is-centered">
-								<p>UMBRELLA</p>
+								<p className="title" >UMBRELLA</p>
 								<LoginBox/>
 								<ForgotPassword/>
 							</div>

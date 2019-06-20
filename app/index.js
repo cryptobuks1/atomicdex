@@ -15,7 +15,7 @@ const serve = require('electron-serve');
 const logger = require('electron-timber');
 const ipc = require('electron-better-ipc');
 const unhandled = require('electron-unhandled');
-const appMenu = require('./menu');
+// const appMenu = require('./menu');
 const config = require('./config');
 const marketmaker = require('./marketmaker');
 const {loginWindowSize} = require('./constants');
@@ -107,6 +107,7 @@ function createMainWindow() {
 			// TODO: Remove this when using Electron 5 as it will be the default value
 			webviewTag: false, // Disabled for security reasons since we don't use it
 		},
+		frame: false,
 	});
 
 	win.on('ready-to-show', () => {
@@ -154,7 +155,7 @@ if (!is.development) {
 
 	logger.log(`HyperDEX ${app.getVersion()}`);
 
-	appMenu();
+	// appMenu();
 
 	mainWindow = createMainWindow();
 })();
