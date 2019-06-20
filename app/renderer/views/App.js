@@ -9,10 +9,11 @@ import CreatePortfolio from './CreatePortfolio';
 import Login from './Login';
 import AppSettings from './AppSettings';
 import Dashboard from './Dashboard';
-import Swap from './Swap';
+// import Swap from './Swap';
 import Exchange from './Exchange';
 import Trades from './Trades';
 import Settings from './Settings';
+import MarketMaker from './MarketMaker';
 import ComponentsPreview from './ComponentsPreview';
 
 const App = () => (
@@ -24,9 +25,10 @@ const App = () => (
 				<AppView component={Login}/>
 				<AppView component={AppSettings}/>
 				<AppView component={Dashboard}/>
-				<AppView component={Swap}/>
+				{/* <AppView component={Swap}/> */}
 				<AppView component={Exchange}/>
 				<AppView component={Trades}/>
+				<AppView component={MarketMaker}/>
 				<AppView component={Settings}/>
 				<AppView component={ComponentsPreview}/>
 			</>

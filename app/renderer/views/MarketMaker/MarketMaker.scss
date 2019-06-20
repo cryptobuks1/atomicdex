@@ -1,0 +1,95 @@
+.MarketMaker {
+    padding: 60px 0px;
+    overflow: auto;
+
+    header {
+        p {
+            margin-bottom: 0px;
+        }
+
+        .title {
+            font-size: 22px;
+            color: white;
+        }
+
+        .description {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+    }
+
+    .MarketList {
+        .head {
+            display: flex;
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+            margin-top: 45px;
+            margin-bottom: 14px;
+            padding: 0px 20px;
+        }
+
+        .list {
+            .market-item {
+                margin-bottom: 9px;
+                border-radius: 5px;
+                border: 1px solid #707070;
+                background-color: rgba(255,255,255,0.03);
+
+                .market {
+                    display: flex;
+                    padding: 8px 20px;
+                    border-bottom: 1px solid rgba(216,216,216,0.06);
+                    align-items: center;
+
+                    input {
+                        width: 52px;
+                        height: 42px;
+                        min-width: 52px;
+                    }
+    
+                    button {
+                        width: 64px;
+                        height: 28px;
+                        min-width: 64px;
+                        line-height: 25px;
+                        padding: 0px 10px;
+                    }
+    
+                    .start {
+                        border-color: #72CE56;
+    
+                        span {
+                            color: #72CE56;
+                        }
+                    }
+    
+                    .stop {
+                        border-color: #EA3055;
+    
+                        span {
+                            color: #EA3055;
+                        }
+                    }
+                }
+
+                .market-update-date {
+                    position: relative;
+                    text-align: center;
+                    padding: 20px 20px;
+
+                    .add-offer {
+                        position: absolute;
+                        font-size: 12px;
+                        color: #54A1DA;
+                        left: 20px;
+                    }
+
+                    .update-date {
+                        font-size: 12px;
+                        color: rgba(255,255,255,0.44);
+                    }
+                }
+            }
+        }
+    }
+}

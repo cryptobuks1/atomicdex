@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import appContainer from 'containers/App';
 import DashboardIcon from 'icons/Dashboard';
-// import SwapIcon from 'icons/Swap';
 import ExchangeIcon from 'icons/Exchange';
 import TradesIcon from 'icons/Trades';
+import MarketIcon from 'icons/Market';
 import SettingsIcon from 'icons/Settings';
 import {translate} from '../translate';
 
@@ -36,9 +36,9 @@ IconNavItem.propTypes = {
 const Nav = () => (
 	<nav className="nav">
 		<IconNavItem to="Dashboard" icon={DashboardIcon}/>
-		{/* <IconNavItem to="Swap" icon={SwapIcon}/> */}
 		<IconNavItem to="Exchange" icon={ExchangeIcon}/>
 		<IconNavItem to="Trades" icon={TradesIcon}/>
+		<IconNavItem to="MarketMaker" icon={MarketIcon}/>
 		<IconNavItem to="Settings" icon={SettingsIcon}/>
 	</nav>
 );
