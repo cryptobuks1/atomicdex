@@ -19,6 +19,7 @@ class CreatePortfolioContainer extends Container {
 		seedPhraseError: null,
 		isCreatingPortfolio: false,
 		step: 1,
+		portfolioId: null,
 	};
 
 	constructor() {
@@ -82,6 +83,7 @@ class CreatePortfolioContainer extends Container {
 			seedPhrase: this.state.generatedSeedPhrase,
 		});
 
+		this.setState({portfolioId});
 		// loginContainer.setActiveView('CreatePortfolioStep4');
 		// loginContainer.setProgress(1);
 

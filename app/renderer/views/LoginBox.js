@@ -123,7 +123,7 @@ class LoginBox extends React.Component {
 					</div>
 					<div className="form-group form-group-2">
 						<Button className="signin-btn" fullwidth type="submit" color="blue" value={t('login')} disabled={!this.state.passwordInputValue || this.state.isLoggingIn}/>
-						<Link
+						{/* <Link
 							disabled={this.state.isLoggingIn}
 							style={{
 								fontSize: '12px',
@@ -137,7 +137,7 @@ class LoginBox extends React.Component {
 							}}
 						>
 							{t('forgotPassword')}
-						</Link>
+						</Link> */}
 					</div>
 				</form>
 			</div>

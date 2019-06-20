@@ -9,7 +9,7 @@ import './CreatePortfolio.scss';
 
 const t = translate('portfolio');
 
-const CreatePortfolioStep1 = () => {
+const Step1 = () => {
 	const {state} = container;
 
 	return (
@@ -85,4 +85,4 @@ const CreatePortfolioStep1 = () => {
 	);
 };
 
-export default CreatePortfolioStep1;
+export default Step1;

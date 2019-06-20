@@ -3,5 +3,6 @@
 	"exchange": "Atomic",
 	"settings": "Settings",
 	"swap": "Swap",
-	"trades": "History"
+	"trades": "History",
+	"MarketMaker": "Market Maker"
 }
