@@ -23,6 +23,27 @@ exports.appViews = [
 	'Settings',
 ];
 
+exports.defaultEnabledCurrencies = [
+	'BCH',
+	'BEER',
+	'BTC',
+	'CHIPS',
+	'DASH',
+	'DOGE',
+	'EQLI',
+	'HUSH',
+	'KMD',
+	'LTC',
+	'MSHARK',
+	'MYTH',
+	'OOT',
+	'PIZZA',
+	'REVS',
+	'SUPERNET',
+	'VTC',
+	'ZEC',
+];
+
 exports.alwaysEnabledCurrencies = [
 	'KMD',
 	'CHIPS',

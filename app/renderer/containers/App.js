@@ -6,16 +6,16 @@ import _ from 'lodash';
 import Cycled from 'cycled';
 import roundTo from 'round-to';
 import SuperContainer from 'containers/SuperContainer';
-import {isPast, addHours} from 'date-fns';
+/// import {isPast, addHours} from 'date-fns';
 import {appViews, alwaysEnabledCurrencies, hiddenCurrencies} from '../../constants';
 import {getCurrencyName} from '../../marketmaker/supported-currencies';
 import fireEvery from '../fire-every';
 import {formatCurrency, setLoginWindowBounds} from '../util';
 import fetchCurrencyInfo from '../fetch-currency-info';
-import {isDevelopment} from '../../util-common';
+import {isDevelopment, isNightlyBuild} from '../../util-common';
 
 const config = remote.require('./config');
-const {decryptSeedPhrase} = remote.require('./portfolio-util');
+const {decryptSeedPhrase, setCurrencies} = remote.require('./portfolio-util');
 
 const excludedTestCurrencies = new Set([
 	'PIZZA',
@@ -26,7 +26,7 @@ class AppContainer extends SuperContainer {
 	state = {
 		theme: config.get('theme'),
 		activeView: 'Login',
-		enabledCoins: _.union(alwaysEnabledCurrencies, config.get('enabledCoins')),
+		enabledCoins: alwaysEnabledCurrencies,
 		currencies: [],
 		swapHistory: [],
 		doneInitialKickstart: false,
@@ -45,22 +45,23 @@ class AppContainer extends SuperContainer {
 		});
 	}
 
-	async kickstartStuckSwaps() {
-		const {doneInitialKickstart} = this.state;
-		this.state.swapHistory
-			.filter(swap => (
-				swap.status === 'swapping' &&
-				(!doneInitialKickstart || isPast(addHours(swap.timeStarted, 4)))
-			))
-			.forEach(async swap => {
-				const {requestId, quoteId} = swap;
-				await this.api.kickstart({requestId, quoteId});
-			});
-
-		if (!doneInitialKickstart) {
-			await this.setState({doneInitialKickstart: true});
-		}
-	}
+	// TODO: Investigate if this is needed with mm2
+	// 	async kickstartStuckSwaps() {
+	// 		const {doneInitialKickstart} = this.state;
+	// 		this.state.swapHistory
+	// 			.filter(swap => (
+	// 				swap.status === 'swapping' &&
+	// 				(!doneInitialKickstart || isPast(addHours(swap.timeStarted, 4)))
+	// 			))
+	// 			.forEach(async swap => {
+	// 				const {requestId, quoteId} = swap;
+	// 				await this.api.kickstart({requestId, quoteId});
+	// 			});
+	//
+	// 		if (!doneInitialKickstart) {
+	// 			await this.setState({doneInitialKickstart: true});
+	// 		}
+	// 	}
 
 	initSwapHistoryListener() {
 		const setSwapHistory = async () => {
@@ -71,16 +72,40 @@ class AppContainer extends SuperContainer {
 
 		this.swapDB.on('change', setSwapHistory);
 
-		this.api.socket.on('message', message => {
+		// TODO: Change this to `1` second.
+		fireEvery({seconds: 10}, async () => {
 			const uuids = this.state.swapHistory.map(swap => swap.uuid);
-			if (uuids.includes(message.uuid)) {
-				this.swapDB.updateSwapData(message);
-			}
+			const recentSwaps = await this.api.myRecentSwaps();
+			console.log('recentSwaps', recentSwaps);
+
+			await Promise.all(uuids.map(async uuid => {
+				const swap = recentSwaps.find(x => x.uuid === uuid);
+				if (!swap) {
+					console.error('Could not find swap:', uuid);
+				}
+
+				// Const errorEvent = swap.events.find(event => swap.error_events.includes(event.type));
+				// if (errorEvent) {
+				// 	swap.errorEvent = errorEvent;
+				// }
+
+				console.log('swap', swap);
+
+				// Const status = await this.api.mySwapStatus(uuid);
+				// console.log('update', status);
+				// TODO: Finish this. It's for tracking swap status.
+				// Blocked by https://github.com/artemii235/SuperNET/issues/451
+				//
+				// We *could* use `my_swap_status` instead of `order_status`, but it's very low-level. Would be nicer to be able to use `order_status`.
+				// From Artem: As of now you have to follow these steps: create order -> check order_status -> if there's no order check my_swap_status with same uuid -> if swap is not found there's something unexpected.
+				//
+				this.swapDB.updateSwapData(swap);
+			}));
 		});
 
-		fireEvery({minutes: 15}, async () => {
-			await this.kickstartStuckSwaps();
-		});
+		/// fireEvery({minutes: 15}, async () => {
+		// 	await this.kickstartStuckSwaps();
+		// });
 	}
 
 	setActiveView(activeView) {
@@ -96,6 +121,18 @@ class AppContainer extends SuperContainer {
 		this.setActiveView(this.views.previous());
 	}
 
+	setEnabledCurrencies(currencies) {
+		currencies = currencies.slice();
+
+		if (isNightlyBuild) {
+			currencies.push('PIZZA', 'BEER');
+		}
+
+		this.setState({
+			enabledCoins: _.union(alwaysEnabledCurrencies, currencies),
+		});
+	}
+
 	setTheme(theme) {
 		config.set('theme', theme);
 
@@ -103,6 +140,7 @@ class AppContainer extends SuperContainer {
 		if (theme === 'system' && is.macos) {
 			cssTheme = darkMode.isEnabled ? 'dark' : 'light';
 		}
+
 		document.documentElement.dataset.theme = cssTheme;
 
 		this.setState({theme});
@@ -155,7 +193,19 @@ class AppContainer extends SuperContainer {
 		if (!this.stopWatchingCurrencies) {
 			this.stopWatchingCurrencies = await fireEvery({seconds: 1}, async () => {
 				const {price: kmdPriceInUsd} = this.coinPrices.find(x => x.symbol === 'KMD');
-				let {portfolio: currencies} = await this.api.portfolio();
+				const enabledCurrencies = (await this.api.getEnabledCurrencies()).map(x => x.ticker);
+
+				// This imitates the `portfolio` endpoint which is no longer available in mm v2
+				let currencies = await Promise.all(enabledCurrencies.map(async currency => {
+					const {address, balance} = await this.api.myBalance(currency);
+
+					return {
+						coin: currency,
+						address,
+						balance,
+						price: 0, // TODO: No way to get this with mm v2 yet: https://github.com/artemii235/SuperNET/issues/450
+					};
+				}));
 
 				// TODO(sindresorhus): Move the returned `mm` currency info to a sub-property and only have cleaned-up top-level properties. For example, `mm` has too many properties for just the balance.
 
@@ -226,7 +276,7 @@ class AppContainer extends SuperContainer {
 		this.setState(prevState => {
 			this.api.enableCurrency(coin);
 			const enabledCoins = [...prevState.enabledCoins, coin];
-			config.set('enabledCoins', enabledCoins);
+			setCurrencies(prevState.portfolio.id, enabledCoins);
 			return {enabledCoins};
 		}, () => {
 			this.events.emit('enabled-currencies-changed');
@@ -237,7 +287,7 @@ class AppContainer extends SuperContainer {
 		this.setState(prevState => {
 			this.api.disableCoin(coin);
 			const enabledCoins = prevState.enabledCoins.filter(enabledCoin => enabledCoin !== coin);
-			config.set('enabledCoins', enabledCoins);
+			setCurrencies(prevState.portfolio.id, enabledCoins);
 			return {enabledCoins};
 		}, () => {
 			this.events.emit('enabled-currencies-changed');
@@ -246,7 +296,7 @@ class AppContainer extends SuperContainer {
 
 	async logOut(options = {}) {
 		await this.stopMarketmaker();
-		config.set('windowState', remote.getCurrentWindow().getBounds());
+		config.set('windowState', remote.getCurrentWindow().getNormalBounds());
 		this.setActiveView('');
 		this.setState({portfolio: null});
 		await Promise.resolve(); // Ensure the window is blank before changing the size
@@ -309,6 +359,8 @@ appContainer.subscribe(() => {
 
 // We send an initial event so it can show the correct menu state after logging out
 ipc.send('app-container-state-updated', appContainer.state);
+
+ipc.answerMain('current-portfolio-id', () => appContainer.state.portfolio.id);
 
 window.addEventListener('beforeunload', () => {
 	ipc.callMain('stop-marketmaker');

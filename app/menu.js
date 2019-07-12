@@ -1,22 +1,23 @@
 'use strict';
 const path = require('path');
 const electron = require('electron');
-const {runJS, is} = require('electron-util');
+const {runJS, is, appMenu, openUrlMenuItem, aboutMenuItem} = require('electron-util');
+const ipc = require('electron-better-ipc');
 const i18next = require('i18next');
 const config = require('./config');
 const {openGitHubIssue} = require('./util');
 const {websiteUrl, repoUrl, appViews, supportedLanguagesWithNames} = require('./constants');
 const {isDevelopment, isNightlyBuild} = require('./util-common');
 const {translate} = require('./locale');
+const {portfoliosDirectoryPath, getPortfolioFilePath} = require('./portfolio-util');
 
-const {app, BrowserWindow, shell, clipboard, ipcMain: ipc, Menu} = electron;
-const appName = app.getName();
+const {app, BrowserWindow, shell, clipboard, Menu} = electron;
 const t = translate('menu');
 
 const sendAction = (action, data) => {
 	const [win] = BrowserWindow.getAllWindows();
 
-	if (process.platform === 'darwin') {
+	if (is.macos) {
 		win.restore();
 	}
 
@@ -43,24 +44,18 @@ const createHelpMenu = () => {
 		{
 			type: 'separator',
 		},
-		{
+		openUrlMenuItem({
 			label: t('help.website'),
-			click() {
-				shell.openExternal(websiteUrl);
-			},
-		},
-		{
+			url: websiteUrl,
+		}),
+		openUrlMenuItem({
 			label: t('help.sourceCode'),
-			click() {
-				shell.openExternal(repoUrl);
-			},
-		},
-		{
+			url: repoUrl,
+		}),
+		openUrlMenuItem({
 			label: t('help.reportSecurityIssue'),
-			click() {
-				shell.openExternal('mailto:hyperdex@protonmail.com');
-			},
-		},
+			url: 'mailto:hyperdex@protonmail.com',
+		}),
 		{
 			label: t('help.reportIssue'),
 			click() {
@@ -69,20 +64,18 @@ const createHelpMenu = () => {
 		},
 	];
 
-	if (process.platform !== 'darwin') {
-		helpSubmenu.push({
-			type: 'separator',
-		}, {
-			role: 'about',
-			click() {
-				electron.dialog.showMessageBox({
-					title: t('help.about', {appName}),
-					message: `${appName} ${app.getVersion()}`,
-					detail: 'Copyright © Luke Childs',
-					icon: path.join(__dirname, 'static/icon.png'),
-				});
+	if (!is.macos) {
+		helpSubmenu.push(
+			{
+				type: 'separator',
 			},
-		});
+			aboutMenuItem({
+				icon: path.join(__dirname, 'static/icon.png'),
+				// FIXME: Doing it like this for now so I don't have to update all the translations
+				title: t('help.about', {appName: ''}).trim(),
+				copyright: 'Copyright © Luke Childs',
+			})
+		);
 	}
 
 	return helpSubmenu;
@@ -120,15 +113,13 @@ const createDebugMenu = () => {
 			},
 			{
 				label: 'Log Container State',
-				async click() {
-					const [win] = BrowserWindow.getAllWindows();
+				async click(menuItem, win) {
 					await runJS('UNSTATED.logState()', win);
 				},
 			},
 			{
 				label: 'Toggle Logging on State Changes',
-				async click() {
-					const [win] = BrowserWindow.getAllWindows();
+				async click(menuItem, win) {
 					await runJS('UNSTATED.logStateChanges = !UNSTATED.logStateChanges', win);
 				},
 			},
@@ -137,15 +128,13 @@ const createDebugMenu = () => {
 			},
 			{
 				label: 'Log Swaps',
-				async click() {
-					const [win] = BrowserWindow.getAllWindows();
-					await runJS('_swapDB.getSwaps().then(console.log)', win);
+				async click(menuItem, win) {
+					await runJS('console.log(await _swapDB.getSwaps())', win);
 				},
 			},
 			{
 				label: 'Copy Swaps to Clipboard',
-				async click() {
-					const [win] = BrowserWindow.getAllWindows();
+				async click(menuItem, win) {
 					const swaps = await runJS('_swapDB.getSwaps()', win);
 					clipboard.writeText(JSON.stringify(swaps, null, '\t'));
 				},
@@ -154,15 +143,22 @@ const createDebugMenu = () => {
 				type: 'separator',
 			},
 			{
-				label: 'Show Portfolios',
-				click() {
-					shell.openItem(path.join(app.getPath('userData'), 'portfolios'));
-				},
-			},
-			{
 				label: 'Show Settings',
 				click() {
 					config.openInEditor();
+				},
+			},
+			{
+				label: 'Show Current Portfolio',
+				async click(menuItem, win) {
+					const id = await ipc.callRenderer(win, 'current-portfolio-id');
+					shell.openItem(getPortfolioFilePath(id));
+				},
+			},
+			{
+				label: 'Show Portfolios',
+				click() {
+					shell.openItem(portfoliosDirectoryPath);
 				},
 			},
 			{
@@ -176,8 +172,7 @@ const createDebugMenu = () => {
 			},
 			{
 				label: 'Delete Swap History',
-				async click() {
-					const [win] = BrowserWindow.getAllWindows();
+				async click(menuItem, win) {
 					await runJS('_swapDB.destroy()', win);
 					app.relaunch();
 					app.quit();
@@ -185,8 +180,7 @@ const createDebugMenu = () => {
 			},
 			{
 				label: 'Delete Portfolios',
-				click() {
-					const [win] = BrowserWindow.getAllWindows();
+				click(menuItem, win) {
 					shell.moveItemToTrash(path.join(app.getPath('userData'), 'portfolios'));
 					win.webContents.reload();
 				},
@@ -221,12 +215,12 @@ const createAppMenu = options => {
 	};
 
 	const portfolioSubmenu = [];
-	for (const [i, view] of appViews.entries()) {
+	for (const [index, view] of appViews.entries()) {
 		portfolioSubmenu.push({
 			label: t(`portfolio.${view.toLowerCase()}`),
 			type: 'radio',
 			checked: activeView === view,
-			accelerator: `CommandOrControl+${i + 1}`,
+			accelerator: `CommandOrControl+${index + 1}`,
 			click() {
 				setActiveView(view);
 			},
@@ -262,79 +256,28 @@ const createAppMenu = options => {
 		}
 	);
 
-	const macosTpl = [
-		{
-			label: appName,
-			submenu: [
-				{
-					role: 'about',
+	const macosTemplate = [
+		appMenu([
+			{
+				label: t('app.preferences'),
+				accelerator: 'Command+,',
+				click() {
+					setActiveView('Settings');
 				},
-				{
-					type: 'separator',
-				},
-				{
-					label: t('app.preferences'),
-					accelerator: 'Cmd+,',
-					click() {
-						setActiveView('Settings');
-					},
-				},
-				{
-					type: 'separator',
-				},
-				{
-					role: 'services',
-					submenu: [],
-				},
-				{
-					type: 'separator',
-				},
-				{
-					role: 'hide',
-				},
-				{
-					role: 'hideothers',
-				},
-				{
-					role: 'unhide',
-				},
-				{
-					type: 'separator',
-				},
-				{
-					role: 'quit',
-				},
-			],
-		},
+			},
+		]),
 		{
 			role: 'editMenu',
 		},
-		isLoggedIn ? {
+		isLoggedIn && {
 			label: t('portfolio.title'),
 			// TODO: Can't use `visible` because of Electron bug:
 			// https://github.com/electron/electron/issues/8703
 			// visible: isLoggedIn,
 			submenu: portfolioSubmenu,
-		} : null,
+		},
 		{
-			role: 'window',
-			submenu: [
-				{
-					role: 'minimize',
-				},
-				{
-					role: 'close',
-				},
-				{
-					type: 'separator',
-				},
-				{
-					role: 'front',
-				},
-				{
-					role: 'togglefullscreen',
-				},
-			],
+			role: 'windowMenu',
 		},
 		{
 			role: 'help',
@@ -342,7 +285,7 @@ const createAppMenu = options => {
 		},
 	];
 
-	const otherTpl = [
+	const otherTemplate = [
 		{
 			label: t('other.file'),
 			submenu: [
@@ -354,26 +297,26 @@ const createAppMenu = options => {
 		{
 			role: 'editMenu',
 		},
-		isLoggedIn ? {
+		isLoggedIn && {
 			label: t('portfolio.title'),
 			// TODO: Can't use `visible` because of Electron bug:
 			// https://github.com/electron/electron/issues/8703
 			// visible: isLoggedIn,
 			submenu: portfolioSubmenu,
-		} : null,
+		},
 		{
 			role: 'help',
 			submenu: createHelpMenu(),
 		},
 	];
 
-	const tpl = process.platform === 'darwin' ? macosTpl : otherTpl;
+	const template = is.macos ? macosTemplate : otherTemplate;
 
 	if (isDevelopment) {
-		tpl.push(createDebugMenu());
+		template.push(createDebugMenu());
 	}
 
-	Menu.setApplicationMenu(Menu.buildFromTemplate(tpl.filter(x => x !== null)));
+	Menu.setApplicationMenu(Menu.buildFromTemplate(template.filter(Boolean)));
 };
 
 ipc.on('app-container-state-updated', (event, state) => {

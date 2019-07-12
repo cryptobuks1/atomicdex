@@ -1,56 +1,35 @@
+/* eslint-disable camelcase */
 import util from 'util';
-import electron from 'electron';
 import {sha256} from 'crypto-hash';
 import PQueue from 'p-queue';
 import ow from 'ow';
 import _ from 'lodash';
 import {getCurrency} from '../marketmaker/supported-currencies';
 import {isDevelopment} from '../util-common';
-import MarketmakerSocket from './marketmaker-socket';
-
-const getPort = electron.remote.require('get-port');
 
 const symbolPredicate = ow.string.uppercase;
-const uuidPredicate = ow.string.alphanumeric.lowercase;
+const uuidPredicate = ow.string.matches(/[a-z\d-]/);
 
 const errorWithObject = (message, object) => new Error(`${message}:\n${util.format(object)}`);
 const genericError = object => errorWithObject('Encountered an error', object);
 
-/* eslint-disable camelcase */
 export default class Api {
 	constructor({endpoint, seedPhrase, concurrency = 1}) {
-		ow(endpoint, ow.string.label('endpoint'));
-		ow(seedPhrase, ow.string.label('seedPhrase'));
-		ow(concurrency, ow.number.integerOrInfinite.positive.label('concurrency'));
+		ow(endpoint, 'endpoint', ow.string);
+		ow(seedPhrase, 'seedPhrase', ow.string);
+		ow(concurrency, 'concurrency', ow.number.positive.integerOrInfinite);
 
 		this.endpoint = endpoint;
 		this.token = sha256(seedPhrase);
-		this.socket = false;
-		this.useQueue = false;
-		this.currentQueueId = 0;
-
 		this.queue = new PQueue({concurrency});
 	}
 
-	async enableSocket() {
-		const port = await getPort();
-		const {endpoint} = await this.request({method: 'getendpoint', port});
-		const socket = new MarketmakerSocket(endpoint);
-		await socket.connected;
-		this.socket = socket;
-
-		return this.socket;
-	}
-
 	async request(data) {
-		ow(data, ow.object.label('data'));
-
-		const queueId = (this.useQueue && this.socket) ? ++this.currentQueueId : 0;
+		ow(data, 'data', ow.object);
 
 		const body = {
 			...data,
 			needjson: 1,
-			queueid: queueId,
 			userpass: await this.token,
 		};
 
@@ -67,14 +46,14 @@ export default class Api {
 				});
 			});
 
-			result = await ((this.useQueue && this.socket) ? this.socket.getResponse(queueId) : response.json());
+			result = await response.json();
 
 			if (isDevelopment) {
 				// TODO: Use `Intl.RelativeTimeFormat` here when we use an Electron version with Chrome 71
 				const requestDuration = (Date.now() - requestTime) / 1000;
 				const groupLabel = `API method: ${body.method} (${requestDuration}s)`;
 				console.groupCollapsed(groupLabel);
-				console.log('Request:', _.omit(body, ['needjson', 'userpass', this.useQueue ? null : 'queueid']));
+				console.log('Request:', _.omit(body, ['needjson', 'userpass']));
 				console.log('Response:', response.status, result);
 				console.groupEnd(groupLabel);
 			}
@@ -100,7 +79,7 @@ export default class Api {
 	}
 
 	async enableCurrency(symbol) {
-		ow(symbol, symbolPredicate.label('symbol'));
+		ow(symbol, 'symbol', symbolPredicate);
 
 		const currency = getCurrency(symbol);
 
@@ -110,15 +89,19 @@ export default class Api {
 		}
 
 		if (currency.electrumServers) {
-			const requests = currency.electrumServers.map(server => this.request({
-				method: 'electrum',
-				coin: symbol,
-				ipaddr: server.host,
-				port: server.port,
+			const servers = currency.electrumServers.map(server => ({
+				url: `${server.host}:${server.port}`,
+				// TODO: Use HTTPS for the Electrum servers that supports it.
+				// protocol: 'SSL',
 			}));
 
-			const responses = await Promise.all(requests);
-			const success = responses.filter(response => response.result === 'success').length > 0;
+			const response = await this.request({
+				method: 'electrum',
+				coin: symbol,
+				servers,
+			});
+
+			const success = response.result === 'success';
 
 			if (!success) {
 				const error = `Could not connect to ${symbol} Electrum server`;
@@ -126,6 +109,8 @@ export default class Api {
 				// eslint-disable-next-line no-new
 				new Notification(error);
 			}
+
+			console.log('Enabled Electrum for currency:', symbol);
 
 			return success;
 		}
@@ -135,7 +120,7 @@ export default class Api {
 	}
 
 	disableCoin(coin) {
-		ow(coin, symbolPredicate.label('coin'));
+		ow(coin, 'coin', symbolPredicate);
 
 		return this.request({
 			method: 'disable',
@@ -143,13 +128,9 @@ export default class Api {
 		});
 	}
 
-	portfolio() {
-		return this.request({method: 'portfolio'});
-	}
-
 	balance(coin, address) {
-		ow(coin, symbolPredicate.label('coin'));
-		ow(address, ow.string.label('address'));
+		ow(coin, 'coin', symbolPredicate);
+		ow(address, 'address', ow.string);
 
 		return this.request({
 			method: 'balance',
@@ -163,8 +144,8 @@ export default class Api {
 	}
 
 	async orderBook(base, rel) {
-		ow(base, symbolPredicate.label('base'));
-		ow(rel, symbolPredicate.label('rel'));
+		ow(base, 'base', symbolPredicate);
+		ow(rel, 'rel', symbolPredicate);
 
 		const response = await this.request({
 			method: 'orderbook',
@@ -192,27 +173,81 @@ export default class Api {
 		return formattedResponse;
 	}
 
-	order(opts) {
-		ow(opts.type, ow.string.oneOf(['buy', 'sell']).label('type'));
-		ow(opts.baseCurrency, symbolPredicate.label('baseCurrency'));
-		ow(opts.quoteCurrency, symbolPredicate.label('quoteCurrency'));
-		ow(opts.amount, ow.number.finite.label('amount'));
-		ow(opts.total, ow.number.finite.label('total'));
-		ow(opts.price, ow.number.finite.label('price'));
+	// Mm v2
+	async order(opts) {
+		ow(opts, 'opts', ow.object.exactShape({
+			type: ow.string.oneOf(['buy', 'sell']),
+			baseCurrency: symbolPredicate,
+			quoteCurrency: symbolPredicate,
+			price: ow.number.finite,
+			volume: ow.number.finite,
+		}));
 
-		return this.request({
+		const {result} = await this.request({
 			method: opts.type,
-			gtc: 1,
+			gtc: 1, // TODO: Looks like this is missing from mm v2
 			base: opts.baseCurrency,
 			rel: opts.quoteCurrency,
-			basevolume: opts.amount,
-			relvolume: opts.total,
 			price: opts.price,
+			volume: opts.volume,
 		});
+
+		result.baseAmount = Number(result.base_amount);
+		delete result.base_amount;
+
+		result.quoteAmount = Number(result.rel_amount);
+		delete result.rel_amount;
+
+		return result;
+	}
+
+	// Mm v2
+	async orderStatus(uuid) {
+		ow(uuid, 'uuid', uuidPredicate);
+
+		const {result} = await this.request({
+			method: 'order_status',
+			uuid,
+		});
+
+		return result;
+	}
+
+	// Mm v2
+	async mySwapStatus(uuid) {
+		ow(uuid, 'uuid', uuidPredicate);
+
+		const {result} = await this.request({
+			method: 'my_swap_status',
+			params: {uuid},
+		});
+
+		return result;
+	}
+
+	// Mm v2
+	// https://github.com/artemii235/developer-docs/blob/mm/docs/basic-docs/atomicdex/atomicdex-api.md#my_recent_swaps
+	// TODO: Add support for the input arguments it supports.
+	async myRecentSwaps() {
+		const {result} = await this.request({
+			method: 'my_recent_swaps',
+		});
+
+		return result.swaps;
+	}
+
+	// Mm v2
+	// https://github.com/artemii235/developer-docs/blob/mm/docs/basic-docs/atomicdex/atomicdex-api.md#get_enabled_coins
+	async getEnabledCurrencies() {
+		const {result} = await this.request({
+			method: 'get_enabled_coins',
+		});
+
+		return result;
 	}
 
 	async cancelOrder(uuid) {
-		ow(uuid, uuidPredicate.label('uuid'));
+		ow(uuid, 'uuid', uuidPredicate);
 
 		const response = await this.request({
 			method: 'cancel',
@@ -235,7 +270,7 @@ export default class Api {
 	}
 
 	async getFee(coin) {
-		ow(coin, symbolPredicate.label('coin'));
+		ow(coin, 'coin', symbolPredicate);
 
 		const response = await this.request({
 			method: 'getfee',
@@ -249,10 +284,28 @@ export default class Api {
 		return response.txfee;
 	}
 
+	// Mm v2
+	// https://github.com/artemii235/developer-docs/blob/mm/docs/basic-docs/atomicdex/atomicdex-api.md#my_balance
+	async myBalance(currency) {
+		ow(currency, 'currency', symbolPredicate);
+
+		const response = await this.request({
+			method: 'my_balance',
+			coin: currency,
+		});
+
+		return {
+			address: response.address,
+			balance: Number(response.balance),
+		};
+	}
+
 	async _createTransaction(opts) {
-		ow(opts.symbol, symbolPredicate.label('symbol'));
-		ow(opts.address, ow.string.label('address'));
-		ow(opts.amount, ow.number.positive.finite.label('amount'));
+		ow(opts, 'opts', ow.object.exactShape({
+			symbol: symbolPredicate,
+			address: ow.string,
+			amount: ow.number.positive.finite,
+		}));
 
 		const result = await this.request({
 			method: 'withdraw',
@@ -272,8 +325,8 @@ export default class Api {
 	}
 
 	async _broadcastTransaction(symbol, rawTransaction) {
-		ow(symbol, symbolPredicate.label('symbol'));
-		ow(rawTransaction, ow.string.label('rawTransaction'));
+		ow(symbol, 'symbol', symbolPredicate);
+		ow(rawTransaction, 'rawTransaction', ow.string);
 
 		const response = await this.request({
 			method: 'sendrawtransaction',
@@ -289,9 +342,11 @@ export default class Api {
 	}
 
 	async _withdrawBtcFork(opts) {
-		ow(opts.symbol, symbolPredicate.label('symbol'));
-		ow(opts.address, ow.string.label('address'));
-		ow(opts.amount, ow.number.positive.finite.label('amount'));
+		ow(opts, 'opts', ow.object.exactShape({
+			symbol: symbolPredicate,
+			address: ow.string,
+			amount: ow.number.positive.finite,
+		}));
 
 		const {
 			hex: rawTransaction,
@@ -319,9 +374,11 @@ export default class Api {
 	}
 
 	async _withdrawEth(opts) {
-		ow(opts.symbol, symbolPredicate.label('symbol'));
-		ow(opts.address, ow.string.label('address'));
-		ow(opts.amount, ow.number.positive.finite.label('amount'));
+		ow(opts, 'opts', ow.object.exactShape({
+			symbol: symbolPredicate,
+			address: ow.string,
+			amount: ow.number.positive.finite,
+		}));
 
 		const {
 			eth_fee: txFee,
@@ -340,6 +397,7 @@ export default class Api {
 			if (hasBroadcast) {
 				throw new Error('Transaction has already been broadcast');
 			}
+
 			hasBroadcast = true;
 
 			const response = await this.request({
@@ -371,16 +429,20 @@ export default class Api {
 	}
 
 	withdraw(opts) {
-		ow(opts.symbol, symbolPredicate.label('symbol'));
-		ow(opts.address, ow.string.label('address'));
-		ow(opts.amount, ow.number.positive.finite.label('amount'));
+		ow(opts, 'opts', ow.object.exactShape({
+			symbol: symbolPredicate,
+			address: ow.string,
+			amount: ow.number.positive.finite,
+		}));
 
 		return getCurrency(opts.symbol).etomic ? this._withdrawEth(opts) : this._withdrawBtcFork(opts);
 	}
 
 	kickstart(opts) {
-		ow(opts.requestId, ow.number.positive.finite.label('requestId'));
-		ow(opts.quoteId, ow.number.positive.finite.label('quoteId'));
+		ow(opts, 'opts', ow.object.exactShape({
+			requestId: ow.number.positive.finite,
+			quoteId: ow.number.positive.finite,
+		}));
 
 		return this.request({
 			method: 'kickstart',
@@ -390,8 +452,8 @@ export default class Api {
 	}
 
 	listUnspent(coin, address) {
-		ow(coin, symbolPredicate.label('coin'));
-		ow(address, ow.string.label('address'));
+		ow(coin, 'coin', symbolPredicate);
+		ow(address, 'address', ow.string);
 
 		return this.request({
 			method: 'listunspent',

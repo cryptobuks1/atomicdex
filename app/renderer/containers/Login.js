@@ -45,21 +45,25 @@ const initApi = async seedPhrase => {
 const createApi = async seedPhrase => {
 	console.time('create-api');
 	const api = await initApi(seedPhrase);
-	await api.enableSocket();
+
 	appContainer.api = api;
 	if (isDevelopment) {
 		// Exposes the API for debugging in DevTools
 		// Example: `_api.debug({method: 'portfolio'})`
 		window._api = api;
 	}
+
 	console.timeEnd('create-api');
 	return api;
 };
 
 const enableCurrencies = async api => {
 	console.time('enable-currencies');
+
+	// TODO: ERC20 is not yet supported with mm2
 	// ETOMIC needs to be enabled first otherwise ETH/ERC20 tokens will fail
-	await api.enableCurrency('ETOMIC');
+	// await api.enableCurrency('ETOMIC');
+
 	await Promise.all(appContainer.state.enabledCoins.map(x => api.enableCurrency(x)));
 	console.timeEnd('enable-currencies');
 };
@@ -112,6 +116,10 @@ class LoginContainer extends Container {
 	}
 
 	async loadPortfolios() {
+		// We need to do this twice because of the migration of currencies from app config to portfolio.
+		// TODO: Remove this when the migration is removed.
+		await getPortfolios();
+
 		await this.setState({portfolios: await getPortfolios()});
 	}
 
@@ -138,20 +146,25 @@ class LoginContainer extends Container {
 		if (isDevelopment) {
 			window._swapDB = swapDB;
 		}
+
 		console.timeEnd('swap-db');
 
 		this.setActiveView('LoggingIn');
 
+		await appContainer.setEnabledCurrencies(portfolio.currencies);
+
 		const api = await createApi(seedPhrase);
 
-		await Promise.all([
-			enableCurrencies(api),
-			watchFiatPrice(),
-			watchAllCurrencyHistory(),
-		]);
+		await enableCurrencies(api);
 
-		// This method depends on the data from `enableCurrencies()` and `watchFiatPrice()`
+		// Depends on the data from `enableCurrencies()`
+		await watchFiatPrice();
+
+		// Depends on the data from `enableCurrencies()` and `watchFiatPrice()`
 		await watchCurrencies();
+
+		// Depends on data from `enableCurrencies() and `watchFiatPrice()`
+		await watchAllCurrencyHistory();
 
 		config.set('lastActivePortfolioId', portfolio.id);
 		setAppWindowBounds();

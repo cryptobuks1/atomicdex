@@ -1,4 +1,4 @@
-import {remote} from 'electron';
+import unhandled from 'electron-unhandled';
 import React from 'react';
 import Button from 'components/Button';
 import Input from 'components/Input';
@@ -14,7 +14,6 @@ import {translate} from '../translate';
 import './LoginBox.scss';
 
 const t = translate('login');
-const {dialog} = remote;
 
 const SettingsButton = () => (
 	<CogIcon
@@ -81,9 +80,8 @@ class LoginBox extends React.Component {
 				return;
 			}
 
-			console.error(error);
 			loginContainer.setActiveView(LoginBox.name);
-			dialog.showErrorBox('Login Failed', error.message || error || 'Unknown reason');
+			unhandled.logError(error, {title: 'Login Failed'});
 		}
 	};
 
@@ -119,12 +117,12 @@ class LoginBox extends React.Component {
 							className="portfolio-selector"
 							value={selectedPortfolioId}
 							options={selectData}
-							onChange={this.handleSelectChange}
-							onClose={this.handleSelectClose}
 							valueRenderer={this.selectOptionRenderer}
 							optionRenderer={this.selectOptionRenderer}
 							placeholder={t('selectPortfolio')}
 							disabled={this.state.isLoggingIn}
+							onChange={this.handleSelectChange}
+							onClose={this.handleSelectClose}
 						/>
 						<PlusButton
 							disabled={this.state.isLoggingIn}
@@ -136,28 +134,28 @@ class LoginBox extends React.Component {
 					<div className="form-group">
 						<Input
 							ref={this.passwordInputRef}
-							onChange={this.handlePasswordInputChange}
+							required
+							autoFocus
 							type="password"
 							placeholder={t('password')}
 							value={this.state.passwordInputValue}
 							disabled={!selectedPortfolioId || this.state.isLoggingIn}
-							autoFocus
-							required
 							errorMessage={this.state.passwordError}
+							onChange={this.handlePasswordInputChange}
 						/>
 					</div>
 					<div className="form-group form-group-2">
 						<Button primary fullwidth type="submit" value={t('login')} disabled={!this.state.passwordInputValue || this.state.isLoggingIn}/>
 						<Link
 							disabled={this.state.isLoggingIn}
-							onClick={() => {
-								loginContainer.setActiveView('ForgotPasswordStep1');
-								loginContainer.setProgress(0.33);
-							}}
 							style={{
 								fontSize: '13px',
 								lineHeight: 1.5,
 								marginTop: '13px',
+							}}
+							onClick={() => {
+								loginContainer.setActiveView('ForgotPasswordStep1');
+								loginContainer.setProgress(0.33);
 							}}
 						>
 							{t('forgotPassword')}

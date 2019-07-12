@@ -1,4 +1,4 @@
-import {api} from 'electron-util';
+import unhandled from 'electron-unhandled';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {format as formatDate} from 'date-fns';
@@ -18,8 +18,11 @@ const SortDirections = {
 	DESC: Symbol('desc'),
 };
 
-// eslint-disable-next-line no-unused-vars
 class CancelButton extends React.Component {
+	static propTypes = {
+		swap: PropTypes.object.isRequired,
+	};
+
 	cancelSwap = async swapUuid => {
 		await tradesContainer.setIsSwapCancelling(swapUuid, true);
 		this.forceUpdate();
@@ -27,8 +30,7 @@ class CancelButton extends React.Component {
 		try {
 			await appContainer.api.cancelOrder(swapUuid);
 		} catch (error) {
-			console.error(error);
-			api.dialog.showErrorBox('Error', error.message);
+			unhandled.logError(error);
 		}
 	};
 
@@ -63,6 +65,14 @@ const SwapHeaderColumn = ({children, onClick, sortBy, sortDirection, sortKeys, .
 			{isSorting && <span className={`sort ${sortDirection === SortDirections.ASC ? 'asc' : 'desc'}`}/>}
 		</div>
 	);
+};
+
+SwapHeaderColumn.propTypes = {
+	children: PropTypes.node.isRequired,
+	onClick: PropTypes.func.isRequired,
+	sortBy: PropTypes.arrayOf(PropTypes.string).isRequired,
+	sortDirection: PropTypes.symbol.isRequired,
+	sortKeys: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 const SwapHeader = props => (
@@ -104,7 +114,24 @@ const SwapItem = ({style, swap, showCancel, openSwap}) => (
 	</div>
 );
 
+SwapItem.propTypes = {
+	style: PropTypes.object.isRequired,
+	swap: PropTypes.object.isRequired,
+	showCancel: PropTypes.bool.isRequired,
+	openSwap: PropTypes.func.isRequired,
+};
+
 class SwapList extends React.Component {
+	static propTypes = {
+		showHeader: PropTypes.bool,
+		limit: PropTypes.number,
+	};
+
+	static defaultProps = {
+		showHeader: false,
+		limit: undefined,
+	};
+
 	state = {
 		sortBy: this.props.sortBy,
 		sortDirection: this.props.sortDirection,
@@ -203,9 +230,9 @@ class SwapList extends React.Component {
 				<Details/>
 				{showHeader && (
 					<SwapHeader
-						onClick={this.handleSort}
 						sortBy={sortBy}
 						sortDirection={sortDirection}
+						onClick={this.handleSort}
 					/>
 				)}
 				<div className="container">
@@ -228,14 +255,17 @@ class SwapList extends React.Component {
 }
 
 SwapList.propTypes = {
+	swaps: PropTypes.arrayOf(PropTypes.object).isRequired,
 	showCancel: PropTypes.bool,
 	sortBy: PropTypes.arrayOf(PropTypes.string),
 	sortDirection: PropTypes.symbol,
-	swaps: PropTypes.arrayOf(PropTypes.object),
 };
 
 SwapList.defaultProps = {
-	sortBy: ['timeStarted'],
+	showCancel: false,
+	sortBy: [
+		'timeStarted',
+	],
 	sortDirection: SortDirections.DESC,
 };
 

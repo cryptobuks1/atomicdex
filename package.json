@@ -1,122 +1,122 @@
 {
 	"scripts": {
-		"postinstall": "electron-builder install-app-deps",
+		"get-marketmaker": "node scripts/get-marketmaker",
+		"postinstall": "electron-builder install-app-deps && npm run get-marketmaker",
 		"lint": "xo && stylelint 'app/renderer/**/*.scss'",
 		"test": "yarn lint && ava",
 		"start:watch": "webpack-dev-server --hot",
 		"start:launch": "wait-for-localhost 8080 && run-electron app",
-		"start": "yarn && run-p start:*",
+		"start": "yarn && run-p --race start:*",
 		"pack": "webpack && electron-builder --dir",
-		"dist": "webpack --mode=production && electron-builder --mac --linux --win",
+		"dist": "webpack --mode=production && electron-builder --macos --linux --windows",
 		"release": "cd app && np --no-publish"
 	},
 	"dependencies": {
-		"@babel/register": "^7.0.0",
+		"@babel/register": "^7.4.4",
 		"@sindresorhus/slugify": "^0.3.0",
 		"@sindresorhus/to-milliseconds": "^1.0.0",
 		"bip39": "^2.5.0",
-		"coinlist": "^3.1.1",
-		"crypto-hash": "^0.1.0",
+		"coinlist": "^3.1.2",
+		"crypto-hash": "^1.0.0",
 		"crypto-pouch": "^3.1.3",
 		"csv-string": "^3.1.5",
 		"cycled": "^1.0.0",
 		"date-fns": "^1.29.0",
-		"delay": "^4.1.0",
-		"electron-unhandled": "^1.1.0",
-		"electron-util": "^0.10.1",
+		"decompress": "^4.2.0",
+		"delay": "^4.2.0",
+		"electron-unhandled": "^2.2.0",
+		"electron-util": "^0.10.2",
 		"emittery": "^0.4.1",
-		"filter-console": "^0.1.0",
-		"hoist-non-react-statics": "^3.0.1",
+		"filter-console": "^0.1.1",
+		"got": "^9.6.0",
+		"hasha": "^5.0.0",
+		"hoist-non-react-statics": "^3.3.0",
 		"lodash": "^4.17.11",
 		"mem": "^4.0.0",
 		"modern-normalize": "^0.5.0",
-		"moment": "^2.22.2",
-		"ow": "^0.8.0",
+		"moment": "^2.23.0",
+		"ow": "^0.13.2",
 		"p-any": "^1.1.0",
 		"p-event": "^2.1.0",
 		"p-map": "^2.0.0",
-		"p-queue": "^2.4.2",
+		"p-queue": "^3.0.0",
 		"pouchdb-browser": "^7.0.0",
 		"pouchdb-find": "^7.0.0",
 		"pouchdb-upsert": "^2.2.0",
-		"prop-types": "^15.6.2",
+		"prop-types": "^15.7.2",
 		"prop-types-range": "^0.0.0",
 		"qrcode.react": "^0.8.0",
 		"randoma": "^1.2.0",
-		"react": "^16.6.0",
+		"react": "^16.8.6",
 		"react-day-picker": "^7.2.4",
-		"react-dom": "^16.6.0",
-		"react-extras": "^0.7.1",
-		"react-i18next": "^8.0.7",
-		"react-popper": "^1.0.0",
+		"react-dom": "^16.8.6",
+		"react-extras": "^0.9.0",
+		"react-i18next": "^8.4.0",
+		"react-popper": "1.0.0",
 		"react-select": "^1.2.1",
-		"react-transition-group": "^2.5.0",
-		"react-virtualized": "^9.20.1",
+		"react-transition-group": "^4.0.0",
+		"react-virtualized": "^9.21.0",
 		"read-blob": "^1.1.0",
-		"recharts": "^1.3.5",
+		"recharts": "^1.5.0",
 		"round-to": "^3.0.0",
-		"run-electron": "^0.1.0",
+		"run-electron": "^1.0.0",
 		"sass-extras": "^0.4.0",
-		"styled-jsx": "^3.1.0",
+		"styled-jsx": "^3.1.2",
 		"title": "^3.4.0",
 		"unstated": "^2.1.0",
-		"unstated-debug": "^0.3.0"
+		"unstated-debug": "^0.3.2"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.1.2",
-		"@babel/plugin-proposal-class-properties": "^7.1.0",
-		"@babel/plugin-proposal-object-rest-spread": "^7.0.0",
-		"@babel/plugin-syntax-dynamic-import": "^7.0.0",
-		"@babel/plugin-transform-modules-commonjs": "^7.1.0",
+		"@babel/core": "^7.4.5",
+		"@babel/plugin-proposal-class-properties": "^7.4.4",
+		"@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+		"@babel/plugin-syntax-dynamic-import": "^7.2.0",
+		"@babel/plugin-transform-modules-commonjs": "^7.4.4",
 		"@babel/preset-react": "^7.0.0",
-		"ava": "^1.0.0-beta.8",
+		"ava": "^2.0.0",
 		"babel-eslint": "^10.0.1",
-		"babel-loader": "^8.0.4",
-		"babel-plugin-module-resolver": "^3.1.1",
+		"babel-loader": "^8.0.6",
+		"babel-plugin-module-resolver": "^3.2.0",
 		"babel-plugin-transform-require-ignore": "^0.1.1",
-		"browser-env": "^3.2.5",
-		"clean-webpack-plugin": "^0.1.19",
-		"copy-webpack-plugin": "^4.5.3",
-		"cryptocurrency-icons": "^0.8.1",
-		"css-loader": "^1.0.0",
+		"browser-env": "^3.2.6",
+		"clean-webpack-plugin": "^1.0.0",
+		"copy-webpack-plugin": "^4.6.0",
+		"cryptocurrency-icons": "^0.13.0",
+		"css-loader": "^2.0.1",
 		"delay-cli": "^1.1.0",
 		"devtron": "^1.4.0",
-		"electron": "^3.0.5",
-		"electron-builder": "20.20.4",
+		"electron": "^5.0.2",
+		"electron-builder": "20.43.0",
 		"electron-react-devtools": "^0.5.3",
-		"electron-reloader": "^0.2.0",
-		"enzyme": "^3.7.0",
-		"enzyme-adapter-react-16": "^1.6.0",
-		"eslint-config-xo-react": "^0.17.0",
-		"eslint-plugin-react": "^7.11.1",
+		"electron-reloader": "^0.3.0",
+		"enzyme": "^3.8.0",
+		"enzyme-adapter-react-16": "^1.7.1",
+		"eslint-config-xo-react": "^0.19.0",
+		"eslint-plugin-react": "^7.13.0",
+		"eslint-plugin-react-hooks": "^1.6.0",
 		"file-loader": "^2.0.0",
-		"node-fetch": "^2.2.0",
-		"node-sass": "^4.9.3",
-		"np": "^3.0.4",
-		"npm-run-all": "^4.1.3",
+		"node-fetch": "^2.3.0",
+		"node-sass": "^4.11.0",
+		"np": "^5.0.2",
+		"npm-run-all": "^4.1.5",
 		"proxyquire": "^2.1.0",
-		"react-hot-loader": "^4.3.11",
+		"react-hot-loader": "^4.9.0",
 		"sass-loader": "^7.1.0",
-		"sinon": "^6.3.5",
+		"sinon": "^7.3.2",
 		"style-loader": "^0.23.1",
-		"stylelint": "^9.6.0",
-		"stylelint-config-xo-scss": "^0.6.0",
-		"wait-for-localhost-cli": "^1.0.0",
+		"stylelint": "^10.0.1",
+		"stylelint-config-xo-scss": "^0.9.0",
+		"wait-for-localhost-cli": "^1.1.0",
 		"webpack": "4.17.3",
-		"webpack-cli": "^3.1.2",
-		"webpack-dev-server": "^3.1.9",
-		"xo": "^0.23.0"
+		"webpack-cli": "^3.3.0",
+		"webpack-dev-server": "^3.6.0",
+		"xo": "^0.24.0"
 	},
 	"ava": {
 		"require": [
 			"@babel/register",
 			"./test/_index"
-		],
-		"babel": {
-			"testOptions": {
-				"configFile": "./babel.config.js"
-			}
-		}
+		]
 	},
 	"xo": {
 		"nodeVersion": ">=10",
@@ -126,11 +126,6 @@
 			"browser"
 		],
 		"extends": "xo-react",
-		"settings": {
-			"react": {
-				"version": "16.5"
-			}
-		},
 		"rules": {
 			"import/no-extraneous-dependencies": "off",
 			"import/no-unassigned-import": "off",
@@ -141,9 +136,7 @@
 			],
 			"unicorn/filename-case": "off",
 			"import/exports-last": "error",
-			"react/prop-types": "off",
-			"react/require-default-props": "off",
-			"react/jsx-sort-props": "off"
+			"react/jsx-fragments": "off"
 		}
 	},
 	"stylelint": {
@@ -165,10 +158,8 @@
 		"appId": "com.lukechilds.hyperdex",
 		"mac": {
 			"category": "public.app-category.finance",
-			"electronUpdaterCompatibility": ">=2.15.0",
-			"extendInfo": {
-				"NSRequiresAquaSystemAppearance": false
-			}
+			"electronUpdaterCompatibility": ">=4",
+			"darkModeSupport": true
 		},
 		"dmg": {
 			"iconSize": 160,
@@ -195,10 +186,14 @@
 		},
 		"nsis": {
 			"createDesktopShortcut": "always"
-		},
-		"publish": {
-			"provider": "github",
-			"publishAutoUpdate": false
+		}
+	},
+	"marketmaker": {
+		"version": "2e8e36b7d",
+		"hashes": {
+			"macos": "6dd354033a37a60c0ce147e1135189aebba63f6c626a8b8b431c7ea7f5cd799fdd921d6159f7f00f4b1a98dcde9abd2df66f0b49546814b9942f0d6d1f21ff46",
+			"linux": "f09fd78c73c5e7274b1c816916c9256613b445afa000f833c8cdd931ff3a701257b771d9e9fd6734b8406f8237db2a8f6dd639b2b7104e86666712b6ac70c6b1",
+			"windows": "35a609b7ce9a449aaf7ac48f5697669a18b35a94a4e5d8108a4841b4efdb41d7617f8d9db04efd0f158b19a452f8dd45c5806be69d017fa513c370640fffa252"
 		}
 	}
 }

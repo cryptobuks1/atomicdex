@@ -47,12 +47,6 @@ const supportedCurrencies = [
 		rpcport: 80,
 	},
 	{
-		coin: 'AION',
-		name: 'Aion',
-		etomic: '0x4CEdA7906a5Ed2179785Cd3A40A69ee8bc99C466',
-		rpcport: 80,
-	},
-	{
 		coin: 'AMB',
 		name: 'Ambrosus',
 		etomic: '0x4DC3643DbC642b72C158E7F3d2ff232df61cb6CE',
@@ -69,28 +63,6 @@ const supportedCurrencies = [
 		name: 'Aragon',
 		etomic: '0x960b236A07cf122663c4303350609A66A7B288C0',
 		rpcport: 80,
-	},
-	{
-		coin: 'ARG',
-		rpcport: 13581,
-		pubtype: 23,
-		p2shtype: 5,
-		wiftype: 151,
-		txfee: 50000,
-		electrumServers: [
-			{
-				host: 'electrum1.cipig.net',
-				port: 10068,
-			},
-			{
-				host: 'electrum2.cipig.net',
-				port: 10068,
-			},
-			{
-				host: 'electrum3.cipig.net',
-				port: 10068,
-			},
-		],
 	},
 	{
 		coin: 'AST',
@@ -117,25 +89,6 @@ const supportedCurrencies = [
 		rpcport: 80,
 	},
 	{
-		coin: 'BCBC',
-		name: 'Bitcoin@CBC',
-		rpcport: 8340,
-		pubtype: 0,
-		p2shtype: 5,
-		wiftype: 128,
-		txfee: 10000,
-		electrumServers: [
-			{
-				host: 'bsmn0.cleanblockchain.io',
-				port: 50001,
-			},
-			{
-				host: 'bsmn1.cleanblockchain.org',
-				port: 50001,
-			},
-		],
-	},
-	{
 		coin: 'BCH',
 		rpcport: 33333,
 		pubtype: 0,
@@ -144,16 +97,24 @@ const supportedCurrencies = [
 		txfee: 1000,
 		electrumServers: [
 			{
-				host: 'electrum1.cipig.net',
-				port: 10051,
+				host: 'electron.coinucopia.io',
+				port: 50001,
 			},
 			{
-				host: 'electrum2.cipig.net',
-				port: 10051,
+				host: 'electroncash.dk',
+				port: 50001,
 			},
 			{
-				host: 'electrum3.cipig.net',
-				port: 10051,
+				host: 'electrum.imaginary.cash',
+				port: 50001,
+			},
+			{
+				host: 'electron-cash.dragon.zone',
+				port: 60001,
+			},
+			{
+				host: 'wallet.satoshiscoffeehouse.com',
+				port: 60001,
 			},
 		],
 	},
@@ -376,40 +337,22 @@ const supportedCurrencies = [
 		txfee: 50000,
 		electrumServers: [
 			{
-				host: 'electrum1.cipig.net',
-				port: 10057,
+				host: 'ele1.bitcore.cc',
+				port: 50001,
 			},
 			{
-				host: 'electrum2.cipig.net',
-				port: 10057,
+				host: 'ele2.bitcore.cc',
+				port: 50001,
 			},
 			{
-				host: 'electrum3.cipig.net',
-				port: 10057,
+				host: 'ele3.bitcore.cc',
+				port: 50001,
+			},
+			{
+				host: 'ele4.bitcore.cc',
+				port: 50001,
 			},
 		],
-	},
-	{
-		coin: 'CALL',
-		name: 'Capital',
-		asset: 'CALL',
-		rpcport: 19609,
-		electrumServers: [
-			{
-				host: 'electrum1.mycapitalco.in',
-				port: 10000,
-			},
-			{
-				host: 'electrum2.mycapitalco.in',
-				port: 10000,
-			},
-		],
-	},
-	{
-		coin: 'CALLG',
-		name: 'Capital GAS',
-		etomic: '0x6c28f85eb1dbc7651ce02f7af1f29890ad084b94',
-		rpcport: 80,
 	},
 	{
 		coin: 'CDT',
@@ -479,16 +422,11 @@ const supportedCurrencies = [
 		rpcport: 80,
 	},
 	{
-		coin: 'CMT',
-		name: 'CyberMiles',
-		etomic: '0xf85feea2fdd81d51177f6b8f35f0e6734ce45f5f',
-		rpcport: 80,
-	},
-	{
-		coin: 'CC',
+		coin: 'CCL',
 		name: 'CoinCollect',
 		asset: 'CCL',
 		rpcport: 20849,
+		txversion: 4,
 		electrumServers: [
 			{
 				host: 'electrum1.cipig.net',
@@ -605,6 +543,33 @@ const supportedCurrencies = [
 		rpcport: 80,
 	},
 	{
+		coin: 'D',
+		name: 'Denarius',
+		rpcport: 32369,
+		pubtype: 30,
+		p2shtype: 90,
+		wiftype: 158,
+		txfee: 10000,
+		electrumServers: [
+			{
+				host: 'electrumx1.denarius.pro',
+				port: 50001,
+			},
+			{
+				host: 'electrumx2.denarius.pro',
+				port: 50001,
+			},
+			{
+				host: 'electrum.denariuspool.info',
+				port: 50001,
+			},
+			{
+				host: 'electrum.denarius.vip',
+				port: 50001,
+			},
+		],
+	},
+	{
 		coin: 'DASH',
 		rpcport: 9998,
 		pubtype: 76,
@@ -706,25 +671,6 @@ const supportedCurrencies = [
 		rpcport: 80,
 	},
 	{
-		coin: 'DNR',
-		isPoS: 1,
-		rpcport: 32339,
-		pubtype: 30,
-		p2shtype: 90,
-		wiftype: 158,
-		txfee: 10000,
-		electrumServers: [
-			{
-				host: '144.202.95.223',
-				port: 50001,
-			},
-			{
-				host: '45.77.137.111',
-				port: 50001,
-			},
-		],
-	},
-	{
 		coin: 'DNT',
 		name: 'District0x',
 		etomic: '0x0AbdAce70D3790235af448C88547603b945604ea',
@@ -823,12 +769,6 @@ const supportedCurrencies = [
 		rpcport: 80,
 	},
 	{
-		coin: 'EOS',
-		name: 'EOS',
-		etomic: '0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0',
-		rpcport: 80,
-	},
-	{
 		coin: 'EQLI',
 		name: 'Equaliser',
 		asset: 'EQL',
@@ -887,7 +827,7 @@ const supportedCurrencies = [
 		pubtype: 95,
 		p2shtype: 36,
 		wiftype: 223,
-		txfee: 1000000,
+		txfee: 2000000,
 		electrumServers: [
 			{
 				host: 'electrum1.cipig.net',
@@ -946,16 +886,20 @@ const supportedCurrencies = [
 		txfee: 1000000,
 		electrumServers: [
 			{
-				host: 'electrum1.cipig.net',
-				port: 10074,
+				host: 'electrumx-gb-1.feathercoin.network',
+				port: 50001,
 			},
 			{
-				host: 'electrum2.cipig.net',
-				port: 10074,
+				host: 'electrumx-gb-2.feathercoin.network',
+				port: 50001,
 			},
 			{
-				host: 'electrum3.cipig.net',
-				port: 10074,
+				host: 'electrumx-ch-1.feathercoin.ch',
+				port: 50001,
+			},
+			{
+				host: 'electrumx-de-2.feathercoin.ch',
+				port: 50001,
 			},
 		],
 	},
@@ -990,28 +934,6 @@ const supportedCurrencies = [
 			{
 				host: 'electrum3.cipig.net',
 				port: 10072,
-			},
-		],
-	},
-	{
-		coin: 'GBX',
-		rpcport: 12454,
-		pubtype: 38,
-		p2shtype: 10,
-		wiftype: 198,
-		txfee: 10000,
-		electrumServers: [
-			{
-				host: 'electrum1.cipig.net',
-				port: 10073,
-			},
-			{
-				host: 'electrum2.cipig.net',
-				port: 10073,
-			},
-			{
-				host: 'electrum3.cipig.net',
-				port: 10073,
 			},
 		],
 	},
@@ -1176,13 +1098,6 @@ const supportedCurrencies = [
 		rpcport: 80,
 	},
 	{
-		coin: 'ICX',
-		name: 'ICON',
-		etomic: '0xb5a5f22694352c15b00323844ad545abb2b11028',
-		decimals: 18,
-		rpcport: 80,
-	},
-	{
 		coin: 'IND',
 		name: 'Indorse Token',
 		etomic: '0xf8e386EDa857484f5a12e4B5DAa9984E06E73705',
@@ -1316,16 +1231,20 @@ const supportedCurrencies = [
 		txfee: 100000,
 		electrumServers: [
 			{
-				host: 'electrum1.cipig.net',
-				port: 10065,
+				host: 'electrum-ltc.bysh.me',
+				port: 50001,
 			},
 			{
-				host: 'electrum2.cipig.net',
-				port: 10065,
+				host: 'node.ispol.sk',
+				port: 50003,
 			},
 			{
-				host: 'electrum3.cipig.net',
-				port: 10065,
+				host: 'electrum-ltc.wilv.in',
+				port: 50001,
+			},
+			{
+				host: 'backup.electrum-ltc.org',
+				port: 50001,
 			},
 		],
 	},
@@ -1339,34 +1258,6 @@ const supportedCurrencies = [
 		coin: 'LYS',
 		name: 'Lightyears',
 		etomic: '0xdd41fbd1ae95c5d9b198174a28e04be6b3d1aa27',
-		rpcport: 80,
-	},
-	{
-		coin: 'MAC',
-		rpcport: 40332,
-		pubtype: 50,
-		p2shtype: 5,
-		wiftype: 178,
-		txfee: 50000,
-		electrumServers: [
-			{
-				host: 'electrum1.cipig.net',
-				port: 10077,
-			},
-			{
-				host: 'electrum2.cipig.net',
-				port: 10077,
-			},
-			{
-				host: 'electrum3.cipig.net',
-				port: 10077,
-			},
-		],
-	},
-	{
-		coin: 'MAN',
-		name: 'Matrix AI Network',
-		etomic: '0xe25bcec5d3801ce3a794079bf94adf1b8ccd802d',
 		rpcport: 80,
 	},
 	{
@@ -1424,26 +1315,6 @@ const supportedCurrencies = [
 			{
 				host: 'electrum3.cipig.net',
 				port: 10079,
-			},
-		],
-	},
-	{
-		coin: 'MNZ',
-		name: 'Monaize',
-		asset: 'MNZ',
-		rpcport: 14337,
-		electrumServers: [
-			{
-				host: 'electrum1.cipig.net',
-				port: 10002,
-			},
-			{
-				host: 'electrum2.cipig.net',
-				port: 10002,
-			},
-			{
-				host: 'electrum3.cipig.net',
-				port: 10002,
 			},
 		],
 	},
@@ -1559,19 +1430,6 @@ const supportedCurrencies = [
 		rpcport: 80,
 	},
 	{
-		coin: 'NULS',
-		name: 'Nuls',
-		etomic: '0xb91318f35bdb262e9423bc7c7c2a3a93dd93c92c',
-		rpcport: 80,
-	},
-	{
-		coin: 'OCALL',
-		name: 'OLD Capital',
-		decimals: 18,
-		etomic: '0x2c02c801a3324b371ad285c64af372ff1e23f460',
-		rpcport: 80,
-	},
-	{
 		coin: 'OCC',
 		name: 'Original Crypto Coin',
 		etomic: '0x0235fe624e044a05eed7a43e16e3083bc8a4287a',
@@ -1650,6 +1508,22 @@ const supportedCurrencies = [
 		rpcport: 80,
 	},
 	{
+		coin: 'PUNGO',
+		name: 'Pungo Token',
+		asset: 'PGT',
+		rpcport: 46705,
+		electrumServers: [
+			{
+				host: 'electrum1.pungo.cloud',
+				port: 10002,
+			},
+			{
+				host: 'electrum2.pungo.cloud',
+				port: 10002,
+			},
+		],
+	},
+	{
 		coin: 'PIZZA',
 		name: 'Pizza',
 		asset: 'PIZZA',
@@ -1674,28 +1548,6 @@ const supportedCurrencies = [
 		name: 'Pluton',
 		etomic: '0xD8912C10681D8B21Fd3742244f44658dBA12264E',
 		rpcport: 80,
-	},
-	{
-		coin: 'POLIS',
-		rpcport: 24127,
-		pubtype: 55,
-		p2shtype: 56,
-		wiftype: 60,
-		txfee: 10000,
-		electrumServers: [
-			{
-				host: 'electrum1.cipig.net',
-				port: 10075,
-			},
-			{
-				host: 'electrum2.cipig.net',
-				port: 10075,
-			},
-			{
-				host: 'electrum3.cipig.net',
-				port: 10075,
-			},
-		],
 	},
 	{
 		coin: 'POLY',
@@ -1742,7 +1594,7 @@ const supportedCurrencies = [
 	{
 		coin: 'QBIT',
 		name: 'Qubitica',
-		etomic: '0xcb5ea3c190d8f82deadf7ce5af855ddbf33e3962',
+		etomic: '0x1602af2C782cC03F9241992E243290Fccf73Bb13',
 		rpcport: 80,
 	},
 	{
@@ -1750,25 +1602,6 @@ const supportedCurrencies = [
 		name: 'Quantstamp',
 		etomic: '0x99ea4dB9EE77ACD40B119BD1dC4E33e1C070b80d',
 		rpcport: 80,
-	},
-	{
-		coin: 'QMC',
-		name: 'QMCoin',
-		rpcport: 55777,
-		pubtype: 58,
-		p2shtype: 120,
-		wiftype: 1,
-		txfee: 10000,
-		electrumServers: [
-			{
-				host: 'electrum.qmcoin.gq',
-				port: 50001,
-			},
-			{
-				host: 'electrum.qmcoin.ga',
-				port: 50001,
-			},
-		],
 	},
 	{
 		coin: 'QTUM',
@@ -1779,19 +1612,19 @@ const supportedCurrencies = [
 		txfee: 400000,
 		electrumServers: [
 			{
-				host: 's1.qtum.info',
-				port: 50001,
-			},
-			{
-				host: 's2.qtum.info',
-				port: 50001,
-			},
-			{
-				host: 's3.qtum.info',
-				port: 50001,
-			},
-			{
 				host: 's4.qtum.info',
+				port: 50001,
+			},
+			{
+				host: 's5.qtum.info',
+				port: 50001,
+			},
+			{
+				host: 's7.qtum.info',
+				port: 50001,
+			},
+			{
+				host: 's8.qtum.info',
 				port: 50001,
 			},
 		],
@@ -2028,7 +1861,7 @@ const supportedCurrencies = [
 	{
 		coin: 'SUB',
 		name: 'Substratum',
-		etomic: '0x12480e24eb5bec1a9d4369cab6a80cad3c0a377a',
+		etomic: '0x8D75959f1E61EC2571aa72798237101F084DE63a',
 		rpcport: 80,
 	},
 	{
@@ -2064,12 +1897,6 @@ const supportedCurrencies = [
 		rpcport: 80,
 	},
 	{
-		coin: 'THETA',
-		name: 'Theta Token',
-		etomic: '0x3883f5e181fccaF8410FA61e12b59BAd963fb645',
-		rpcport: 80,
-	},
-	{
 		coin: 'TIME',
 		name: 'Chronobank',
 		etomic: '0x6531f133e6DeeBe7F2dcE5A0441aA7ef330B4e53',
@@ -2090,7 +1917,7 @@ const supportedCurrencies = [
 	{
 		coin: 'TUSD',
 		name: 'TrueUSD',
-		etomic: '0x8dd5fbce2f6a956c3022ba3663759011dd51e73e',
+		etomic: '0x0000000000085d4780B73119b644AE5ecd22b376',
 		rpcport: 80,
 	},
 	{
@@ -2106,12 +1933,6 @@ const supportedCurrencies = [
 		rpcport: 80,
 	},
 	{
-		coin: 'VEN',
-		name: 'VeChain',
-		etomic: '0xd850942ef8811f2a866692a623011bde52a462c1',
-		rpcport: 80,
-	},
-	{
 		coin: 'VIA',
 		rpcport: 5222,
 		pubtype: 71,
@@ -2119,6 +1940,14 @@ const supportedCurrencies = [
 		wiftype: 199,
 		txfee: 100000,
 		electrumServers: [
+			{
+				host: 'server.vialectrum.org',
+				port: 50001,
+			},
+			{
+				host: 'server2.vialectrum.org',
+				port: 50001,
+			},
 			{
 				host: 'viax1.bitops.me',
 				port: 50001,
@@ -2138,6 +1967,7 @@ const supportedCurrencies = [
 		name: 'VerusCoin',
 		asset: 'VRSC',
 		rpcport: 27486,
+		txversion: 4,
 		electrumServers: [
 			{
 				host: 'el0.vrsc.0x03.services',
@@ -2231,28 +2061,6 @@ const supportedCurrencies = [
 		rpcport: 80,
 	},
 	{
-		coin: 'XMCC',
-		rpcport: 24156,
-		pubtype: 50,
-		p2shtype: 73,
-		wiftype: 77,
-		txfee: 10000,
-		electrumServers: [
-			{
-				host: 'electrum1.cipig.net',
-				port: 10076,
-			},
-			{
-				host: 'electrum2.cipig.net',
-				port: 10076,
-			},
-			{
-				host: 'electrum3.cipig.net',
-				port: 10076,
-			},
-		],
-	},
-	{
 		coin: 'XOV',
 		name: 'XOVBank',
 		etomic: '0x153eD9CC1b792979d2Bde0BBF45CC2A7e436a5F9',
@@ -2266,6 +2074,7 @@ const supportedCurrencies = [
 		pubtype: 40,
 		p2shtype: 45,
 		wiftype: 128,
+		txversion: 4,
 		txfee: 10000,
 		electrumServers: [
 			{
@@ -2321,12 +2130,12 @@ const supportedCurrencies = [
 	},
 	{
 		coin: 'ZEC',
-		active: 0,
 		rpcport: 8232,
 		taddr: 28,
 		pubtype: 184,
 		p2shtype: 189,
 		wiftype: 128,
+		txversion: 4,
 		txfee: 10000,
 		electrumServers: [
 			{
@@ -2376,6 +2185,11 @@ const supportedCurrencies = [
 		rpcport: 80,
 	},
 ];
+
+// TODO: Update the `mm2` compatibility info for individual currencies
+for (const currency of supportedCurrencies) {
+	currency.mm2 = 1;
+}
 
 const getCurrencySymbols = () => (
 	_(supportedCurrencies)
