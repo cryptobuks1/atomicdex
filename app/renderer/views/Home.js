@@ -5,6 +5,7 @@ import appContainer from 'containers/App';
 import loginContainer from 'containers/Login';
 import { setLoginWindowBounds } from '../util';
 import { translate } from '../translate';
+import Toolbar from './Toolbar/Toolbar';
 import './Home.scss';
 
 const t = translate('home');
@@ -20,7 +21,8 @@ class Home extends React.Component {
 				{login => {
 					return (
 						<div className="Home container">
-							<div className="window-draggable-area" />
+							{/* <div className="window-draggable-area" /> */}
+							<Toolbar/>
 							<div className="is-centered">
 								<p>UMBRELLA</p>
 								<Button

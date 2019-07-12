@@ -22,7 +22,7 @@ const BackTextButton = props => (
 					user-select: none;
 					cursor: pointer;
 					left: 20px;
-					top: 40px;
+					top: 70px;
 				}
 
 				div:hover {

@@ -4,6 +4,7 @@ import React from 'react';
 import Button from 'components/Button';
 import Avatar from 'components/Avatar';
 import DonateButton from 'components/DonateButton';
+import Toolbar from './Toolbar/Toolbar';
 import {translate} from '../translate';
 import Nav from './Nav';
 import './TabView.scss';
@@ -41,6 +42,7 @@ class TabView extends React.Component {
 						</div>
 					</div>
 				</header> */}
+				<Toolbar online />
 				<Nav/>
 				<main className="content">
 					<div className={props.className}>

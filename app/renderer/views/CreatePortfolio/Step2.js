@@ -5,6 +5,7 @@ import SeedPhrase from 'components/SeedPhrase';
 import container from 'containers/CreatePortfolio';
 import {instance, translate} from '../../translate';
 import LoggingIn from '../LoggingIn';
+import Toolbar from '../Toolbar/Toolbar';
 import './CreatePortfolio.scss';
 
 const t = translate(['portfolio']);
@@ -15,6 +16,7 @@ const CreatePortfolioStep2 = () => {
 
 	return (
 		<div className="CreatePortfolio">
+			<Toolbar />
 			{state.isCreatingPortfolio && <LoggingIn />}
 			<h1>{t('create.seedPhrase')}</h1>
 			<div className="form-group" style={{marginTop: '20px'}}>

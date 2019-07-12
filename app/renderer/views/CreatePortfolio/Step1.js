@@ -5,6 +5,7 @@ import Input from 'components/Input';
 import BackTextButton from 'components/BackTextButton';
 import container from 'containers/CreatePortfolio';
 import {translate} from '../../translate';
+import Toolbar from '../Toolbar/Toolbar';
 import './CreatePortfolio.scss';
 
 const t = translate('portfolio');
@@ -14,6 +15,7 @@ const Step1 = () => {
 
 	return (
 		<div className="CreatePortfolio">
+			<Toolbar />
 			<BackTextButton
 				onClick={() => {
 					appContainer.setActiveView('Home');

@@ -6,6 +6,7 @@ import {setLoginWindowBounds} from '../util';
 import LoginBox from './LoginBox';
 import ForgotPassword from './ForgotPassword';
 import './Login.scss';
+import Toolbar from './Toolbar/Toolbar';
 
 class Login extends React.Component {
 	componentDidMount() {
@@ -22,6 +23,7 @@ class Login extends React.Component {
 
 					return (
 						<div className="Login container">
+							<Toolbar/>
 							<div className="window-draggable-area"/>
 							<Progress className="login-progress" value={login.state.progress}/>
 							<div className="is-centered">

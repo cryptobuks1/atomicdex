@@ -277,6 +277,25 @@ class AppContainer extends SuperContainer {
 		await this.api.stop();
 		await ipc.callMain('stop-marketmaker');
 	}
+
+	miniumWindow () {
+		let window = remote.getCurrentWindow();
+		window.minimize(); 
+	}
+
+	maxiumWindow () {
+		let window = remote.getCurrentWindow();
+		if (!window.isMaximized()) {
+			window.maximize();          
+		} else {
+			window.unmaximize();
+		}
+	}
+
+	closeWindow() {
+		let window = remote.getCurrentWindow();
+       	window.close();
+	}
 }
 
 const appContainer = new AppContainer();
