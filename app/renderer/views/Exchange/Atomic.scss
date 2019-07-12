@@ -1,0 +1,97 @@
+.Atomic {
+    display: flex;
+    padding: 37px 95px 10px 0px;
+    overflow: auto;
+
+    .buy-currency {
+        width: 45%;
+
+        .buy-amount {
+            input {
+                height: 44px;
+            }
+        }
+    }
+    
+    .swap-currency {
+        width: 10%;
+        text-align: center;
+        
+        button {
+            width: 42px;
+            height: 42px;
+            background-color: rgba(255,255,255,0.08);
+            border: 1px solid #707070;
+            padding: 8px 0px 8px 8px;
+            margin-top: 5px;
+        }
+    }
+
+    .form-group {
+        margin-bottom: 5px;
+
+        .balance {
+            font-size: 12px;
+            color: white;
+            margin-top: 20px;
+            margin-left: 10px;
+            
+            span {
+                color: #54A1DA;
+            }
+        }
+    }
+
+    .sell-currency {
+        width: 45%;
+
+        .sell-amount {
+            input {
+                height: 44px;
+            }
+        }
+
+        p {
+            font-size: 12px;
+            margin: 0 0;
+            text-align: right;
+        }
+
+        .global-rate {
+            color: white;
+            margin-top: 20px;
+
+            span {
+                color: #54A1DA;
+            }
+        }
+
+        .global-rate-date {
+            color: rgba(255,255,255,0.35);
+        }
+
+        .exchange-btn {
+            height: 44px;
+            margin-top: 18px;
+             
+            span {
+                color: white;
+                font-size: 14px;
+            }
+        }
+    }
+}
+
+.exchange-history {
+    nav {
+		.TabButton {
+			color: rgba(255,255,255,0.35);
+			font-size: 14px;
+		}
+
+		.active {
+			color: white;
+			border-bottom: 1px solid #54A1DA;
+		}
+	}
+}

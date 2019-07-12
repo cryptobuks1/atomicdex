@@ -4,25 +4,33 @@ import Modal from 'components/Modal';
 import Button from 'components/Button';
 import Input from 'components/Input';
 import appContainer from 'containers/App';
+import CopiedIcon from 'icons/Copied';
 import dashboardContainer from 'containers/Dashboard';
-import {formatCurrency} from '../../util';
-import {getCurrency} from '../../../marketmaker/supported-currencies';
-import {translate} from '../../translate';
+import CurrencyIcon from 'components/CurrencyIcon';
+import { formatCurrency } from '../../util';
+import { getCurrency } from '../../../marketmaker/supported-currencies';
+import { translate } from '../../translate';
 import './WithdrawModal.scss';
 
 const t = translate('dashboard');
+const t_login = translate('login');
 
 const getInitialProps = () => ({
 	isOpen: false,
 	recipientAddress: '',
 	amount: '',
 	amountInUsd: '',
+	password: '',
+	isShowPassword: false,
 	isWithdrawing: false,
 	isBroadcasting: false,
 	txFeeCurrencySymbol: '',
 	txFee: 0,
 	txFeeUsd: 0,
 	broadcast: false,
+	isConfirmWithdraw: false,
+	confirmCode: '',
+	isSuccessWithdraw: false,
 });
 
 class WithdrawModal extends React.Component {
@@ -34,7 +42,7 @@ class WithdrawModal extends React.Component {
 	}
 
 	open = () => {
-		this.setState({isOpen: true});
+		this.setState({ isOpen: true });
 	};
 
 	close = () => {
@@ -42,12 +50,13 @@ class WithdrawModal extends React.Component {
 	};
 
 	withdrawButtonHandler = async () => {
-		this.setState({isWithdrawing: true});
+		this.setState({ isWithdrawing: true });
 
-		const {symbol} = dashboardContainer.activeCurrency;
-		const {recipientAddress: address, amount} = this.state;
+		// const {symbol} = dashboardContainer.activeCurrency;
+		const { symbol } = this.props.currencyInfo;
+		const { recipientAddress: address, amount } = this.state;
 
-		const {txFee, broadcast} = await appContainer.api.withdraw({
+		const { txFee, broadcast } = await appContainer.api.withdraw({
 			symbol,
 			address,
 			amount: Number(amount),
@@ -55,29 +64,35 @@ class WithdrawModal extends React.Component {
 
 		const currency = getCurrency(symbol);
 		const txFeeCurrencySymbol = currency.etomic ? 'ETH' : symbol;
-		const {cmcPriceUsd} = appContainer.getCurrencyPrice(txFeeCurrencySymbol);
+		const { cmcPriceUsd } = appContainer.getCurrencyPrice(txFeeCurrencySymbol);
 		const txFeeUsd = formatCurrency(txFee * cmcPriceUsd);
 
-		this.setState({txFeeCurrencySymbol, txFee, txFeeUsd, broadcast});
+		this.setState({ txFeeCurrencySymbol, txFee, txFeeUsd, broadcast });
 	};
 
 	confirmButtonHandler = async () => {
-		this.setState({isBroadcasting: true});
-		const {txid, amount, symbol, address} = await this.state.broadcast();
-		console.log({txid, amount, symbol, address});
+		this.setState({ isBroadcasting: true });
+		const { txid, amount, symbol, address } = await this.state.broadcast();
+		console.log({ txid, amount, symbol, address });
 
 		// TODO: The notification should be clickable and open a block explorer for the currency.
 		// We'll need to have a list of block explorers for each currency.
 		// eslint-disable-next-line no-new
 		new Notification(t('withdraw.successTitle'), {
-			body: t('withdraw.successDescription', {address, amount, symbol}),
+			body: t('withdraw.successDescription', { address, amount, symbol }),
 		});
 
 		this.close();
 	};
 
+	showPassword = () => {
+		const isShowPassword = this.state.isShowPassword;
+		this.setState({ isShowPassword: !isShowPassword });
+	}
+
 	render() {
-		const currencyInfo = dashboardContainer.activeCurrency;
+		// const currencyInfo = dashboardContainer.activeCurrency;
+		const { currencyInfo } = this.props;
 		const maxAmount = currencyInfo.balance;
 		const remainingBalance = roundTo(maxAmount - (Number(this.state.amount) + this.state.txFee), 8);
 
@@ -88,117 +103,150 @@ class WithdrawModal extends React.Component {
 			});
 		};
 
+		const setConfirmCode = value => {
+			this.setState({
+				confirmCode: value
+			})
+		}
+
 		return (
 			<div className="modal-wrapper">
 				<Modal
 					className="WithdrawModal"
-					title={t('withdraw.title', {name: currencyInfo.name, symbol: currencyInfo.symbol})}
+					title={t('withdraw.title')}
 					open={this.state.isOpen}
 					onClose={this.close}
 				>
-					<>
-						<div className="section">
-							<label>{t('withdraw.recipientLabel')}:</label>
-							<Input
-								required
-								value={this.state.recipientAddress}
-								placeholder={t('withdraw.recipientPlaceholder', {symbol: currencyInfo.symbol})}
-								disabled={this.state.isWithdrawing}
-								onChange={value => {
-									this.setState({recipientAddress: value});
-								}}
-							/>
-						</div>
-						<div className="section">
-							<p>
-								{/* TODO: Remove this when #302 is fixed */}
-								<small>{'Note: HyperDEX doesn\'t yet calculate the TX fee, so you can\'t withdraw the whole balance. Try withdrawing slightly less.'}</small>
+					{!this.state.isConfirmWithdraw && (
+						<>
+							<p className="symbol-name">
+								{t('withdraw.symbolName', { symbol: currencyInfo.symbol })}
 							</p>
-							<label>{t('withdraw.amountLabel')}:</label>
-							<div className="amount-inputs">
+							<p className="balance">{t('withdraw.balance')}<span>{currencyInfo.balance}</span></p>
+							<div className="section">
+								<p>
+									{/* TODO: Remove this when #302 is fixed */}
+									{/* <small>{'Note: HyperDEX doesn\'t yet calculate the TX fee, so you can\'t withdraw the whole balance. Try withdrawing slightly less.'}</small> */}
+								</p>
+								<label>{t('withdraw.amountLabel')}</label>
 								<Input
 									required
 									onlyNumeric
 									value={this.state.amount}
 									fractionalDigits={8}
 									disabled={this.state.isWithdrawing}
-									view={() => (
-										<span
-											className={currencyInfo.symbol.length > 3 ? 'long-symbol' : ''}
-										>
-											{currencyInfo.symbol}
-										</span>
-									)}
+									placeholder={t('withdraw.amountPlaceholder')}
 									onChange={value => {
 										setAmount(value);
 									}}
 								/>
-								<span className="separator">≈</span>
+							</div>
+							<div className="section">
+								<label>{t('withdraw.recipientLabel')}</label>
 								<Input
 									required
-									onlyNumeric
-									value={this.state.amountInUsd}
-									fractionalDigits={4}
+									value={this.state.recipientAddress}
+									placeholder={t('withdraw.recipientPlaceholder')}
 									disabled={this.state.isWithdrawing}
-									view={() => (
-										<span>USD</span>
-									)}
 									onChange={value => {
-										this.setState({
-											amountInUsd: value,
-											amount: String(Number.parseFloat(value || '0') * currencyInfo.cmcPriceUsd),
-										});
+										this.setState({ recipientAddress: value });
 									}}
 								/>
-								{/* Hidden because of #302
-								<Link
-									onClick={() => {
-										setAmount(maxAmount);
-									}}
-								>
-									({t('withdraw.maxAmount')})
-								</Link>
-								*/}
 							</div>
-						</div>
-						<div className="section">
-							<div className="info">
-								<span>{t('withdraw.remainingBalance')}:</span>
-								<span className={remainingBalance < 0 ? 'negative-balance' : ''}>{remainingBalance} {currencyInfo.symbol}</span>
+							<div className="section">
+								<label>{t_login('password')}</label>
+								<Input
+									className="user-password"
+									type={this.state.isShowPassword ? 'text' : 'password'}
+									placeholder={t_login('passwordPlaceHolder')}
+									value={this.state.password}
+									showpassword={this.showPassword}
+									suffixString="SHOW"
+								/>
 							</div>
-							<div className={`info ${this.state.broadcast || 'hidden'}`}>
-								<span>{t('withdraw.networkFee')}:</span>
-								<span>{this.state.txFee} {this.state.txFeeCurrencySymbol} ({this.state.txFeeUsd})</span>
+
+							<div className="withdraw-fee">
+								<span>Withdrawal Fee:</span>
+								<span>0.00002</span>
 							</div>
-						</div>
-						{this.state.broadcast ? (
+							<div className="withdraw-total">
+								<span>Total:</span>
+								<span>3.214998</span>
+							</div>
+
+							{/* {this.state.broadcast ? (
 							<Button
-								primary
 								className="confirm-button"
+								color="transparent"
 								value={t('withdraw.confirmNetworkFee')}
 								disabled={this.state.isBroadcasting}
 								onClick={this.confirmButtonHandler}
 							/>
 						) : (
-							<Button
-								primary
-								className="withdraw-button"
-								value={t('withdraw.label')}
-								disabled={
-									!this.state.recipientAddress ||
-									!this.state.amount ||
-									remainingBalance < 0 ||
-									this.state.isWithdrawing
-								}
-								onClick={this.withdrawButtonHandler}
-							/>
-						)}
-					</>
+								<Button
+									className="withdraw-button"
+									color="transparent"
+									value={t('withdraw.label')}
+									disabled={
+										!this.state.recipientAddress ||
+										!this.state.amount ||
+										remainingBalance < 0 ||
+										this.state.isWithdrawing
+									}
+									onClick={this.withdrawButtonHandler}
+								/>
+							)} */}
+							<div className="section--withdraw--btn">
+								<Button className="cancel-btn" color="transparent" value="Cancel" onClick={() => this.close()} />
+								<Button className="continue-btn" color="blue" value="Continue" onClick={() => this.setState({isConfirmWithdraw: true})} />
+							</div>
+						</>)
+					}
+					{this.state.isConfirmWithdraw && !this.state.isSuccessWithdraw && (
+						<>
+							<p className="confirm-title">
+								{t('confirmWithdraw')}
+							</p>
+							<p className="confirm-description">{t('withdraw.confirmDescription')}</p>
+							<div className="section">
+								<Input
+									required
+									onlyNumeric
+									value={this.state.confirmCode}
+									placeholder={t('withdraw.confirmCode')}
+									onChange={value => {
+										setConfirmCode(value);
+									}}
+								/>
+							</div>
+							<p className="resend-code">
+								{t('withdraw.confirmCodeQuiz')}<span>{t('withdraw.confirmCodeResend')}</span>
+							</p>
+							<div className="section--withdraw--btn">
+								<Button className="cancel-btn" color="transparent" value="Cancel" onClick={() => this.setState({isConfirmWithdraw: false})} />
+								<Button className="continue-btn" color="blue" value="Submit" onClick={() => this.setState({isSuccessWithdraw: true})} />
+							</div>
+						</>)						
+					}
+					{this.state.isSuccessWithdraw && (
+						<>
+							<div className="currency-icon">
+								<CurrencyIcon symbol={currencyInfo.symbol} size="38"/>
+								<div className="copied-icon"><CopiedIcon/></div>
+								<p className="currency-name"><strong>{currencyInfo.symbol}</strong>{currencyInfo.name}</p>
+							</div>
+							<p className="withdraw-success">{t('withdraw.confirmWithdrawSuccess')}</p>
+							<div className="withdraw--modal-close-btn">
+								<Button className="close-btn" color="blue" value="Close" onClick={() => this.close()} />
+							</div>
+						</>)
+					}
 				</Modal>
 				<Button
 					className="OpenModalButton"
 					value={t('withdraw.label')}
-					disabled={!currencyInfo.balance}
+					color="transparent"
+					// disabled={!currencyInfo.balance}
 					onClick={this.open}
 				/>
 			</div>

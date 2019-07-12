@@ -156,6 +156,10 @@ class Input extends React.Component {
 		return value;
 	}
 
+	showpassword = () => {
+		this.props.showpassword();
+	}
+
 	render() {
 		let {
 			forwardedRef,
@@ -164,6 +168,7 @@ class Input extends React.Component {
 			icon,
 			iconSize,
 			iconName,
+			suffixString,
 			message,
 			errorMessage,
 			disabled,
@@ -183,9 +188,9 @@ class Input extends React.Component {
 			message = errorMessage;
 		}
 
-		if (type === 'password') {
-			iconName = 'password';
-		}
+		// if (type === 'password') {
+		// 	iconName = 'password';
+		// }
 
 		if (iconName) {
 			icon = `/assets/${iconName}-icon.svg`;
@@ -241,6 +246,14 @@ class Input extends React.Component {
 					{icon &&
 						<span className="Input__icon">
 							<img src={icon} width={iconSize}/>
+						</span>
+					}
+					{suffixString &&
+						<span
+							className="Input__suffix"
+							onClick={this.showpassword}
+						>
+							{suffixString}
 						</span>
 					}
 					{View &&

@@ -7,7 +7,6 @@ const translate = namespaces => mem(namespaces ? instance.getFixedT(null, namesp
 
 (async () => {
 	const i18n = await ipc.callMain('get-translations');
-
 	instance.init({
 		...i18n.options,
 		lng: i18n.language,

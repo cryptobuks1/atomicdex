@@ -47,11 +47,12 @@ const removedCurrencies = [
 	'EOS',
 ];
 
-const createPortfolio = async ({name, seedPhrase, password}) => {
+const createPortfolio = async ({email, name, seedPhrase, password}) => {
 	const id = generateId(name);
 	const filePath = idToFilePath(id);
 
 	const portfolio = {
+		email,
 		name,
 		encryptedSeedPhrase: await encrypt(seedPhrase, password),
 		appVersion: app.getVersion(),

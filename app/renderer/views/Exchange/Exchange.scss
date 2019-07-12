@@ -1,17 +1,46 @@
 @import '~sass-extras/index';
 @import '../../styles/variables';
 
+.content {
+	background-color: var(--widget-background-color);
+	padding: 0px 20px;
+}
+
 .Exchange {
 	--text-size: 13px;
 	--header-text-size: 18px;
-	display: grid;
-	grid-template-areas:
-		'buy chart sell'
-		'buy swaps sell';
-	grid-template-rows: 1fr 1fr;
-	grid-template-columns: 280px 1fr 280px;
-	grid-gap: 20px;
+	// display: grid;
+	// grid-template-areas:
+	// 	'buy chart sell'
+	// 	'buy swaps sell';
+	// grid-template-rows: 1fr 1fr;
+	// grid-template-columns: 280px 1fr 280px;
+	// grid-gap: 20px;
 	height: 100%;
+	background-color: var(--widget-background-color);
+	overflow: auto;
+	
+	main {
+		height: 100%;
+	}
+
+	.title {
+		margin-top: 60px;
+		font-size: 22px;
+		color: white;
+	}
+
+	nav {
+		.TabButton {
+			color: rgba(255,255,255,0.35);
+			font-size: 14px;
+		}
+
+		.active {
+			color: white;
+			border-bottom: 1px solid #54A1DA;
+		}
+	}
 
 	h3 {
 		font-size: var(--header-text-size);
@@ -43,7 +72,7 @@
 		border-radius: 4px;
 	}
 
-	@media (min-width: 1400px) {
-		grid-template-columns: 320px 1fr 320px;
-	}
+	// @media (min-width: 1400px) {
+	// 	grid-template-columns: 320px 1fr 320px;
+	// }
 }

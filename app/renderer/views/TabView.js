@@ -4,6 +4,7 @@ import React from 'react';
 import Button from 'components/Button';
 import Avatar from 'components/Avatar';
 import DonateButton from 'components/DonateButton';
+import Toolbar from './Toolbar/Toolbar';
 import {translate} from '../translate';
 import Nav from './Nav';
 import './TabView.scss';
@@ -13,7 +14,7 @@ const t = translate('common');
 
 class TabView extends React.Component {
 	componentDidMount() {
-		activeWindow().setSheetOffset(document.querySelector('.toolbar').getBoundingClientRect().height);
+		// activeWindow().setSheetOffset(document.querySelector('.toolbar').getBoundingClientRect().height);
 	}
 
 	render() {
@@ -21,7 +22,7 @@ class TabView extends React.Component {
 
 		return (
 			<div className="TabView">
-				<header className="toolbar">
+				{/* <header className="toolbar">
 					<h1 className="app-name">
 						{is.macos ? 'HyperDEX' : ''}
 					</h1>
@@ -40,7 +41,8 @@ class TabView extends React.Component {
 							</div>
 						</div>
 					</div>
-				</header>
+				</header> */}
+				<Toolbar online />
 				<Nav/>
 				<main className="content">
 					<div className={props.className}>

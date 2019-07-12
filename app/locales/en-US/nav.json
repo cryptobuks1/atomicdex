@@ -1,7 +1,8 @@
 {
-	"dashboard": "Dashboard",
-	"exchange": "Exchange",
+	"dashboard": "Overview",
+	"exchange": "Atomic",
 	"settings": "Settings",
 	"swap": "Swap",
-	"trades": "Trades"
+	"trades": "History",
+	"marketmaker": "Market Maker"
 }

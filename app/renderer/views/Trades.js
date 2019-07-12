@@ -7,10 +7,10 @@ import tradesContainer from 'containers/Trades';
 import View from 'components/View';
 import SwapList from 'components/SwapList';
 import SwapFilters from 'components/SwapFilters';
-import TabButton from 'components/TabButton';
 import {formatCurrency} from '../util';
 import {translate} from '../translate';
 import AppTabView from './TabView';
+import TradeHistory  from './TradeHistory';
 import './Exchange/Swaps.scss';
 import './Trades.scss';
 
@@ -30,16 +30,16 @@ const OpenOrders = () => {
 	return <SwapList showCancel showHeader swaps={filteredData}/>;
 };
 
-const TradeHistory = () => {
-	const {state} = appContainer;
-	const filteredData = state.swapHistory.filter(swap => !swap.isActive);
+// const TradeHistory = () => {
+// 	const {state} = appContainer;
+// 	const filteredData = state.swapHistory.filter(swap => !swap.isActive);
 
-	return (
-		<SwapFilters swaps={filteredData}>
-			{swaps => <SwapList showCancel showHeader swaps={swaps}/>}
-		</SwapFilters>
-	);
-};
+// 	return (
+// 		<SwapFilters swaps={filteredData}>
+// 			{swaps => <SwapList showCancel showHeader swaps={swaps}/>}
+// 		</SwapFilters>
+// 	);
+// };
 
 const Trades = props => (
 	<Subscribe to={[tradesContainer]}>
@@ -49,35 +49,9 @@ const Trades = props => (
 
 			return (
 				<AppTabView title="Trades" className="Trades">
-					<header>
-						<nav>
-							<TabButton
-								isActive={tradesContainer.state.activeView === OpenOrders.name}
-								onClick={() => tradesContainer.setActiveView(OpenOrders.name)}
-							>
-								{t('openOrders')}
-							</TabButton>
-							<TabButton
-								isActive={tradesContainer.state.activeView === TradeHistory.name}
-								onClick={() => tradesContainer.setActiveView(TradeHistory.name)}
-							>
-								{t('tradeHistory')}
-							</TabButton>
-						</nav>
-						<div className="stats">
-							{stats &&
-								<p>
-									{t('stats', {
-										count: stats.successfulSwapCount,
-										currencyCount: stats.currencyCount,
-										totalSwapsWorthInUsd: formatCurrency(stats.totalSwapsWorthInUsd),
-									})}
-								</p>
-							}
-						</div>
-					</header>
 					<main>
-						<TabView component={OpenOrders}/>
+						<p className="title">{t('title')}</p>
+						<p className="description">{t('description')}</p>
 						<TabView component={TradeHistory}/>
 					</main>
 				</AppTabView>

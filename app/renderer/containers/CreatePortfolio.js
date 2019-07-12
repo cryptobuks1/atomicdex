@@ -9,6 +9,7 @@ const t = translate('portfolio');
 
 class CreatePortfolioContainer extends Container {
 	state = {
+		portfolioEmail: '',
 		portfolioName: '',
 		portfolioPassword: '',
 		confirmedPassword: '',
@@ -17,6 +18,8 @@ class CreatePortfolioContainer extends Container {
 		confirmedSeedPhrase: '',
 		seedPhraseError: null,
 		isCreatingPortfolio: false,
+		step: 1,
+		portfolioId: null,
 	};
 
 	constructor() {
@@ -27,6 +30,10 @@ class CreatePortfolioContainer extends Container {
 	generateSeedPhrase = () => {
 		this.setState({generatedSeedPhrase: bip39.generateMnemonic()});
 	};
+
+	handlePortfolioEmailInputChange = value => {
+		this.setState({portfolioEmail: value});
+	}
 
 	handlePortfolioNameInputChange = value => {
 		this.setState({portfolioName: value});
@@ -53,14 +60,35 @@ class CreatePortfolioContainer extends Container {
 		}
 
 		await this.setState({confirmedPasswordError: null});
-
-		loginContainer.setActiveView('CreatePortfolioStep2');
-		loginContainer.setProgress(0.50);
+		this.setState({step: 2});
+		// loginContainer.setActiveView('CreatePortfolioStep2');
+		// loginContainer.setProgress(0.50);
 	};
 
-	handleStep2ClickNext = () => {
-		loginContainer.setActiveView('CreatePortfolioStep3');
-		loginContainer.setProgress(0.75);
+	handleStep2ClickNext = async event => {
+		event.preventDefault();
+
+		this.step3confirmButtonClicked = true;
+
+		// if (!this.checkSeedPhrase()) {
+		// 	this.confirmSeedPhraseTextArea.focus();
+		// 	return;
+		// }
+
+		await this.setState({isCreatingPortfolio: true});
+		const portfolioId = await createPortfolio({
+			email: this.state.portfolioEmail,
+			name: this.state.portfolioName,
+			password: this.state.portfolioPassword,
+			seedPhrase: this.state.generatedSeedPhrase,
+		});
+
+		this.setState({portfolioId});
+		// loginContainer.setActiveView('CreatePortfolioStep4');
+		// loginContainer.setProgress(1);
+
+		await loginContainer.loadPortfolios();
+		await loginContainer.handleLogin(portfolioId, this.state.portfolioPassword);
 	};
 
 	checkSeedPhrase = () => {
@@ -76,31 +104,6 @@ class CreatePortfolioContainer extends Container {
 		if (this.step3confirmButtonClicked) {
 			this.checkSeedPhrase();
 		}
-	};
-
-	handleStep3Submit = async event => {
-		event.preventDefault();
-
-		this.step3confirmButtonClicked = true;
-
-		if (!this.checkSeedPhrase()) {
-			this.confirmSeedPhraseTextArea.focus();
-			return;
-		}
-
-		await this.setState({isCreatingPortfolio: true});
-
-		const portfolioId = await createPortfolio({
-			name: this.state.portfolioName,
-			password: this.state.portfolioPassword,
-			seedPhrase: this.state.generatedSeedPhrase,
-		});
-
-		loginContainer.setActiveView('CreatePortfolioStep4');
-		loginContainer.setProgress(1);
-
-		await loginContainer.loadPortfolios();
-		await loginContainer.handleLogin(portfolioId, this.state.portfolioPassword);
 	};
 }
 

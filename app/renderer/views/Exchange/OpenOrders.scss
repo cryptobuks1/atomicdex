@@ -1,0 +1,63 @@
+.order-list {
+    padding: 30px 95px 0px 0px;
+
+    .item {
+        display: flex;
+        background-color: rgba(255,255,255,0.03);
+        border: #707070;
+        padding: 10px 35px 10px 20px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+
+        p {
+            margin-bottom: 0px;
+        }
+
+        .item-from {
+            display: flex;
+            width: 35%;
+        }
+
+        .item-to {
+            display: flex;
+            width: 35%;
+
+            svg {
+                margin-right: 30px;
+                margin-top: 15px;
+            }
+        }
+
+        .item-status {
+            width: 30%;
+            text-align: right;
+
+            span {
+                margin-left: 10px;
+                font-size: 12px;
+                color: rgba(255,255,255,0.7);
+            }
+        }
+
+        .left {
+            margin-right: 10px;
+
+            img {
+                margin-top: 7px;
+            }
+        }
+
+        .right {
+            .amount {
+                font-size: 14px;
+                color: white;
+                height: 19px;
+            }
+
+            .currency {
+                font-size: 12px;
+                height: 19px;
+            }
+        }
+    }
+}

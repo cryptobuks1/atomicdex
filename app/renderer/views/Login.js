@@ -1,17 +1,12 @@
 import React from 'react';
 import {Subscribe} from 'unstated';
 import Progress from 'components/Progress';
-import LoginView from 'components/LoginView';
-import appContainer from 'containers/App';
 import loginContainer from 'containers/Login';
 import {setLoginWindowBounds} from '../util';
-import NewPortfolio from './NewPortfolio';
 import LoginBox from './LoginBox';
-import CreatePortfolio from './CreatePortfolio';
-import RestorePortfolio from './RestorePortfolio';
 import ForgotPassword from './ForgotPassword';
-import LoggingIn from './LoggingIn';
 import './Login.scss';
+import Toolbar from './Toolbar/Toolbar';
 
 class Login extends React.Component {
 	componentDidMount() {
@@ -26,29 +21,15 @@ class Login extends React.Component {
 						return null; // Not loaded yet
 					}
 
-					const LoginViews = () => (
-						<>
-							<LoginView component={NewPortfolio}/>
-							<LoginView component={LoginBox}/>
-							<LoginView component={LoggingIn}/>
-							<CreatePortfolio/>
-							<RestorePortfolio/>
-							<ForgotPassword/>
-						</>
-					);
-
 					return (
 						<div className="Login container">
+							<Toolbar/>
 							<div className="window-draggable-area"/>
 							<Progress className="login-progress" value={login.state.progress}/>
 							<div className="is-centered">
-								<img
-									className="hyperdex-icon"
-									src={`/assets/hyperdex-logo-text-${appContainer.isDarkTheme ? 'white' : 'black'}.svg`}
-									width="130"
-									height="113"
-								/>
-								<LoginViews/>
+								<p className="title" >UMBRELLA</p>
+								<LoginBox/>
+								<ForgotPassword/>
 							</div>
 						</div>
 					);

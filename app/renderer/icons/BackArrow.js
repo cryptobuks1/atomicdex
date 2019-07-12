@@ -2,8 +2,11 @@ import React from 'react';
 import Svg from 'components/Svg';
 
 const BackArrow = props => (
-	<Svg {...props} viewBox="0 0 7 12">
-		<path d="M.187 5.368c.036-.035.09-.044.133-.07.063-.085.117-.174.198-.253L5.158.519c.548-.535 1.29-.68 1.657-.323.366.357.218 1.08-.33 1.616l-4.31 4.203 4.308 4.202c.55.535.697 1.259.331 1.616s-1.108.212-1.656-.323L.518 6.984c-.08-.08-.135-.168-.198-.253-.043-.026-.097-.035-.133-.07-.162-.158-.208-.393-.178-.646-.03-.254.016-.49.178-.647z"/>
+	<Svg xmlns="http://www.w3.org/2000/svg" width="20.943" height="7.753" viewBox="0 0 20.943 7.753">
+		<g id="Group_2" data-name="Group 2" transform="translate(20.683 -0.475) rotate(180)">
+			<path id="Path" d="M0,.5H-19.38" transform="translate(0.241 -3.825) rotate(-180)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1"/>
+			<path id="Path_2" data-name="Path 2" d="M0,0-3.376,3.376,0,6.753" transform="translate(16.807 -0.975) rotate(-180)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1"/>
+		</g>
 	</Svg>
 );
 

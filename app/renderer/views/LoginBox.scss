@@ -1,6 +1,10 @@
 .LoginBox {
 	margin-top: 50px;
 
+	.form-group {
+		margin-bottom: 0px;
+	}
+
 	.form-group-1 {
 		display: flex;
 		width: 100%;
@@ -12,8 +16,30 @@
 		}
 	}
 
-	.form-group-2 {
-		margin-top: 25px;
+	.user-name, .user-password {
+		margin: 0px 0px 20px 0px;
+
+		input {
+			height: 42px;
+		}
+	}
+
+	.user-password {
+		input {
+			padding-right: 70px;
+		}
+	}
+
+	.error-msg {
+		text-align: center;
+		color: var(--red-color);
+	}
+
+	.signin-btn {
+		height: 44px;
+		span {
+			color: white;
+		}
 	}
 
 	.SettingsButton {

@@ -10,6 +10,7 @@ const SelectOption = ({
 	image,
 	fallbackImage,
 	imageRenderer,
+	selectType,
 	...props
 }) => {
 	const hasImage = Boolean(image || imageRenderer);
@@ -21,7 +22,6 @@ const SelectOption = ({
 		},
 		className
 	);
-
 	return (
 		<div {...props} className={containerClassName}>
 			{hasImage &&
@@ -38,9 +38,20 @@ const SelectOption = ({
 					}
 				</span>
 			}
-			<span className="SelectOption__label">
-				{label}
-			</span>
+			{
+				!selectType && (
+				<span className="SelectOption__label">
+					{label}
+				</span>)
+			}
+			{
+				selectType === 'currencySetting' && (
+					<div className="currency-setting">
+						<p>{value}</p>
+						<p>{label}</p>
+					</div>
+				)
+			}
 		</div>
 	);
 };

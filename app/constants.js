@@ -11,13 +11,14 @@ exports.minWindowSize = {
 };
 
 exports.loginWindowSize = {
-	width: 680,
+	width: 330,
 	height: is.macos ? 500 : 550,
 };
 
 exports.appViews = [
 	'Dashboard',
 	// 'Swap',
+	'Home',
 	'Exchange',
 	'Trades',
 	'Settings',
@@ -45,8 +46,8 @@ exports.defaultEnabledCurrencies = [
 ];
 
 exports.alwaysEnabledCurrencies = [
-	'KMD',
-	'CHIPS',
+	// 'KMD',
+	// 'CHIPS',
 ];
 
 exports.ignoreExternalPrice = new Set([

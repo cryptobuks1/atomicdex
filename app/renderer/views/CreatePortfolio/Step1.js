@@ -1,34 +1,54 @@
 import React from 'react';
+import appContainer from 'containers/App';
 import Button from 'components/Button';
 import Input from 'components/Input';
-import LoginBackButton from 'components/LoginBackButton';
+import BackTextButton from 'components/BackTextButton';
 import container from 'containers/CreatePortfolio';
 import {translate} from '../../translate';
+import Toolbar from '../Toolbar/Toolbar';
 import './CreatePortfolio.scss';
 
 const t = translate('portfolio');
 
-const CreatePortfolioStep1 = () => {
+const Step1 = () => {
 	const {state} = container;
 
 	return (
 		<div className="CreatePortfolio">
-			<LoginBackButton view="NewPortfolio" progress={0}/>
-			<h1>{t('create.title')}</h1>
+			<Toolbar />
+			<BackTextButton
+				onClick={() => {
+					appContainer.setActiveView('Home');
+				}}
+			/>
+			<p className="signup-title">{t('create.title')}</p>
 			<form style={{marginTop: '20px'}} onSubmit={container.handleStep1Submit}>
 				<div className="form-group">
 					<Input
+						type="email"
+						className="user-email"
+						autoFocus
+						required
+						placeholder={t('create.email')}
+						value={state.portfolioEmail}
+						maxLength="50"
+						onChange={container.handlePortfolioEmailInputChange}
+					/>
+				</div>
+				<div className="form-group">
+					<Input
+						className="user-name"
 						autoFocus
 						required
 						placeholder={t('create.name')}
 						value={state.portfolioName}
 						maxLength="50"
-						iconName="person"
 						onChange={container.handlePortfolioNameInputChange}
 					/>
 				</div>
 				<div className="form-group">
 					<Input
+						className="user-password"
 						required
 						type="password"
 						placeholder={t('create.password')}
@@ -38,6 +58,7 @@ const CreatePortfolioStep1 = () => {
 				</div>
 				<div className="form-group">
 					<Input
+						className="user-confirmpassword"
 						ref={input => {
 							container.confirmPasswordInput = input;
 						}}
@@ -51,11 +72,12 @@ const CreatePortfolioStep1 = () => {
 				</div>
 				<div className="form-group">
 					<Button
+						className="signup-btn"
 						type="submit"
 						value={t('create.next')}
 						disabled={!(state.portfolioName && state.portfolioPassword && state.confirmedPassword)}
+						color="blue"
 						style={{
-							width: '170px',
 							marginTop: '15px',
 						}}
 					/>
@@ -65,4 +87,4 @@ const CreatePortfolioStep1 = () => {
 	);
 };
 
-export default CreatePortfolioStep1;
+export default Step1;

@@ -25,7 +25,7 @@ const excludedTestCurrencies = new Set([
 class AppContainer extends SuperContainer {
 	state = {
 		theme: config.get('theme'),
-		activeView: 'Login',
+		activeView: 'Home',
 		enabledCoins: alwaysEnabledCurrencies,
 		currencies: [],
 		swapHistory: [],
@@ -313,6 +313,25 @@ class AppContainer extends SuperContainer {
 	async stopMarketmaker() {
 		await this.api.stop();
 		await ipc.callMain('stop-marketmaker');
+	}
+
+	miniumWindow () {
+		let window = remote.getCurrentWindow();
+		window.minimize(); 
+	}
+
+	maxiumWindow () {
+		let window = remote.getCurrentWindow();
+		if (!window.isMaximized()) {
+			window.maximize();          
+		} else {
+			window.unmaximize();
+		}
+	}
+
+	closeWindow() {
+		let window = remote.getCurrentWindow();
+       	window.close();
 	}
 }
 

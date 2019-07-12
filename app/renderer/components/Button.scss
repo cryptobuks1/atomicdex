@@ -142,6 +142,17 @@
 		}
 	}
 
+	&--blue {
+		background: linear-gradient(to left, #60BCDB, #54A1DA);
+		border: 1px solid #707070;
+		box-shadow: #56A6DA;
+	}
+
+	&--transparent {
+		border: 1px solid #54A1DA;
+		background: transparent;
+	}
+
 	&--fullwidth {
 		width: 100%;
 	}

@@ -5,15 +5,18 @@
 		"confirmPasswordNoMatch": "Confirmed password doesn't match password",
 		"confirmSeedPhrase": "Confirm Your Seed Phrase",
 		"exampleSeedPhrase": "Example: {{seedPhrase}} …",
-		"name": "Portfolio Name",
-		"next": "Next",
+		"email": "Email",
+		"name": "Username",
+		"next": "Create New Account",
+		"saveCode": "I Saved The Code",
 		"password": "Password",
 		"securityDescription": "<0>We recommend storing it offline. <1>Learn more security best practices</1></0>",
 		"securityTitle": "Important: please back up your seed phrase now!",
-		"seedPhrase": "Seed Phrase for Your Portfolio",
+		"seedPhrase": "Your Passcode",
 		"seedPhraseNoMatch": "The seed phrase you entered is not the same as the generated one",
 		"success": "New portfolio added!",
-		"title": "Create New Portfolio"
+		"title": "UMBRELLA",
+		"warning": "Important! Please make a copy of your seed phrase. Without it access to your funds will be lost."
 	},
 	"new": {
 		"createOrRestoreDescription": "Create a new one if you don't have a seed phrase yet.",

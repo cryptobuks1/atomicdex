@@ -29,6 +29,23 @@
 			margin-left: 4px;
 		}
 	}
+
+	.currency-setting {
+		padding-left: 10px;
+		p {
+			margin-top: 0px;
+			margin-bottom: 0px;
+		}
+		
+		:first-child {
+			color: white;
+			font-size: 14px;
+		}
+
+		:last-child {
+			font-size: 12px;
+		}
+	}
 }
 
 .Select--multi .Select-multi-value-wrapper {

@@ -8,19 +8,21 @@ const t = translate('common');
 
 const CopyIconButton = withState(
 	({setState, state, ...props}) => (
-		<Tooltip
-			content={state.isCopied ? t('copied') : t('copy')}
-			onClose={() => {
-				setState({isCopied: false});
-			}}
-		>
+		// <Tooltip
+		// 	content={state.isCopied ? t('copied') : t('copy')}
+		// 	onClose={() => {
+		// 		setState({isCopied: false});
+		// 	}}
+		// >
 			<CopyButton
 				{...props}
 				onClick={() => {
 					setState({isCopied: true});
+					props.onCopied();
 				}}
-			/>
-		</Tooltip>
+			>
+			</CopyButton>
+		//</Tooltip>
 	),
 	{isCopied: false}
 );

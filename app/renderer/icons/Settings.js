@@ -2,8 +2,12 @@ import React from 'react';
 import Svg from 'components/Svg';
 
 const Settings = props => (
-	<Svg {...props} viewBox="0 0 35 36">
-		<path d="M20.755 0a2 2 0 0 0-2 2v2.255H.53a.5.5 0 0 0 0 1h18.225v2.254a2 2 0 0 0 2 2h4.202a2 2 0 0 0 2-2V5.255h6.703a.5.5 0 1 0 0-1h-6.702V2a2 2 0 0 0-2-2zm-1 2a1 1 0 0 1 1-1h4.202a1 1 0 0 1 1 1v5.51a1 1 0 0 1-1 1h-4.202a1 1 0 0 1-1-1zm1 23.528a2 2 0 0 0-2 2v2.255H.53a.5.5 0 0 0 0 1h18.225v2.254a2 2 0 0 0 2 2h4.202a2 2 0 0 0 2-2v-2.254h6.703a.5.5 0 1 0 0-1h-6.702v-2.255a2 2 0 0 0-2-2zm-1 2a1 1 0 0 1 1-1h4.202a1 1 0 0 1 1 1v5.51a1 1 0 0 1-1 1h-4.202a1 1 0 0 1-1-1zM7.232 14.764a2 2 0 0 1 2-2h4.202a2 2 0 0 1 2 2v2.255H33.66a.5.5 0 1 1 0 1H15.434v2.254a2 2 0 0 1-2 2H9.232a2 2 0 0 1-2-2V18.02H.53a.5.5 0 1 1 0-1h6.702zm2-1a1 1 0 0 0-1 1v5.51a1 1 0 0 0 1 1h4.202a1 1 0 0 0 1-1v-5.51a1 1 0 0 0-1-1z"/>
+	<Svg {...props}>
+		<g id="Icons_Overview" data-name="Icons / Overview" opacity="0.479">
+			<rect id="Rectangle" width="20" height="20" fill="none" />
+			<circle id="Oval" cx="2" cy="2" r="2" transform="translate(8 8)" fill="none" stroke="#fff" stroke-miterlimit="10" stroke-width="1" />
+			<path id="Combined_Shape" data-name="Combined Shape" d="M7,11.655,4.807,13.227A6.994,6.994,0,0,1,2.338,11.8L2.6,9.116.145,8a7.066,7.066,0,0,1,0-2.85L2.6,4.039,2.338,1.356A6.994,6.994,0,0,1,4.807-.072L7,1.5,9.194-.072a7,7,0,0,1,2.468,1.427L11.4,4.039l2.459,1.114a7.064,7.064,0,0,1,0,2.849L11.4,9.116l.264,2.684a7,7,0,0,1-2.468,1.427Z" transform="translate(3 3.423)" fill="none" stroke="#fff" stroke-miterlimit="10" stroke-width="1" />
+		</g>
 	</Svg>
 );
 

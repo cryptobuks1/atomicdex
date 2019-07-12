@@ -46,9 +46,10 @@ class CurrencySetting extends React.Component {
 		const {isUpdatingCurrencies} = settingsContainer.state;
 
 		const selectData = currencySymbols.map(symbol => ({
-			label: `${getCurrencyName(symbol)} (${symbol})`,
+			label: `${getCurrencyName(symbol)}`,
 			value: symbol,
 			clearableValue: !alwaysEnabledCurrencies.includes(symbol),
+			selectType: 'currencySetting',
 		}));
 
 		return (

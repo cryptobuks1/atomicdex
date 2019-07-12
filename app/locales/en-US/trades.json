@@ -1,4 +1,6 @@
 {
+	"title": "Past Trades",
+	"description": "History of all your transactions is stored here",
 	"openOrders": "Open Orders",
 	"tradeHistory": "Trade History",
 	"stats": "In the last month you did {{count}} successful trade in {{currencyCount}} currencies worth {{totalSwapsWorthInUsd}} in total",

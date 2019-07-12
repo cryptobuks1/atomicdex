@@ -1,8 +1,10 @@
 {
-	"forgotPassword": "Forgot password",
+	"forgotPassword": "Forgot Password?",
 	"incorrectPassword": "Incorrect password",
-	"login": "Login",
+	"login": "Sign In",
 	"loggingIn": "Logging in…",
+	"user": "Username",
 	"password": "Password",
+	"passwordPlaceHolder": "Enter password",
 	"selectPortfolio": "Select portfolio…"
 }
