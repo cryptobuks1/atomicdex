@@ -42,7 +42,7 @@ class WithdrawModal extends React.Component {
 	}
 
 	open = () => {
-		this.setState({ isOpen: true });
+		this.setState({isOpen: true});
 	};
 
 	close = () => {
@@ -50,36 +50,35 @@ class WithdrawModal extends React.Component {
 	};
 
 	withdrawButtonHandler = async () => {
-		this.setState({ isWithdrawing: true });
+		this.setState({isWithdrawing: true});
 
-		// const {symbol} = dashboardContainer.activeCurrency;
-		const { symbol } = this.props.currencyInfo;
-		const { recipientAddress: address, amount } = this.state;
+		const {symbol} = dashboardContainer.activeCurrency;
+		const {recipientAddress: address, amount} = this.state;
 
-		const { txFee, broadcast } = await appContainer.api.withdraw({
+		const {txFee, broadcast} = await appContainer.api.withdraw({
 			symbol,
 			address,
 			amount: Number(amount),
 		});
 
 		const currency = getCurrency(symbol);
-		const txFeeCurrencySymbol = currency.etomic ? 'ETH' : symbol;
-		const { cmcPriceUsd } = appContainer.getCurrencyPrice(txFeeCurrencySymbol);
+		const txFeeCurrencySymbol = currency.contractAddress ? 'ETH' : symbol;
+		const {cmcPriceUsd} = appContainer.getCurrencyPrice(txFeeCurrencySymbol);
 		const txFeeUsd = formatCurrency(txFee * cmcPriceUsd);
 
-		this.setState({ txFeeCurrencySymbol, txFee, txFeeUsd, broadcast });
+		this.setState({txFeeCurrencySymbol, txFee, txFeeUsd, broadcast});
 	};
 
 	confirmButtonHandler = async () => {
-		this.setState({ isBroadcasting: true });
-		const { txid, amount, symbol, address } = await this.state.broadcast();
-		console.log({ txid, amount, symbol, address });
+		this.setState({isBroadcasting: true});
+		const {txid, amount, symbol, address} = await this.state.broadcast();
+		console.log({txid, amount, symbol, address});
 
 		// TODO: The notification should be clickable and open a block explorer for the currency.
 		// We'll need to have a list of block explorers for each currency.
 		// eslint-disable-next-line no-new
 		new Notification(t('withdraw.successTitle'), {
-			body: t('withdraw.successDescription', { address, amount, symbol }),
+			body: t('withdraw.successDescription', {address, amount, symbol}),
 		});
 
 		this.close();

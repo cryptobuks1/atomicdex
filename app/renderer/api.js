@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
 import util from 'util';
-import {sha256} from 'crypto-hash';
 import PQueue from 'p-queue';
 import ow from 'ow';
 import _ from 'lodash';
@@ -16,13 +15,13 @@ const errorWithObject = (message, object) => new Error(`${message}:\n${util.form
 const genericError = object => errorWithObject('Encountered an error', object);
 
 export default class Api {
-	constructor({endpoint, seedPhrase, concurrency = 1}) {
+	constructor({endpoint, rpcPassword, concurrency = Infinity}) {
 		ow(endpoint, 'endpoint', ow.string);
-		ow(seedPhrase, 'seedPhrase', ow.string);
+		ow(rpcPassword, 'rpcPassword', ow.string);
 		ow(concurrency, 'concurrency', ow.number.positive.integerOrInfinite);
 
 		this.endpoint = endpoint;
-		this.token = sha256(seedPhrase);
+		this.rpcPassword = rpcPassword;
 		this.queue = new PQueue({concurrency});
 	}
 
@@ -31,8 +30,8 @@ export default class Api {
 
 		const body = {
 			...data,
-			needjson: 1,
-			userpass: await this.token,
+			// TODO: When https://github.com/artemii235/SuperNET/issues/298 is fixed, rename `userpass` to `rpc_password` and also reduce the places we pass around `seedPhrase`.
+			userpass: this.rpcPassword,
 		};
 
 		let result;
@@ -103,30 +102,33 @@ export default class Api {
 				servers,
 			});
 
-			const success = response.result === 'success';
-
-			if (!success) {
+			const isSuccess = response.result === 'success';
+			if (!isSuccess) {
 				const error = `Could not connect to ${symbol} Electrum server`;
 				console.error(error);
 				// eslint-disable-next-line no-new
 				new Notification(error);
+				return;
 			}
 
 			console.log('Enabled Electrum for currency:', symbol);
-
-			return success;
+			return;
 		}
 
+		if (currency.urls === undefined)
+			currency.urls = [
+				'http://eth1.cipig.net:8555',
+				'http://eth2.cipig.net:8555',
+				'http://eth3.cipig.net:8555',
+			];
 		const response = await this.request({
 			method: 'enable',
 			coin: symbol,
 			urls: currency.urls,
 			swap_contract_address: smartContractAddress,
 		});
-
-		const success = response.result === 'success';
-
-		if (!success) {
+		const isSuccess = response.result === 'success';
+		if (!isSuccess) {
 			const error = `Could not connect to ${symbol} server`;
 			console.error(error);
 			// eslint-disable-next-line no-new
@@ -134,17 +136,18 @@ export default class Api {
 		}
 
 		console.log('Enabled for currency:', symbol);
-
 		return success;
 	}
 
-	disableCoin(coin) {
-		ow(coin, 'coin', symbolPredicate);
+	// Mm v2 doesn't currently have an endpoint for disabling a coin, so we do nothing.
+	// https://github.com/artemii235/SuperNET/issues/459
+	async disableCurrency(/** symbol */) {
+		/// ow(symbol, 'symbol', symbolPredicate);
 
-		return this.request({
-			method: 'disable',
-			coin,
-		});
+		// return this.request({
+		// 	method: 'disable',
+		// 	coin: symbol,
+		// });
 	}
 
 	balance(coin, address) {
@@ -162,14 +165,15 @@ export default class Api {
 		return this.request({method: 'getcoins'});
 	}
 
-	async orderBook(base, rel) {
-		ow(base, 'base', symbolPredicate);
-		ow(rel, 'rel', symbolPredicate);
+	// Mm v2
+	async orderBook(baseCurrency, quoteCurrency) {
+		ow(baseCurrency, 'baseCurrency', symbolPredicate);
+		ow(quoteCurrency, 'quoteCurrency', symbolPredicate);
 
 		const response = await this.request({
 			method: 'orderbook',
-			base,
-			rel,
+			base: baseCurrency,
+			rel: quoteCurrency,
 		});
 
 		const formatOrders = orders => orders
@@ -265,27 +269,19 @@ export default class Api {
 		return result;
 	}
 
+	// Mm v2
+	// https://github.com/artemii235/developer-docs/blob/mm/docs/basic-docs/atomicdex/atomicdex-api.md#cancel_order
 	async cancelOrder(uuid) {
 		ow(uuid, 'uuid', uuidPredicate);
 
 		const response = await this.request({
-			method: 'cancel',
+			method: 'cancel_order',
 			uuid,
 		});
 
 		if (response.error) {
-			if (/uuid not cancellable/.test(response.error)) {
-				throw new Error('Order cannot be cancelled');
-			}
-
 			throw new Error(response.error);
 		}
-
-		if (response.result !== 'success') {
-			throw genericError(response);
-		}
-
-		return response.status;
 	}
 
 	async getFee(coin) {
@@ -317,6 +313,16 @@ export default class Api {
 			address: response.address,
 			balance: Number(response.balance),
 		};
+	}
+
+	// Mm v2
+	// https://github.com/artemii235/developer-docs/blob/mm/docs/basic-docs/atomicdex/atomicdex-api.md#coins_needed_for_kick_start
+	async coinsNeededForKickStart() {
+		const {result} = await this.request({
+			method: 'coins_needed_for_kick_start',
+		});
+
+		return result;
 	}
 
 	async _createTransaction(opts) {
@@ -454,20 +460,7 @@ export default class Api {
 			amount: ow.number.positive.finite,
 		}));
 
-		return getCurrency(opts.symbol).etomic ? this._withdrawEth(opts) : this._withdrawBtcFork(opts);
-	}
-
-	kickstart(opts) {
-		ow(opts, 'opts', ow.object.exactShape({
-			requestId: ow.number.positive.finite,
-			quoteId: ow.number.positive.finite,
-		}));
-
-		return this.request({
-			method: 'kickstart',
-			requestid: opts.requestId,
-			quoteid: opts.quoteId,
-		});
+		return getCurrency(opts.symbol).contractAddress ? this._withdrawEth(opts) : this._withdrawBtcFork(opts);
 	}
 
 	listUnspent(coin, address) {

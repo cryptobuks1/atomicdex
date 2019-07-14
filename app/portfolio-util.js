@@ -45,6 +45,19 @@ const removedCurrencies = [
 	'AION',
 	'VEN',
 	'EOS',
+	'BTCZ',
+	'ZCL',
+	'BTCP',
+	'BTX',
+	'CRW',
+	'EQLI',
+	'GLXT',
+	'RAP',
+	'STAK',
+	'VIA',
+	'XSG',
+	'BEER',
+	'PIZZA',
 ];
 
 const createPortfolio = async ({email, name, seedPhrase, password}) => {

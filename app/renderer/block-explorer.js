@@ -1,6 +1,6 @@
 // TODO(lukechilds): Extract this into an npm package when it's more mature
 import ow from 'ow';
-import {isEtomic} from '../marketmaker/supported-currencies';
+import {isEthBased} from '../marketmaker/supported-currencies';
 
 const explorers = new Map(Object.entries({
 	888: 'https://chainz.cryptoid.info/octo/tx.dws?{txid}',
@@ -14,7 +14,6 @@ const explorers = new Map(Object.entries({
 	BCH: 'https://blockchair.com/bitcoin-cash/transaction/{txid}',
 	BCO: 'https://explorer.bridgecoin.org/tx/{txid}',
 	BDL: 'https://explorer.bitdeal.co.in/tx/{txid}',
-	BEER: 'https://beer.kmdexplorer.io/tx/{txid}',
 	BGN: 'http://BGN.explorer.supernet.org/tx/{txid}',
 	BITS: 'http://explorer.v2.bitstarcoin.com/tx/{txid}',
 	BLK: 'https://chainz.cryptoid.info/blk//tx.dws?{txid}',
@@ -23,12 +22,9 @@ const explorers = new Map(Object.entries({
 	BTA: 'https://chainz.cryptoid.info/bta/tx.dws?{txid}',
 	BTC: 'https://www.blocktrail.com/BTC/tx/{txid}',
 	BTCH: 'https://btch.kmdexplorer.io/tx/{txid}',
-	BTCP: 'https://explorer.btcprivate.org/tx/{txid}',
-	BTCZ: 'https://explorer.bitcoinz.site/tx/{txid}',
 	BTG: 'https://btgexp.com/tx/{txid}',
 	BTM: 'http://explorer.bitmark.io/tx/{txid}',
 	BTNX: 'http://explorer.bitnexus.online/tx/{txid}',
-	BTX: 'https://chainz.cryptoid.info/btx/tx.dws?{txid}',
 	BUCK: 'https://explorer.buck.red/tx/{txid}',
 	CARB: 'https://chainz.cryptoid.info/carbon/tx.dws?{txid}',
 	CCL: 'http://ccl.explorer.dexstats.info/tx/{txid}',
@@ -42,7 +38,6 @@ const explorers = new Map(Object.entries({
 	CRC: 'http://explorer.cryptopros.us/tx/{txid}',
 	CRDS: 'http://explorer.crds.co/tx/{txid}',
 	CREA: 'https://chainz.cryptoid.info/crea/tx.dws?{txid}',
-	CRW: 'https://chainz.cryptoid.info/crw/tx.dws?{txid}',
 	CRYPTO: 'https://crypto.kmdexplorer.io/tx/{txid}',
 	D: 'https://chainz.cryptoid.info/d/tx.dws?{txid}',
 	DASH: 'https://chainz.cryptoid.info/dash/tx.dws?{txid}',
@@ -60,7 +55,6 @@ const explorers = new Map(Object.entries({
 	EMC2: 'https://chainz.cryptoid.info/emc2/tx.dws?{txid}',
 	ERC: 'https://chainz.cryptoid.info/erc/tx.dws?{txid}',
 	ETH: 'https://etherscan.io/tx/{txid}',
-	ETOMIC: 'https://etomic.kmdexplorer.io/tx/{txid}',
 	FAIR: 'https://chain.fair.to/transaction?transaction={txid}',
 	FJC: 'http://explorer.fujicoin.org/tx/{txid}',
 	FLO: 'https://florincoin.info/tx/{txid}',
@@ -69,7 +63,6 @@ const explorers = new Map(Object.entries({
 	GAME: 'https://blockexplorer.gamecredits.com/transactions/{txid}',
 	GLD: 'https://chainz.cryptoid.info/gld/tx.dws?{txid}',
 	GLT: 'https://explorer.globaltoken.org/tx/{txid}',
-	GLXT: 'http://glx.info/tx/{txid}',
 	GRLC: 'https://garli.co.in/tx/{txid}',
 	GRS: 'http://groestlsight.groestlcoin.org/tx/{txid}',
 	HODL: 'https://hodl.kmdexplorer.io/tx/{txid}',
@@ -93,26 +86,26 @@ const explorers = new Map(Object.entries({
 	MNX: 'https://minexexplorer.com/?r=explorer/tx&hash={txid}',
 	MONA: 'https://mona.chainsight.info/tx/{txid}',
 	MOON: 'https://chainz.cryptoid.info/moon/tx.dws?{txid}',
+	MORTY: 'https://morty.kmd.dev/tx/{txid}',
 	MSHARK: 'https://mshark.kmdexplorer.io/tx/{txid}',
 	MUE: 'https://chainz.cryptoid.info/mue/tx.dws?{txid}',
 	MVP: 'http://mvp.explorer.supernet.org/tx/{txid}',
 	MZC: 'http://mazacoin.thecoin.pw/tx/{txid}',
 	NAV: 'https://chainz.cryptoid.info/nav/tx.dws?{txid}',
-	NMC: 'https://namecoin.webbtc.com/tx/{txid}',
+	NMC: 'https://nmc.tokenview.com/en/tx/{txid}',
 	OOT: 'http://explorer.utrum.io/tx/{txid}',
 	ORE: 'https://explorer.galactrum.org/tx/{txid}',
 	PAC: 'http://usa.pacblockexplorer.com:3002/tx/{txid}',
 	PANGEA: 'https://pangea.kmdexplorer.io/tx/{txid}',
 	PEW: 'http://explorer.brofist.online/tx/{txid}',
 	PGN: 'http://explorer.pigeoncoin.org/tx/{txid}',
-	PIZZA: 'https://pizza.kmdexplorer.io/tx/{txid}',
 	PUNGO: 'https://explorer.pungotoken.com/tx/{txid}',
 	PURA: 'https://chainz.cryptoid.info/pura/tx.dws?{txid}',
 	PYRO: 'http://138.68.246.198:3001/tx/{txid}',
 	QTUM: 'https://explorer.qtum.org/tx/{txid}',
 	RADIUS: 'http://explorer.radiuscrypto.online/tx/{txid}',
-	RAP: 'http://explorer.our-rapture.com/tx/{txid}',
 	REVS: 'https://revs.kmdexplorer.io/tx/{txid}',
+	RICK: 'https://rick.kmd.dev/tx/{txid}',
 	ROGER: 'https://explorer.theholyroger.com/tx/{txid}',
 	ROI: 'https://roi-coin-blockexplorer.roi-coin.com/tx/{txid}',
 	RVN: 'http://threeeyed.info/tx/{txid}',
@@ -123,7 +116,6 @@ const explorers = new Map(Object.entries({
 	SMART: 'https://explorer3.smartcash.cc/tx/{txid}',
 	SMC: 'http://smartchain.cc/tx/{txid}',
 	SPK: 'http://explorer.sparkscoin.io/tx/{txid}',
-	STAK: 'https://straks.info/transaction/{txid}',
 	STRAT: 'https://cryptobe.com/tx/{txid}',
 	SUPERNET: 'https://supernet.kmdexplorer.io/tx/{txid}',
 	SXC: 'http://blockexplorer.lavajumper.com/tx/{txid}',
@@ -132,7 +124,6 @@ const explorers = new Map(Object.entries({
 	UFO: 'https://chainz.cryptoid.info/ufo/tx.dws?{txid}',
 	UIS: 'https://explorer.unitus.online/tx/{txid}',
 	UNO: 'https://chainz.cryptoid.info/uno/tx.dws?{txid}',
-	VIA: 'https://chainz.cryptoid.info/via/tx.dws?{txid}',
 	VIVO: 'https://chainz.cryptoid.info/vivo/tx.dws?{txid}',
 	VOT: 'http://explorer.votecoin.site/tx/{txid}',
 	VRSC: 'https://explorer.veruscoin.io/tx/{txid}',
@@ -143,10 +134,8 @@ const explorers = new Map(Object.entries({
 	XCOIN: 'http://xcoin.ddns.net/tx/{txid}',
 	XMY: 'https://cryptap.us/myr/explorer/tx/{txid}',
 	XRE: 'http://revolvercoin.org:3001/tx/{txid}',
-	XSG: 'https://explorer.snowgem.org/tx/{txid}',
 	XSN: 'https://xsnexplorer.io/transactions/{txid}',
 	XZC: 'http://explorer.zcoin.io/tx/{txid}',
-	ZCL: 'http://explorer.zclmine.pro/tx/{txid}',
 	ZEC: 'https://explorer.zcha.in/transactions/{txid}',
 	ZEL: 'http://explorer.zel.cash/tx/{txid}',
 	ZER: 'http://zeroexplorer.forgetop.com/tx/{txid}',
@@ -161,7 +150,7 @@ blockExplorer.tx = (symbol, txid) => {
 	ow(symbol, 'symbol', ow.string.uppercase);
 	ow(txid, 'txid', ow.string);
 
-	const explorer = explorers.get(isEtomic(symbol) ? 'ETH' : symbol);
+	const explorer = explorers.get(isEthBased(symbol) ? 'ETH' : symbol);
 
 	// Fallback
 	if (!explorer) {

@@ -83,4 +83,7 @@ const main = async () => {
 	}));
 };
 
-main();
+main().catch(error => {
+	console.error(error);
+	process.exit(1); // eslint-disable-line unicorn/no-process-exit
+});
