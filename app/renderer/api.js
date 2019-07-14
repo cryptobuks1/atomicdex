@@ -9,6 +9,8 @@ import {isDevelopment} from '../util-common';
 
 const symbolPredicate = ow.string.uppercase;
 const uuidPredicate = ow.string.matches(/[a-z\d-]/);
+const smartContractAddress = "0x8500AFc0bc5214728082163326C2FF0C73f4a871"; // Ethereum mainnet
+//const smartContractAddress = "0x7Bc1bBDD6A0a722fC9bffC49c921B685ECB84b94"; // Ethereum ropsten
 
 const errorWithObject = (message, object) => new Error(`${message}:\n${util.format(object)}`);
 const genericError = object => errorWithObject('Encountered an error', object);
@@ -115,8 +117,25 @@ export default class Api {
 			return success;
 		}
 
-		const response = await this.request({method: 'enable', coin: symbol});
-		return response.status === 'active';
+		const response = await this.request({
+			method: 'enable',
+			coin: symbol,
+			urls: currency.urls,
+			swap_contract_address: smartContractAddress,
+		});
+
+		const success = response.result === 'success';
+
+		if (!success) {
+			const error = `Could not connect to ${symbol} server`;
+			console.error(error);
+			// eslint-disable-next-line no-new
+			new Notification(error);
+		}
+
+		console.log('Enabled for currency:', symbol);
+
+		return success;
 	}
 
 	disableCoin(coin) {

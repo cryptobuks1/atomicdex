@@ -788,6 +788,7 @@ const supportedCurrencies = [
 		coin: 'ETH',
 		etomic: '0x0000000000000000000000000000000000000000',
 		rpcport: 80,
+		urls: ['https://ropsten.infura.io/v3/125e6ea342154b6bb962b180a15ae497']
 	},
 	{
 		coin: 'ETA',
@@ -1224,29 +1225,11 @@ const supportedCurrencies = [
 	},
 	{
 		coin: 'LTC',
-		rpcport: 9332,
-		pubtype: 48,
-		p2shtype: 5,
-		wiftype: 176,
+		rpcport: 19332,
+		pubtype: 111,
+		p2shtype: 196,
+		wiftype: 239,
 		txfee: 100000,
-		electrumServers: [
-			{
-				host: 'electrum-ltc.bysh.me',
-				port: 50001,
-			},
-			{
-				host: 'node.ispol.sk',
-				port: 50003,
-			},
-			{
-				host: 'electrum-ltc.wilv.in',
-				port: 50001,
-			},
-			{
-				host: 'backup.electrum-ltc.org',
-				port: 50001,
-			},
-		],
 	},
 	{
 		coin: 'LUN',
