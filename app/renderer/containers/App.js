@@ -192,7 +192,7 @@ class AppContainer extends SuperContainer {
 	async watchCurrencies() {
 		if (!this.stopWatchingCurrencies) {
 			this.stopWatchingCurrencies = await fireEvery({seconds: 1}, async () => {
-				const {price: kmdPriceInUsd} = this.coinPrices.find(x => x.symbol === 'KMD');
+				const {price: kmdPriceInUsd = 0} = this.coinPrices.find(x => x.symbol === 'KMD') || {};
 				const enabledCurrencies = (await this.api.getEnabledCurrencies()).map(x => x.ticker);
 
 				// This imitates the `portfolio` endpoint which is no longer available in mm v2
