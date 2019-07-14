@@ -78,10 +78,10 @@ class Marketmaker {
 
 		options = {
 			...options,
-			client: 1,
+			i_am_seed: true,
 			gui: 'hyperdex',
 			userhome: os.homedir(),
-			netid: 9999, // Since Marketmaker v2 is not yet compatible with v1
+			netid: 4444, // Since Marketmaker v2 is not yet compatible with v1
 			rpcport: port,
 			rpccors: is.development ? 'http://localhost:8080' : 'app://-',
 			// We leave out `electrumServers` since it's not needed
@@ -100,8 +100,6 @@ class Marketmaker {
 
 		// NOTE: It's very important that this is a different directory than mm v1, as the database is not compatible
 		const cwd = await makeDir(path.join(electron.app.getPath('userData'), 'marketmaker2-test'));
-
-		logger.log('Spawning Marketmaker with options:', JSON.stringify({...options, passphrase: '<redacted>'}));
 
 		logger.log('Spawning Marketmaker with options:', JSON.stringify({...options, passphrase: '<redacted>'}));
 
