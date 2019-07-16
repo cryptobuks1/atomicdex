@@ -8,8 +8,8 @@ import {isDevelopment} from '../util-common';
 
 const symbolPredicate = ow.string.uppercase;
 const uuidPredicate = ow.string.matches(/[a-z\d-]/);
-const smartContractAddress = "0x8500AFc0bc5214728082163326C2FF0C73f4a871"; // Ethereum mainnet
-//const smartContractAddress = "0x7Bc1bBDD6A0a722fC9bffC49c921B685ECB84b94"; // Ethereum ropsten
+//const smartContractAddress = "0x8500AFc0bc5214728082163326C2FF0C73f4a871"; // Ethereum mainnet
+const smartContractAddress = "0x7Bc1bBDD6A0a722fC9bffC49c921B685ECB84b94"; // Ethereum ropsten
 
 const errorWithObject = (message, object) => new Error(`${message}:\n${util.format(object)}`);
 const genericError = object => errorWithObject('Encountered an error', object);
@@ -136,7 +136,7 @@ export default class Api {
 		}
 
 		console.log('Enabled for currency:', symbol);
-		return success;
+		return isSuccess;
 	}
 
 	// Mm v2 doesn't currently have an endpoint for disabling a coin, so we do nothing.

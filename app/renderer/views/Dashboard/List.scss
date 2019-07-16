@@ -90,12 +90,7 @@
 		.currency {
 			display: flex;
 			width: 40%;
-
-			.right {
-				h2 {
-					margin-top: 10px;
-				}
-			}
+			align-items: center;
 		}
 
 		.balance {

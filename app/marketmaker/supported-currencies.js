@@ -1034,6 +1034,7 @@ const supportedCurrencies = [
 	},
 	{
 		coin: 'LTC',
+		name: 'litecoin',
 		rpcport: 19332,
 		pubtype: 111,
 		p2shtype: 196,
