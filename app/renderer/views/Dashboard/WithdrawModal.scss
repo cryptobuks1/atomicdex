@@ -1,6 +1,11 @@
 @import '../../styles/variables';
 
 .WithdrawModal main {
+	.error-msg {
+		text-align: center;
+		color: var(--red-color);
+	}
+	
 	.section {
 		display: flex;
 
