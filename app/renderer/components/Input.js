@@ -40,6 +40,7 @@ class Input extends React.Component {
 		view: PropTypes.elementType,
 		button: PropTypes.elementType,
 		onChange: PropTypes.func,
+		showPassword: PropTypes.func,
 		value: PropTypes.string,
 		pattern: PropTypes.oneOfType([
 			PropTypes.string,
@@ -64,6 +65,7 @@ class Input extends React.Component {
 		view: undefined,
 		button: undefined,
 		onChange: undefined,
+		showPassword: undefined,
 		value: '',
 		pattern: undefined,
 	}
@@ -156,8 +158,8 @@ class Input extends React.Component {
 		return value;
 	}
 
-	showpassword = () => {
-		this.props.showpassword();
+	showPassword = () => {
+		this.props.showPassword();
 	}
 
 	render() {
@@ -179,6 +181,7 @@ class Input extends React.Component {
 			view: View,
 			button: Button,
 			onChange,
+			showPassword,
 			...props
 		} = this.props;
 		let {level} = this.state;
@@ -251,7 +254,7 @@ class Input extends React.Component {
 					{suffixString &&
 						<span
 							className="Input__suffix"
-							onClick={this.showpassword}
+							onClick={this.showPassword}
 						>
 							{suffixString}
 						</span>

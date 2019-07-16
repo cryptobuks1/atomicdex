@@ -114,7 +114,7 @@ class LoginBox extends React.Component {
 							value={this.state.passwordInputValue}
 							disabled={this.state.isLoggingIn}
 							onChange={this.handlePasswordInputChange}
-							showpassword={this.showPassword}
+							showPassword={this.showPassword}
 							suffixString="SHOW"
 						/>
 					</div>
