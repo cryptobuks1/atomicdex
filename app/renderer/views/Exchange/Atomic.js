@@ -63,11 +63,16 @@ class Atomic extends React.Component {
 			buyAmount: '',
 			exchangeRate: '',
 			tabType: 'buy',
-			buySymbol: "BTC",
-			sellSymbol: "LTC",
+			buySymbol: "",
+			sellSymbol: "",
+			selectedCurrency: null,
 		}
 	}
 
+	componentDidMount() {
+		// const selectedCurrency = this.getSelectedCurrency('buy');
+		// this.setState({ selectedCurrency });
+	}
 
 	handleBuyAmountChange = value => {
 		this.setState({ buyAmount: value }, () => {
@@ -92,7 +97,8 @@ class Atomic extends React.Component {
 	handleSelectChange = (selectedOption, type) => {
 		if (type === 'buy') {
 			exchangeContainer.setBaseCurrency(selectedOption.value);
-			this.setState({buySymbol: selectedOption.value});
+			const selectedCurrency = this.getSelectedCurrency('buy');
+			this.setState({selectedCurrency, buySymbol: selectedOption.value});
 		} else {
 			exchangeContainer.setQuoteCurrency(selectedOption.value);
 			this.setState({sellSymbol: selectedOption.value});
@@ -110,7 +116,8 @@ class Atomic extends React.Component {
 		
 		this.setState({sellSymbol: buySymbol, buySymbol: sellSymbol}, () => {
 			exchangeContainer.setState({baseCurrency: this.state.buySymbol});
-			this.getSelectedCurrency();
+			const selectedCurrency = this.getSelectedCurrency('buy');
+			this.setState({ selectedCurrency });
 		});
 	}
 
@@ -122,8 +129,6 @@ class Atomic extends React.Component {
 			value: currency.symbol,
 		}));
 		
-		const selectedCurrency = this.getSelectedCurrency();
-
 		return (
 			<div>
 				<div className="Atomic">
@@ -147,7 +152,7 @@ class Atomic extends React.Component {
 								onChange={option => this.handleSelectChange(option, 'buy')}
 							/>
 							<h3 className="balance">
-								{t('order.symbolBalance')}: <span>{roundTo(selectedCurrency.balance, 8)}</span>
+								{t('order.symbolBalance')}: <span>{this.state.selectedCurrency ? roundTo(this.state.selectedCurrency.balance, 8) : 0}</span>
 							</h3>
 						</div>
 					</div>

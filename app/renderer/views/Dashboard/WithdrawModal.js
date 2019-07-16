@@ -28,7 +28,6 @@ const getInitialProps = () => ({
 	txFee: 0,
 	txFeeUsd: 0,
 	broadcast: false,
-	isConfirmWithdraw: false,
 	confirmCode: '',
 	isSuccessWithdraw: false,
 });
@@ -49,18 +48,21 @@ class WithdrawModal extends React.Component {
 		this.setState(getInitialProps());
 	};
 
+	cancelWithdraw = () => {
+		this.setState({ isWithdrawing: false, broadcast: false });
+	}
+
 	withdrawButtonHandler = async () => {
 		this.setState({isWithdrawing: true});
 
 		const {symbol} = dashboardContainer.activeCurrency;
 		const {recipientAddress: address, amount} = this.state;
-
 		const {txFee, broadcast} = await appContainer.api.withdraw({
 			symbol,
 			address,
 			amount: Number(amount),
 		});
-
+		
 		const currency = getCurrency(symbol);
 		const txFeeCurrencySymbol = currency.contractAddress ? 'ETH' : symbol;
 		const {cmcPriceUsd} = appContainer.getCurrencyPrice(txFeeCurrencySymbol);
@@ -70,7 +72,7 @@ class WithdrawModal extends React.Component {
 	};
 
 	confirmButtonHandler = async () => {
-		this.setState({isBroadcasting: true});
+		this.setState({isSuccessWithdraw: true, isBroadcasting: true});
 		const {txid, amount, symbol, address} = await this.state.broadcast();
 		console.log({txid, amount, symbol, address});
 
@@ -93,8 +95,8 @@ class WithdrawModal extends React.Component {
 		// const currencyInfo = dashboardContainer.activeCurrency;
 		const { currencyInfo } = this.props;
 		const maxAmount = currencyInfo.balance;
-		const remainingBalance = roundTo(maxAmount - (Number(this.state.amount) + this.state.txFee), 8);
-
+		const remainingBalance = roundTo(maxAmount - (Number(this.state.amount) + (this.state.txFee || 0)), 8);
+		
 		const setAmount = value => {
 			this.setState({
 				amount: String(value),
@@ -116,7 +118,7 @@ class WithdrawModal extends React.Component {
 					open={this.state.isOpen}
 					onClose={this.close}
 				>
-					{!this.state.isConfirmWithdraw && (
+					{!this.state.isWithdrawing && (
 						<>
 							<p className="symbol-name">
 								{t('withdraw.symbolName', { symbol: currencyInfo.symbol })}
@@ -159,7 +161,7 @@ class WithdrawModal extends React.Component {
 									type={this.state.isShowPassword ? 'text' : 'password'}
 									placeholder={t_login('passwordPlaceHolder')}
 									value={this.state.password}
-									showpassword={this.showPassword}
+									showPassword={this.showPassword}
 									suffixString="SHOW"
 								/>
 							</div>
@@ -170,38 +172,28 @@ class WithdrawModal extends React.Component {
 							</div>
 							<div className="withdraw-total">
 								<span>Total:</span>
-								<span>3.214998</span>
+								<span>{remainingBalance}</span>
 							</div>
-
-							{/* {this.state.broadcast ? (
-							<Button
-								className="confirm-button"
-								color="transparent"
-								value={t('withdraw.confirmNetworkFee')}
-								disabled={this.state.isBroadcasting}
-								onClick={this.confirmButtonHandler}
-							/>
-						) : (
-								<Button
-									className="withdraw-button"
-									color="transparent"
-									value={t('withdraw.label')}
-									disabled={
-										!this.state.recipientAddress ||
-										!this.state.amount ||
-										remainingBalance < 0 ||
-										this.state.isWithdrawing
-									}
-									onClick={this.withdrawButtonHandler}
-								/>
-							)} */}
 							<div className="section--withdraw--btn">
 								<Button className="cancel-btn" color="transparent" value="Cancel" onClick={() => this.close()} />
-								<Button className="continue-btn" color="blue" value="Continue" onClick={() => this.setState({isConfirmWithdraw: true})} />
+								{!this.state.broadcast &&
+									<Button
+										className="continue-btn"
+										color="blue"
+										value="Continue"
+										disabled={
+											!this.state.recipientAddress ||
+											!this.state.amount ||
+											remainingBalance < 0 ||
+											this.state.isWithdrawing
+										}
+										onClick={this.withdrawButtonHandler}
+									/>
+								}
 							</div>
 						</>)
 					}
-					{this.state.isConfirmWithdraw && !this.state.isSuccessWithdraw && (
+					{this.state.isWithdrawing && !this.state.isSuccessWithdraw && (
 						<>
 							<p className="confirm-title">
 								{t('confirmWithdraw')}
@@ -222,8 +214,16 @@ class WithdrawModal extends React.Component {
 								{t('withdraw.confirmCodeQuiz')}<span>{t('withdraw.confirmCodeResend')}</span>
 							</p>
 							<div className="section--withdraw--btn">
-								<Button className="cancel-btn" color="transparent" value="Cancel" onClick={() => this.setState({isConfirmWithdraw: false})} />
-								<Button className="continue-btn" color="blue" value="Submit" onClick={() => this.setState({isSuccessWithdraw: true})} />
+								<Button className="cancel-btn" color="transparent" value="Cancel" onClick={() => this.cancelWithdraw()} />
+								{this.state.broadcast &&
+									<Button
+									className="continue-btn"
+									color="blue"
+									value="Submit"
+									disabled={this.state.isBroadcasting}
+									onClick={this.confirmButtonHandler}
+									/>
+								}
 							</div>
 						</>)						
 					}

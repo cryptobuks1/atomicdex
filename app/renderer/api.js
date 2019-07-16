@@ -37,13 +37,12 @@ export default class Api {
 		let result;
 		try {
 			let requestTime;
-
 			const response = await this.queue.add(() => {
 				requestTime = Date.now();
 
 				return fetch(this.endpoint, {
 					method: 'post',
-					body: JSON.stringify(body),
+					body: JSON.stringify(body)
 				});
 			});
 
@@ -100,6 +99,7 @@ export default class Api {
 				method: 'electrum',
 				coin: symbol,
 				servers,
+				mm2: 1
 			});
 
 			const isSuccess = response.result === 'success';
@@ -126,6 +126,8 @@ export default class Api {
 			coin: symbol,
 			urls: currency.urls,
 			swap_contract_address: smartContractAddress,
+			gas_station_url: 'https://ethgasstation.info/json/ethgasAPI.json',
+			mm2: 1,
 		});
 		const isSuccess = response.result === 'success';
 		if (!isSuccess) {
@@ -325,98 +327,28 @@ export default class Api {
 		return result;
 	}
 
-	async _createTransaction(opts) {
+	async _withdraw(opts) {
 		ow(opts, 'opts', ow.object.exactShape({
 			symbol: symbolPredicate,
 			address: ow.string,
 			amount: ow.number.positive.finite,
 		}));
 
-		const result = await this.request({
-			method: 'withdraw',
-			coin: opts.symbol,
-			outputs: [{[opts.address]: opts.amount}],
-			broadcast: 0,
-		});
-
-		if (!result.complete) {
-			throw errorWithObject('Couldn\'t create withdrawal transaction', result);
-		}
-
-		return {
-			...opts,
-			...result,
-		};
-	}
-
-	async _broadcastTransaction(symbol, rawTransaction) {
-		ow(symbol, 'symbol', symbolPredicate);
-		ow(rawTransaction, 'rawTransaction', ow.string);
-
+		console.log("withdraw");
+		
 		const response = await this.request({
-			method: 'sendrawtransaction',
-			coin: symbol,
-			signedtx: rawTransaction,
-		});
-
-		if (!response.result === 'success') {
-			throw errorWithObject('Couldn\'t broadcast transaction', response);
-		}
-
-		return response.txid;
-	}
-
-	async _withdrawBtcFork(opts) {
-		ow(opts, 'opts', ow.object.exactShape({
-			symbol: symbolPredicate,
-			address: ow.string,
-			amount: ow.number.positive.finite,
-		}));
-
-		const {
-			hex: rawTransaction,
-			txfee: txFeeSatoshis,
-			txid,
-			amount,
-			symbol,
-			address,
-		} = await this._createTransaction(opts);
-
-		// Convert from satoshis
-		const SATOSHIS = 100000000;
-		const txFee = txFeeSatoshis / SATOSHIS;
-
-		const broadcast = async () => {
-			await this._broadcastTransaction(opts.symbol, rawTransaction);
-
-			return {txid, amount, symbol, address};
-		};
-
-		return {
-			txFee,
-			broadcast,
-		};
-	}
-
-	async _withdrawEth(opts) {
-		ow(opts, 'opts', ow.object.exactShape({
-			symbol: symbolPredicate,
-			address: ow.string,
-			amount: ow.number.positive.finite,
-		}));
-
-		const {
-			eth_fee: txFee,
-			gas_price: gasPrice,
-			gas,
-		} = await this.request({
-			method: 'eth_withdraw',
+			method: 'withdraw',
 			coin: opts.symbol,
 			to: opts.address,
 			amount: opts.amount,
 			broadcast: 0,
 		});
 
+		const tx_hex = response.tx_hex;
+		const gas_price = response.fee_details.gas_price;
+		const gas = response.fee_details.gas;
+		const txFee = response.fee_details.amount ? response.fee_details.amount : gas_price * gas;
+		
 		let hasBroadcast = false;
 		const broadcast = async () => {
 			if (hasBroadcast) {
@@ -426,13 +358,9 @@ export default class Api {
 			hasBroadcast = true;
 
 			const response = await this.request({
-				method: 'eth_withdraw',
-				gas,
-				gas_price: gasPrice,
+				method: 'send_raw_transaction',
 				coin: opts.symbol,
-				to: opts.address,
-				amount: opts.amount,
-				broadcast: 1,
+				tx_hex,
 			});
 
 			if (response.error) {
@@ -440,7 +368,7 @@ export default class Api {
 			}
 
 			return {
-				txid: response.tx_id,
+				txid: response.tx_hash,
 				symbol: opts.symbol,
 				amount: opts.amount,
 				address: opts.address,
@@ -459,8 +387,7 @@ export default class Api {
 			address: ow.string,
 			amount: ow.number.positive.finite,
 		}));
-
-		return getCurrency(opts.symbol).contractAddress ? this._withdrawEth(opts) : this._withdrawBtcFork(opts);
+		return this._withdraw(opts);
 	}
 
 	listUnspent(coin, address) {
