@@ -207,8 +207,8 @@ export default class Api {
 			price: ow.number.finite,
 			volume: ow.number.finite,
 		}));
-
-		const {result} = await this.request({
+		
+		const { result } = await this.request({
 			method: opts.type,
 			gtc: 1, // TODO: Looks like this is missing from mm v2
 			base: opts.baseCurrency,
@@ -216,7 +216,7 @@ export default class Api {
 			price: opts.price,
 			volume: opts.volume,
 		});
-
+		
 		result.baseAmount = Number(result.base_amount);
 		delete result.base_amount;
 

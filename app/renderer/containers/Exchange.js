@@ -50,7 +50,6 @@ class ExchangeContainer extends SuperContainer {
 		if (baseCurrency === this.state.quoteCurrency) {
 			this.setState({quoteCurrency: this.state.baseCurrency});
 		}
-
 		const {orderBook} = this.getInitialState();
 		this.setState({baseCurrency, orderBook});
 		this.fetchOrderBook();

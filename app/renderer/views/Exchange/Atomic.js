@@ -69,56 +69,87 @@ class Atomic extends React.Component {
 		}
 	}
 
-	componentDidMount() {
-		// const selectedCurrency = this.getSelectedCurrency('buy');
-		// this.setState({ selectedCurrency });
+	handleSellAmountChange = value => {
+		this.setState({ sellAmount: value }, () => {
+			this.setState({ buyAmount:  String(roundTo(Number(this.state.sellAmount) * Number(this.state.exchangeRate), 8))})
+		});
 	}
 
 	handleBuyAmountChange = value => {
 		this.setState({ buyAmount: value }, () => {
-			this.setState({ sellAmount:  String(roundTo(Number(this.state.buyAmount) * Number(this.state.exchangeRate), 8))})
-		});
-	}
-
-	handleSellAmountChange = value => {
-		this.setState({ sellAmount: value }, () => {
 			if (Number(this.state.exchangeRate) > 0) {
-				this.setState({buyAmount: String(roundTo(Number(this.state.sellAmount) / Number(this.state.exchangeRate), 8))});
+				this.setState({sellAmount: String(roundTo(Number(this.state.buyAmount) / Number(this.state.exchangeRate), 8))});
 			}
 		});
 	}
 
 	handleRateChange = value => {
 		this.setState({ exchangeRate: value }, () => {
-			this.setState({ sellAmount:  String(roundTo(Number(this.state.buyAmount) * Number(this.state.exchangeRate), 8))})
+			this.setState({ buyAmount:  String(roundTo(Number(this.state.sellAmount) * Number(this.state.exchangeRate), 8))})
 		});
 	}
 
-	handleSelectChange = (selectedOption, type) => {
-		if (type === 'buy') {
-			exchangeContainer.setBaseCurrency(selectedOption.value);
-			const selectedCurrency = this.getSelectedCurrency('buy');
-			this.setState({selectedCurrency, buySymbol: selectedOption.value});
+	handleSelectChange = async (selectedOption, type) => {
+		if (type === 'sell') {
+			await exchangeContainer.setBaseCurrency(selectedOption.value);
+			const selectedCurrency = this.getSelectedCurrency();
+			this.setState({selectedCurrency, sellSymbol: selectedOption.value});
 		} else {
 			exchangeContainer.setQuoteCurrency(selectedOption.value);
-			this.setState({sellSymbol: selectedOption.value});
+			this.setState({buySymbol: selectedOption.value});
 		}
 	};
 
-	getSelectedCurrency = type => {
+	getSelectedCurrency = () => {
 		const {state} = exchangeContainer;
-		const selectedCurrencySymbol = type === 'buy' ? state.baseCurrency : state.quoteCurrency;
+		const selectedCurrencySymbol = state.baseCurrency;
 		return appContainer.getCurrency(selectedCurrencySymbol);
 	};
 
-	changeCurrency = () => {
+	changeCurrency = async () => {
 		const {sellSymbol, buySymbol} = this.state;
 		
-		this.setState({sellSymbol: buySymbol, buySymbol: sellSymbol}, () => {
-			exchangeContainer.setState({baseCurrency: this.state.buySymbol});
-			const selectedCurrency = this.getSelectedCurrency('buy');
-			this.setState({ selectedCurrency });
-		});
+		await this.setState({buySymbol: sellSymbol, sellSymbol: buySymbol});
+		await exchangeContainer.setBaseCurrency(buySymbol);
+		await exchangeContainer.setQuoteCurrency(sellSymbol);
+		const selectedCurrency = this.getSelectedCurrency();
+		this.setState({ selectedCurrency });
+	}
+
+	handleOrder = async () => {
+		exchangeContainer.setIsSendingOrder(true);
+		const {api} = appContainer;
+		const {baseCurrency, quoteCurrency} = exchangeContainer.state;
+		const price = this.state.exchangeRate;
+		const amount = this.state.sellAmount;
+		const type = "buy";
+		const total = this.state.buyAmount;
+		const orderError = error => {
+			// eslint-disable-next-line no-new
+			new Notification(t('order.failedTrade', {baseCurrency, type}), {body: error});
+			exchangeContainer.setIsSendingOrder(false);
+			this.setState({hasError: true});
+		};
+
+		const requestOpts = {
+			type,
+			baseCurrency,
+			quoteCurrency,
+			price: Number(price),
+			volume: Number(amount),
+		};
+		let swap;
+		try {
+			swap = await api.order(requestOpts);
+		} catch (error) {
+			console.log('a', error);
+			orderError(error);
+			return;
+		}
+
+		const {swapDB} = appContainer;
+		await swapDB.insertSwapData(swap, requestOpts);
+		exchangeContainer.setIsSendingOrder(false);
 	}
 
 	render() {
@@ -132,35 +163,6 @@ class Atomic extends React.Component {
 		return (
 			<div>
 				<div className="Atomic">
-					<div className="buy-currency">
-						<div className="form-group">
-							<Input
-								className="buy-amount"
-								type="text"
-								onlyNumeric
-								value={this.state.buyAmount}
-								onChange={this.handleBuyAmountChange}
-							/>
-						</div>
-						<div className="form-group">
-							<Select
-								className="currency-selector"
-								value={this.state.buySymbol}
-								options={selectData}
-								valueRenderer={CurrencySelectOption}
-								optionRenderer={CurrencySelectOption}
-								onChange={option => this.handleSelectChange(option, 'buy')}
-							/>
-							<h3 className="balance">
-								{t('order.symbolBalance')}: <span>{this.state.selectedCurrency ? roundTo(this.state.selectedCurrency.balance, 8) : 0}</span>
-							</h3>
-						</div>
-					</div>
-					<div className="swap-currency">
-						<button onClick={this.changeCurrency}>
-							<SwapIcon />
-						</button>
-					</div>
 					<div className="sell-currency">
 						<div className="form-group">
 							<Input
@@ -180,6 +182,35 @@ class Atomic extends React.Component {
 								optionRenderer={CurrencySelectOption}
 								onChange={option => this.handleSelectChange(option, 'sell')}
 							/>
+							<h3 className="balance">
+								{t('order.symbolBalance')}: <span>{this.state.selectedCurrency ? roundTo(this.state.selectedCurrency.balance, 8) : 0}</span>
+							</h3>
+						</div>
+					</div>
+					<div className="swap-currency">
+						<button onClick={this.changeCurrency}>
+							<SwapIcon />
+						</button>
+					</div>
+					<div className="buy-currency">
+						<div className="form-group">
+							<Input
+								className="buy-amount"
+								type="text"
+								onlyNumeric
+								value={this.state.buyAmount}
+								onChange={this.handleBuyAmountChange}
+							/>
+						</div>
+						<div className="form-group">
+							<Select
+								className="currency-selector"
+								value={this.state.buySymbol}
+								options={selectData}
+								valueRenderer={CurrencySelectOption}
+								optionRenderer={CurrencySelectOption}
+								onChange={option => this.handleSelectChange(option, 'buy')}
+							/>
 						</div>
 						<div className="form-group">
 							<Input
@@ -191,7 +222,7 @@ class Atomic extends React.Component {
 								onChange={this.handleRateChange}
 							/>
 						</div>
-						<p className="global-rate">BTC/LTC Global market rate: <span>3.215</span></p>
+						<p className="global-rate">{this.state.sellSymbol.toUpperCase()}/{this.state.buySymbol.toUpperCase()} Global market rate: <span>3.215</span></p>
 						<p className="global-rate-date">updated 10/11/18, 11:31</p>
 						<div className="form-group">
 							<Button
@@ -199,6 +230,7 @@ class Atomic extends React.Component {
 								fullwidth
 								color="blue"
 								value={t('exchange.exchangeButton')}
+								onClick={this.handleOrder}
 							/>
 						</div>
 					</div>

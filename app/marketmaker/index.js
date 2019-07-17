@@ -94,7 +94,7 @@ class Marketmaker {
 			gui: 'atomicdex',
 			userhome: os.homedir(),
 			netid: 4444, // TODO: Set this to `0` when mm v2 is production ready
-			seednodes: ['192.168.0.60'],
+			seednodes: ['18.130.216.2'],
 			rpcport: port,
 			rpccors: is.development ? 'http://localhost:8080' : 'app://-',
 			coins,

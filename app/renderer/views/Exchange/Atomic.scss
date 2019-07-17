@@ -3,10 +3,10 @@
     padding: 37px 95px 10px 0px;
     overflow: auto;
 
-    .buy-currency {
+    .sell-currency {
         width: 45%;
 
-        .buy-amount {
+        .sell-amount {
             input {
                 height: 44px;
             }
@@ -42,10 +42,10 @@
         }
     }
 
-    .sell-currency {
+    .buy-currency {
         width: 45%;
 
-        .sell-amount {
+        .buy-amount {
             input {
                 height: 44px;
             }
