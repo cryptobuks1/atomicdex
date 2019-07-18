@@ -125,7 +125,6 @@ class Atomic extends React.Component {
 	}
 
 	handleOrder = async () => {
-		exchangeContainer.setIsSendingOrder(true);
 		const {api} = appContainer;
 		const {baseCurrency, quoteCurrency} = exchangeContainer.state;
 		const price = this.state.exchangeRate;
@@ -147,20 +146,24 @@ class Atomic extends React.Component {
 			volume: Number(amount)
 		};
 		let swap;
-		try {
-			swap = await api.order(requestOpts);
-		} catch (error) {
-			console.log('a', error);
-			orderError(error);
-			return;
+		
+		if (baseCurrency && quoteCurrency && baseCurrency !== quoteCurrency) {
+			exchangeContainer.setIsSendingOrder(true);
+			try {
+				swap = await api.order(requestOpts);
+			} catch (error) {
+				console.log('a', error);
+				orderError(error);
+				return;
+			}
+
+			requestOpts.amount = requestOpts.volume;
+			requestOpts.total = total;
+
+			const {swapDB} = appContainer;
+			await swapDB.insertSwapData(swap, requestOpts);
+			exchangeContainer.setIsSendingOrder(false);
 		}
-
-		requestOpts.amount = requestOpts.volume;
-		requestOpts.total = total;
-
-		const {swapDB} = appContainer;
-		await swapDB.insertSwapData(swap, requestOpts);
-		exchangeContainer.setIsSendingOrder(false);
 	}
 
 	render() {
