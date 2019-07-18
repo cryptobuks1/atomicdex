@@ -171,13 +171,14 @@ export default class Api {
 	async orderBook(baseCurrency, quoteCurrency) {
 		ow(baseCurrency, 'baseCurrency', symbolPredicate);
 		ow(quoteCurrency, 'quoteCurrency', symbolPredicate);
-
+		if (!baseCurrency || !quoteCurrency || baseCurrency === quoteCurrency) {
+			return null;
+		} 
 		const response = await this.request({
 			method: 'orderbook',
 			base: baseCurrency,
 			rel: quoteCurrency,
 		});
-
 		const formatOrders = orders => orders
 			.map(order => ({
 				address: order.address,
@@ -194,7 +195,6 @@ export default class Api {
 			asks: formatOrders(response.asks),
 			bids: formatOrders(response.bids),
 		};
-
 		return formattedResponse;
 	}
 

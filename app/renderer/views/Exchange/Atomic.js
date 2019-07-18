@@ -69,6 +69,14 @@ class Atomic extends React.Component {
 		}
 	}
 
+	componentDidMount() {
+		const {state} = exchangeContainer;
+		if (state.baseCurrency && state.quoteCurrency && (state.baseCurrency !== state.quoteCurrency)) {
+			const selectedCurrency = this.getSelectedCurrency();
+			this.setState({selectedCurrency, sellSymbol: state.baseCurrency, buySymbol: state.quoteCurrency});
+		}
+	}
+
 	handleSellAmountChange = value => {
 		this.setState({ sellAmount: value }, () => {
 			this.setState({ buyAmount:  String(roundTo(Number(this.state.sellAmount) * Number(this.state.exchangeRate), 8))})
@@ -123,7 +131,7 @@ class Atomic extends React.Component {
 		const price = this.state.exchangeRate;
 		const amount = this.state.sellAmount;
 		const type = "buy";
-		const total = this.state.buyAmount;
+		const total = Number(this.state.buyAmount);
 		const orderError = error => {
 			// eslint-disable-next-line no-new
 			new Notification(t('order.failedTrade', {baseCurrency, type}), {body: error});
@@ -131,12 +139,12 @@ class Atomic extends React.Component {
 			this.setState({hasError: true});
 		};
 
-		const requestOpts = {
+		let requestOpts = {
 			type,
 			baseCurrency,
 			quoteCurrency,
 			price: Number(price),
-			volume: Number(amount),
+			volume: Number(amount)
 		};
 		let swap;
 		try {
@@ -146,6 +154,9 @@ class Atomic extends React.Component {
 			orderError(error);
 			return;
 		}
+
+		requestOpts.amount = requestOpts.volume;
+		requestOpts.total = total;
 
 		const {swapDB} = appContainer;
 		await swapDB.insertSwapData(swap, requestOpts);

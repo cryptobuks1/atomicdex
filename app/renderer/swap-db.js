@@ -90,14 +90,16 @@ class SwapDB {
 	}
 
 	updateSwapData = swapData => {
-		return this.queue(async () => {
-			const swap = await this._getSwapData(swapData.uuid);
+		if (swapData && swapData.uuid) {
+			return this.queue(async () => {
+				const swap = await this._getSwapData(swapData.uuid);
 
-			await this.db.upsert(swap._id, doc => {
-				doc.swapData = swapData;
-				return doc;
+				await this.db.upsert(swap._id, doc => {
+					doc.swapData = swapData;
+					return doc;
+				});
 			});
-		});
+		}
 	}
 
 	// TODO: We should refactor this into a seperate file
@@ -133,18 +135,18 @@ class SwapDB {
 			progress: 0,
 			baseCurrency,
 			quoteCurrency,
-			baseCurrencyAmount: roundTo(baseAmount, 8),
-			quoteCurrencyAmount: roundTo(quoteAmount, 8),
-			price: roundTo(quoteAmount / baseAmount, 8),
+			baseCurrencyAmount: roundTo(Number(baseAmount) || 0, 8),
+			quoteCurrencyAmount: roundTo(Number(quoteAmount) || 0, 8),
+			price: baseAmount ? roundTo((Number(quoteAmount) || 0) / Number(baseAmount), 8) : 0,
 			requested: {
-				baseCurrencyAmount: roundTo(request.amount, 8),
-				quoteCurrencyAmount: roundTo(request.total, 8),
-				price: roundTo(request.price, 8),
+				baseCurrencyAmount: roundTo(Number(request.amount) || 0, 8),
+				quoteCurrencyAmount: roundTo(Number(request.total) || 0, 8),
+				price: roundTo(request.price || 0, 8),
 			},
 			broadcast: {
-				baseCurrencyAmount: roundTo(baseAmount, 8),
-				quoteCurrencyAmount: roundTo(quoteAmount, 8),
-				price: roundTo(quoteAmount / baseAmount, 8),
+				baseCurrencyAmount: roundTo(Number(baseAmount) || 0, 8),
+				quoteCurrencyAmount: roundTo(Number(quoteAmount) || 0, 8),
+				price: baseAmount ? roundTo((Number(quoteAmount) || 0) / Number(baseAmount), 8) : 0,
 			},
 			executed: {
 				baseCurrencyAmount: undefined,
@@ -242,7 +244,7 @@ class SwapDB {
 
 	async _getAllSwapData(options = {}) {
 		await this.ready;
-s
+
 		options = {
 			since: true,
 			sort: 'desc',

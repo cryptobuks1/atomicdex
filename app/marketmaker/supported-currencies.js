@@ -1930,8 +1930,9 @@ const getCurrencySymbols = () => (
 
 const getCurrencyName = symbol => {
 	const coinParams = supportedCurrencies.find(currency => currency.coin === symbol);
-
-	return coinParams.name || coinlist.get(symbol, 'name') || symbol;
+	if (coinParams && symbol)
+		return coinParams.name || coinlist.get(symbol, 'name') || symbol;
+	return '';
 };
 
 const getCurrency = symbol => supportedCurrencies.find(currency => currency.coin === symbol);

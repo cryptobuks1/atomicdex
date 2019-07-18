@@ -31,14 +31,18 @@ class ExchangeContainer extends SuperContainer {
 				const newBaseCurrency = appContainer.state.enabledCoins.find(enabledCoin => {
 					return enabledCoin !== this.state.quoteCurrency;
 				});
-				this.setBaseCurrency(newBaseCurrency);
+				
+				if (newBaseCurrency)
+					this.setBaseCurrency(newBaseCurrency);
 			}
 
 			if (!appContainer.state.enabledCoins.includes(this.state.quoteCurrency)) {
 				const newQuoteCurrency = appContainer.state.enabledCoins.find(enabledCoin => {
 					return enabledCoin !== this.state.baseCurrency;
 				});
-				this.setQuoteCurrency(newQuoteCurrency);
+
+				if (newQuoteCurrency)
+					this.setQuoteCurrency(newQuoteCurrency);
 			}
 		});
 	}
@@ -83,7 +87,6 @@ class ExchangeContainer extends SuperContainer {
 		) {
 			return;
 		}
-
 		if (!_.isEqual(this.state.orderBook, orderBook)) {
 			this.setState({orderBook});
 		}
