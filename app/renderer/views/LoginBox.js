@@ -42,10 +42,8 @@ class LoginBox extends React.Component {
 
 		const {usernameInputValue, passwordInputValue} = this.state;
 		const {portfolios} = loginContainer.state;
-		const selectData = portfolios.map(portfolio => {
-			if (portfolio.name === usernameInputValue) {
-				return portfolio;
-			}
+		const selectData = portfolios.filter(portfolio => {
+			return portfolio && portfolio.name === usernameInputValue;
 		});
 		loginContainer.setSelectedPortfolioId(selectData[0] ? selectData[0].id : null);
 		try {

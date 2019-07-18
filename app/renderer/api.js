@@ -58,6 +58,8 @@ export default class Api {
 				console.groupEnd(groupLabel);
 			}
 		} catch (error) {
+			console.log('body:', body);
+			console.log('endpoint:', this.endpoint);
 			if (error.message === 'Failed to fetch') {
 				error.message = 'Could not connect to Marketmaker';
 			}

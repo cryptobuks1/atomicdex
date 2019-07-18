@@ -25,23 +25,23 @@ exports.appViews = [
 ];
 
 exports.defaultEnabledCurrencies = [
-	'BCH',
+	// 'BCH',
 	'BTC',
-	'CHIPS',
-	'DASH',
-	'DOGE',
-	'HUSH',
-	'KMD',
+	// 'CHIPS',
+	// 'DASH',
+	// 'DOGE',
+	// 'HUSH',
+	// 'KMD',
 	'LTC',
-	'MORTY',
-	'MSHARK',
-	'MYTH',
-	'OOT',
-	'REVS',
-	'RICK',
-	'SUPERNET',
-	'VTC',
-	'ZEC',
+	// 'MORTY',
+	// 'MSHARK',
+	// 'MYTH',
+	// 'OOT',
+	// 'REVS',
+	// 'RICK',
+	// 'SUPERNET',
+	// 'VTC',
+	// 'ZEC',
 ];
 
 exports.alwaysEnabledCurrencies = [
