@@ -5,6 +5,19 @@
 	border-radius: 4px;
 	background-color: var(--widget-background-color);
 
+	&::after {
+		content: ' ';
+		position: absolute;
+		width: 425px;
+		height: 100%;
+		background-image: url('../../assets/Wave.svg');
+		top: 0px;
+		right: 30px;
+		background-size: cover;
+		z-index: 999;
+		pointer-events: none;
+	}
+
 	header {
 		display: flex;
 		align-items: center;

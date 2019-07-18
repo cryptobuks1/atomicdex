@@ -1,7 +1,18 @@
 .MarketMaker {
-    padding: 60px 0px;
+    padding: 60px 20px;
     overflow: auto;
 
+    &::before {
+		content: ' ';
+		position: absolute;
+		width: 425px;
+		height: 100%;
+		background-image: url('../../assets/Wave.svg');
+		top: 0px;
+		right: 30px;
+		background-size: cover;
+    }
+    
     header {
         p {
             margin-bottom: 0px;

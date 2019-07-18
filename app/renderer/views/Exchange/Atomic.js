@@ -129,7 +129,7 @@ class Atomic extends React.Component {
 		const {baseCurrency, quoteCurrency} = exchangeContainer.state;
 		const price = this.state.exchangeRate;
 		const amount = this.state.sellAmount;
-		const type = "buy";
+		const type = "sell";
 		const total = Number(this.state.buyAmount);
 		const orderError = error => {
 			// eslint-disable-next-line no-new

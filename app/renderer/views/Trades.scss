@@ -8,6 +8,17 @@
 	padding: 60px 0px;
 	overflow: auto;
 	
+	&::before {
+		content: ' ';
+		position: absolute;
+		width: 425px;
+		height: 100%;
+		background-image: url('../assets/Wave.svg');
+		top: 0px;
+		right: 30px;
+		background-size: cover;
+	}
+
 	header nav .TabButton {
 		padding-bottom: 19px;
 		font-size: 17px;

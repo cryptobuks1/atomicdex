@@ -1,5 +1,15 @@
 .Dashboard--List {
 	flex-direction: column;
+	&::before {
+		content: ' ';
+		position: absolute;
+		width: 425px;
+		height: 100%;
+		background-image: url('../../assets/Wave.svg');
+		top: 0px;
+		right: 30px;
+		background-size: cover;
+	}
 
 	.top {
 		align-items: start;
