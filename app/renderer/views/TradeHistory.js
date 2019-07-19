@@ -37,7 +37,6 @@ const tradeData = [
 class TradeHistory extends React.Component {
 	render() {
 		const { swapHistory } = appContainer.state;
-		console.log('swapHistory', swapHistory);
 		return (
 			<div className="trade-list">
 				{

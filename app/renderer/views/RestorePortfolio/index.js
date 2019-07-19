@@ -8,13 +8,13 @@ import Step3 from './Step3';
 
 const RestorePortfolio = () => (
 	<Subscribe to={[restorePortfolioContainer]}>
-		{() => (
+		{() =>{ return (
 			<>
-				<LoginView component={Step1}/>
-				<LoginView component={Step2}/>
-				<LoginView component={Step3}/>
+				{restorePortfolioContainer.state.step === 1 && <Step1 /> }
+				{restorePortfolioContainer.state.step === 2 && <Step2 /> }
+				{restorePortfolioContainer.state.step === 3 && <Step3 /> }
 			</>
-		)}
+		)}}
 	</Subscribe>
 );
 

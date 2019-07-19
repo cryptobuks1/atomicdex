@@ -136,7 +136,6 @@ class LoginContainer extends Container {
 		const portfolio = this.portfolioFromId(portfolioId);
 		const seedPhrase = await decryptSeedPhrase(portfolio.encryptedSeedPhrase, password);
 		console.timeEnd('decrypt');
-
 		console.time('swap-db');
 		const swapDB = new SwapDB(portfolioId, seedPhrase);
 		appContainer.swapDB = swapDB;

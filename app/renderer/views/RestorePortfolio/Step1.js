@@ -1,9 +1,13 @@
 import React from 'react';
+import appContainer from 'containers/App';
 import Button from 'components/Button';
 import TextArea from 'components/TextArea';
 import LoginBackButton from 'components/LoginBackButton';
+import BackTextButton from 'components/BackTextButton';
 import container from 'containers/RestorePortfolio';
+import Toolbar from '../Toolbar/Toolbar';
 import {translate} from '../../translate';
+import './RestorePortfolio.scss';
 
 const t = translate('portfolio');
 
@@ -12,11 +16,15 @@ const RestorePortfolioStep1 = () => {
 
 	return (
 		<div className="RestorePortfolio">
-			<LoginBackButton view="NewPortfolio" progress={0}/>
-			<h1>{t('restore.enterSeedPhrase')}</h1>
-			<p>TODO: Put some explanation here on what to do.</p>
-			<form style={{marginTop: '20px'}} onSubmit={container.handleStep1Submit}>
-				<div className="form-group" style={{width: '460px'}}>
+			<Toolbar />
+			<BackTextButton
+				onClick={() => {
+					appContainer.setActiveView('Home');
+				}}
+			/>
+			<p className="restore-title">{t('restore.enterSeedPhrase')}</p>
+			<form onSubmit={container.handleStep1Submit}>
+				<div className="form-group">
 					<TextArea
 						required
 						autoFocus
@@ -29,14 +37,11 @@ const RestorePortfolioStep1 = () => {
 				</div>
 				<div className="form-group">
 					<Button
-						primary
+						className="seed-btn"
 						type="submit"
 						value={t('restore.confirm')}
 						disabled={!state.seedPhrase}
-						style={{
-							width: '172px',
-							marginTop: '18px',
-						}}
+						color="blue"
 					/>
 				</div>
 			</form>

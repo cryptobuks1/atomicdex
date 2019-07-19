@@ -27,7 +27,8 @@
 	"restore": {
 		"confirm": "Confirm",
 		"confirmPasswordNoMatch": "Confirmed password doesn't match password",
-		"enterSeedPhrase": "Enter Your Seed Phrase",
-		"exampleSeedPhrase": "Example: {{seedPhrase}} …"
+		"enterSeedPhrase": "Enter Your Passcode",
+		"exampleSeedPhrase": "Example: {{seedPhrase}} …",
+		"reset": "Reset"
 	}
 }
