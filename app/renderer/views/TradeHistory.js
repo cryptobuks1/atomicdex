@@ -72,7 +72,7 @@ class TradeHistory extends React.Component {
 									</div>
 									<div className="item-status">
 										<div className="trade-date">
-											{item.timeStarted}
+											{ new Date(item.timeStarted).toLocaleString()}
 										</div>
 										<div className={`trade-status ${item.status === 'completed' ? 'success' : 'fail'}`}>
 											{item.status === 'completed' && <div><Success /><span>{item.status}</span></div>}

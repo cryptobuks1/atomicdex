@@ -10,7 +10,8 @@
 		background-image: url('../../assets/Wave.svg');
 		top: 0px;
 		right: 30px;
-		background-size: cover;
+        background-size: cover;
+        pointer-events: none;
     }
     
     header {
