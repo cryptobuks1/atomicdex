@@ -76,19 +76,21 @@ class ExchangeContainer extends SuperContainer {
 	}
 
 	async fetchOrderBook() {
-		const orderBook = await appContainer.api.orderBook(
-			this.state.baseCurrency,
-			this.state.quoteCurrency,
-		);
+		if (this.state.baseCurrency && this.state.quoteCurrency && this.state.baseCurrency !== this.state.quoteCurrency) {
+			const orderBook = await appContainer.api.orderBook(
+				this.state.baseCurrency,
+				this.state.quoteCurrency,
+			);
 
-		if (
-			orderBook.baseCurrency !== this.state.baseCurrency ||
-			orderBook.quoteCurrency !== this.state.quoteCurrency
-		) {
-			return;
-		}
-		if (!_.isEqual(this.state.orderBook, orderBook)) {
-			this.setState({orderBook});
+			if (
+				orderBook.baseCurrency !== this.state.baseCurrency ||
+				orderBook.quoteCurrency !== this.state.quoteCurrency
+			) {
+				return;
+			}
+			if (!_.isEqual(this.state.orderBook, orderBook)) {
+				this.setState({orderBook});
+			}
 		}
 	}
 
