@@ -101,7 +101,14 @@ class Atomic extends React.Component {
 
 	handleRateChange = value => {
 		this.setState({ exchangeRate: value }, () => {
-			this.setState({ buyAmount:  String(roundTo(Number(this.state.sellAmount) * Number(this.state.exchangeRate), 8))})
+			if (this.state.sellAmount !== '') {
+				this.setState({ buyAmount:  String(roundTo(Number(this.state.sellAmount) * Number(this.state.exchangeRate), 8))})
+			}
+			else {
+				if (Number(this.state.exchangeRate) > 0) {
+					this.setState({sellAmount: String(roundTo(Number(this.state.buyAmount) / Number(this.state.exchangeRate), 8))});
+				}
+			}
 		});
 	}
 
@@ -155,7 +162,7 @@ class Atomic extends React.Component {
 		};
 		let swap;
 		
-		if (baseCurrency && quoteCurrency && baseCurrency !== quoteCurrency && this.state.isValidSellAmount) {
+		if (baseCurrency && quoteCurrency && baseCurrency !== quoteCurrency && this.state.isValidSellAmount && total !== 0) {
 			exchangeContainer.setIsSendingOrder(true);
 			try {
 				swap = await api.order(requestOpts);
@@ -255,6 +262,7 @@ class Atomic extends React.Component {
 								color="blue"
 								value={t('exchange.exchangeButton')}
 								onClick={this.handleOrder}
+								disabled={!this.state.isValidSellAmount || Number(this.state.buyAmount) === 0}
 							/>
 						</div>
 					</div>
