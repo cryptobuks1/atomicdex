@@ -5,6 +5,8 @@ import './TradeHistory.scss';
 import NextArrow from 'icons/NextArrow';
 import Success from 'icons/Success';
 import Fail from 'icons/Fail';
+import Swap from 'icons/Swap';
+import Trades from 'icons/Trades';
 import {getCurrencyName} from '../../marketmaker/supported-currencies';
 
 const tradeData = [
@@ -73,9 +75,12 @@ class TradeHistory extends React.Component {
 										<div className="trade-date">
 											{ new Date(item.timeStarted).toLocaleString()}
 										</div>
-										<div className={`trade-status ${item.status === 'completed' ? 'success' : 'fail'}`}>
+										<div className={`trade-status ${item.status}`}>
+											{item.status === 'pending' && <div><Trades /><span>{item.status}</span></div>}
+											{item.status === 'swapping' && <div><Swap /><span>{item.status}</span></div>}
 											{item.status === 'completed' && <div><Success /><span>{item.status}</span></div>}
-											{item.status !== 'completed' && <div><Fail /><span>{item.status}</span></div>}
+											{item.status === 'matched' && <div><Success /><span>{item.status}</span></div>}
+											{item.status === 'failed' && <div><Fail /><span>{item.status}</span></div>}
 										</div>
 									</div>
 								</div>

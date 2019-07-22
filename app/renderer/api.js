@@ -263,7 +263,6 @@ export default class Api {
 	// https://github.com/artemii235/developer-docs/blob/mm/docs/basic-docs/atomicdex/atomicdex-api.md#cancel_order
 	async cancelOrder(uuid) {
 		ow(uuid, 'uuid', uuidPredicate);
-
 		const response = await this.request({
 			method: 'cancel_order',
 			uuid,
