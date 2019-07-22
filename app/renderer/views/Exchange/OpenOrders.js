@@ -103,7 +103,7 @@ class OpenOrders extends React.Component {
 											},
 										}}
 										/>
-									<span>Transaction</span>
+									<span>{item.status}</span>
 								</div>
 								<div className="item-cancel">
 								 { 
