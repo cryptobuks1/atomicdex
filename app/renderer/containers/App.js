@@ -48,6 +48,7 @@ class AppContainer extends SuperContainer {
 		const setSwapHistory = async () => {
 			await this.setState({swapHistory: await this.swapDB.getSwaps()});
 		};
+
 		setSwapHistory();
 
 		this.swapDB.on('change', setSwapHistory);

@@ -11,8 +11,10 @@ const uuidPredicate = ow.string.matches(/[a-z\d-]/);
 //const smartContractAddress = "0x8500AFc0bc5214728082163326C2FF0C73f4a871"; // Ethereum mainnet
 const smartContractAddress = "0x7Bc1bBDD6A0a722fC9bffC49c921B685ECB84b94"; // Ethereum ropsten
 
+/* eslint-disable no-unused-vars */
 const errorWithObject = (message, object) => new Error(`${message}:\n${util.format(object)}`);
 const genericError = object => errorWithObject('Encountered an error', object);
+/* eslint-enable no-unused-vars */
 
 export default class Api {
 	constructor({endpoint, rpcPassword, concurrency = Infinity}) {
@@ -37,6 +39,7 @@ export default class Api {
 		let result;
 		try {
 			let requestTime;
+
 			const response = await this.queue.add(() => {
 				requestTime = Date.now();
 
@@ -58,8 +61,10 @@ export default class Api {
 				console.groupEnd(groupLabel);
 			}
 		} catch (error) {
-			console.log('body:', body);
-			console.log('endpoint:', this.endpoint);
+			if (isDevelopment) {
+				console.error('Request error', error, body);
+			}
+
 			if (error.message === 'Failed to fetch') {
 				error.message = 'Could not connect to Marketmaker';
 			}
@@ -76,10 +81,7 @@ export default class Api {
 		return result;
 	}
 
-	botList() {
-		return this.request({method: 'bot_list'});
-	}
-
+	// Mm v2
 	async enableCurrency(symbol) {
 		ow(symbol, 'symbol', symbolPredicate);
 
@@ -154,39 +156,22 @@ export default class Api {
 		// });
 	}
 
-	balance(coin, address) {
-		ow(coin, 'coin', symbolPredicate);
-		ow(address, 'address', ow.string);
-
-		return this.request({
-			method: 'balance',
-			coin,
-			address,
-		});
-	}
-
-	coins() {
-		return this.request({method: 'getcoins'});
-	}
-
 	// Mm v2
 	async orderBook(baseCurrency, quoteCurrency) {
 		ow(baseCurrency, 'baseCurrency', symbolPredicate);
 		ow(quoteCurrency, 'quoteCurrency', symbolPredicate);
-		if (!baseCurrency || !quoteCurrency || baseCurrency === quoteCurrency) {
-			return null;
-		} 
+
 		const response = await this.request({
 			method: 'orderbook',
 			base: baseCurrency,
 			rel: quoteCurrency,
 		});
+
 		const formatOrders = orders => orders
 			.map(order => ({
 				address: order.address,
 				depth: order.depth,
 				price: order.price,
-				averageVolume: order.avevolume,
 				maxVolume: order.maxvolume,
 				zCredits: order.zcredits,
 			}));
@@ -197,28 +182,29 @@ export default class Api {
 			asks: formatOrders(response.asks),
 			bids: formatOrders(response.bids),
 		};
+
 		return formattedResponse;
 	}
 
 	// Mm v2
-	async order(opts) {
-		ow(opts, 'opts', ow.object.exactShape({
+	async order(options) {
+		ow(options, 'options', ow.object.exactShape({
 			type: ow.string.oneOf(['buy', 'sell']),
 			baseCurrency: symbolPredicate,
 			quoteCurrency: symbolPredicate,
 			price: ow.number.finite,
 			volume: ow.number.finite,
 		}));
-		
-		const { result } = await this.request({
-			method: opts.type,
+
+		const {result} = await this.request({
+			method: options.type,
 			gtc: 1, // TODO: Looks like this is missing from mm v2
-			base: opts.baseCurrency,
-			rel: opts.quoteCurrency,
-			price: opts.price,
-			volume: opts.volume,
+			base: options.baseCurrency,
+			rel: options.quoteCurrency,
+			price: options.price,
+			volume: options.volume,
 		});
-		
+
 		result.baseAmount = Number(result.base_amount);
 		delete result.base_amount;
 
@@ -288,21 +274,6 @@ export default class Api {
 		}
 	}
 
-	async getFee(coin) {
-		ow(coin, 'coin', symbolPredicate);
-
-		const response = await this.request({
-			method: 'getfee',
-			coin,
-		});
-
-		if (response.result !== 'success') {
-			throw genericError(response);
-		}
-
-		return response.txfee;
-	}
-
 	// Mm v2
 	// https://github.com/artemii235/developer-docs/blob/mm/docs/basic-docs/atomicdex/atomicdex-api.md#my_balance
 	async myBalance(currency) {
@@ -329,87 +300,42 @@ export default class Api {
 		return result;
 	}
 
-	async _withdraw(opts) {
-		ow(opts, 'opts', ow.object.exactShape({
+	// Mm v2
+	// https://github.com/artemii235/developer-docs/blob/mm/docs/basic-docs/atomicdex/atomicdex-api.md#send_raw_transaction
+	async sendRawTransaction(options) {
+		ow(options, 'options', ow.object.exactShape({
 			symbol: symbolPredicate,
-			address: ow.string,
-			amount: ow.number.positive.finite,
+			txHex: ow.string,
 		}));
 
-		console.log("withdraw");
-		
-		const response = await this.request({
-			method: 'withdraw',
-			coin: opts.symbol,
-			to: opts.address,
-			amount: opts.amount,
-			broadcast: 0,
+		const {tx_hash: txHash} = await this.request({
+			method: 'send_raw_transaction',
+			coin: options.symbol,
+			tx_hex: options.txHex,
 		});
 
-		const tx_hex = response.tx_hex;
-		const gas_price = response.fee_details.gas_price;
-		const gas = response.fee_details.gas;
-		const txFee = response.fee_details.amount ? response.fee_details.amount : gas_price * gas;
-		
-		let hasBroadcast = false;
-		const broadcast = async () => {
-			if (hasBroadcast) {
-				throw new Error('Transaction has already been broadcast');
-			}
-
-			hasBroadcast = true;
-
-			const response = await this.request({
-				method: 'send_raw_transaction',
-				coin: opts.symbol,
-				tx_hex,
-			});
-
-			if (response.error) {
-				throw errorWithObject('Couldn\'t create withdrawal transaction', response);
-			}
-
-			return {
-				txid: response.tx_hash,
-				symbol: opts.symbol,
-				amount: opts.amount,
-				address: opts.address,
-			};
-		};
-
-		return {
-			txFee,
-			broadcast,
-		};
+		return txHash;
 	}
 
-	withdraw(opts) {
-		ow(opts, 'opts', ow.object.exactShape({
+	// Mm v2
+	// https://github.com/artemii235/developer-docs/blob/mm/docs/basic-docs/atomicdex/atomicdex-api.md#withdraw
+	async withdraw(options) {
+		ow(options, 'options', ow.object.exactShape({
 			symbol: symbolPredicate,
 			address: ow.string,
 			amount: ow.number.positive.finite,
+			max: ow.boolean,
 		}));
-		return this._withdraw(opts);
-	}
 
-	listUnspent(coin, address) {
-		ow(coin, 'coin', symbolPredicate);
-		ow(address, 'address', ow.string);
+		const {max = false} = options;
 
 		return this.request({
-			method: 'listunspent',
-			coin,
-			address,
+			method: 'withdraw',
+			coin: options.symbol,
+			to: options.address,
+			amount: String(options.amount),
+			max,
 		});
-	}
-
-	async funds() {
-		const coins = (await this.coins()).filter(coin => coin.status === 'active');
-		return Promise.all(coins.map(coin => this.balance(coin.coin, coin.smartaddress)));
-	}
-
-	ticker() {
-		return this.request({method: 'ticker'});
 	}
 
 	async stop() {

@@ -9,9 +9,9 @@ import CopiedIcon from 'icons/Copied';
 import dashboardContainer from 'containers/Dashboard';
 import loginContainer from 'containers/Login';
 import CurrencyIcon from 'components/CurrencyIcon';
-import { formatCurrency } from '../../util';
-import { getCurrency } from '../../../marketmaker/supported-currencies';
-import { translate } from '../../translate';
+import {formatCurrency} from '../../util';
+import {getCurrency} from '../../../marketmaker/supported-currencies';
+import {translate} from '../../translate';
 import './WithdrawModal.scss';
 
 const {decryptSeedPhrase} = remote.require('./portfolio-util');
@@ -19,7 +19,7 @@ const {decryptSeedPhrase} = remote.require('./portfolio-util');
 const t = translate('dashboard');
 const t_login = translate('login');
 
-const getInitialProps = () => ({
+const getInitialState = () => ({
 	isOpen: false,
 	recipientAddress: '',
 	amount: '',
@@ -29,36 +29,36 @@ const getInitialProps = () => ({
 	passwordError: null,
 	isWithdrawing: false,
 	isBroadcasting: false,
+	symbol: '',
+	address: '',
 	txFeeCurrencySymbol: '',
 	txFee: 0,
 	txFeeUsd: 0,
+	txHex: '',
 	broadcast: false,
 	confirmCode: '',
 	isSuccessWithdraw: false,
 });
 
 class WithdrawModal extends React.Component {
-	state = getInitialProps();
+	state = getInitialState();
 
 	constructor(props) {
 		super(props);
 		this.initialState = this.state;
 	}
 
-	componentDidMount() {
-		this._isMounted = true;
-	}
-
-	componentWillUnmount() {
-		this._isMounted = false;
-	}
-	
 	open = () => {
+		this.resetState();
 		this.setState({isOpen: true});
 	};
 
 	close = () => {
-		this.setState(getInitialProps());
+		this.resetState();
+	};
+
+	resetState = () => {
+		this.setState(getInitialState());
 	};
 
 	cancelWithdraw = () => {
@@ -85,25 +85,39 @@ class WithdrawModal extends React.Component {
 
 			const {symbol} = dashboardContainer.activeCurrency;
 			const {recipientAddress: address, amount} = this.state;
-			const {txFee, broadcast} = await appContainer.api.withdraw({
+			const {
+				fee_details: feeDetails,
+				tx_hex: txHex,
+			} = await appContainer.api.withdraw({
 				symbol,
 				address,
 				amount: Number(amount),
+				// TODO: Support `max` option
+				max: false,
 			});
-			
+
+			const txFee = 'amount' in feeDetails ? feeDetails.amount : feeDetails.total_fee;
+
 			const currency = getCurrency(symbol);
 			const txFeeCurrencySymbol = currency.contractAddress ? 'ETH' : symbol;
 			const {cmcPriceUsd} = appContainer.getCurrencyPrice(txFeeCurrencySymbol);
 			const txFeeUsd = formatCurrency(txFee * cmcPriceUsd);
 
-			this.setState({txFeeCurrencySymbol, txFee, txFeeUsd, broadcast});
+			// TODO: For ETH-based currencies, show the gas amount and gas price.
+
+			this.setState({symbol, address, txFeeCurrencySymbol, txFee, txFeeUsd, txHex});
 		}
 	};
 
 	confirmButtonHandler = async () => {
 		this.setState({isSuccessWithdraw: true, isBroadcasting: true});
-		const {txid, amount, symbol, address} = await this.state.broadcast();
-		console.log({txid, amount, symbol, address});
+		const {symbol, address, amount, txFee, txFeeUsd, txHex} = this.state;
+		console.log('Raw transaction details', {symbol, address, amount, txFee, txFeeUsd, txHex});
+
+		const broadcastTxHash = await appContainer.api.sendRawTransaction({symbol, txHex});
+
+		// TODO: Show the user the broadcast tx hash
+		console.log('Broadcast TX hash', broadcastTxHash);
 
 		// TODO: The notification should be clickable and open a block explorer for the currency.
 		// We'll need to have a list of block explorers for each currency.

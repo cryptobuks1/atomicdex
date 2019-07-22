@@ -81,7 +81,7 @@
 		"browser-env": "^3.2.6",
 		"clean-webpack-plugin": "^1.0.0",
 		"copy-webpack-plugin": "^4.6.0",
-		"cryptocurrency-icons": "^0.13.0",
+		"cryptocurrency-icons": "^0.15.0",
 		"css-loader": "^2.0.1",
 		"delay-cli": "^1.1.0",
 		"devtron": "^1.4.0",
@@ -191,9 +191,9 @@
 	"marketmaker": {
 		"version": "046402090",
 		"hashes": {
-			"macos": "7016d61579d1a9c3158267bed7421d2482835d0e30c6bfd7ba1125ff7b28f97320bbdcc8e1f93e4c67802ad23cfb6eaf09c2f61c64ef8c621db1c55f66636cde",
-			"linux": "4017a595908af391ac7dacf668d411df39cc6ffe26c66a0390deeb3f3475c1a9ce0d07e59c94e626bd3efe50e02928df7d9d6d2fc484fccc54e777a4a2ab2f59",
-			"windows": "fa3495d0b60d1da5b35688c91e6578c68420cdaed442f4ee88c6da36a204bbd5e3dd63e6c388c510a16a39aa2f9dea7b8d35e9455ba8e7df397eba3f102f73df"
+			"macos": "9bb6945d3efc437c08148f6e65a939ed499f73c7d2589d4af1c4f033e40a54f2e54fb669fcd8507211a67ceb50378f7f5a2c215d280e62aa3ec68752a87e1c50",
+			"linux": "ed3b5259509fa5c03f828bd9133801ac59183d58c067ad9f40b6e5d49e889a477279ad367d84ba430270c4df5474bab96e04be322955490792180ad88a30027b",
+			"windows": "7b3f93f9040647df2abd49d09da95c1d8c02672589156a6095ed3dbe1f62b4669393020d3343b1e55a9df7084422287c737b9ba50426bbd45e8c4120f26787e1"
 		}
 	}
 }

@@ -136,6 +136,7 @@ class LoginContainer extends Container {
 		const portfolio = this.portfolioFromId(portfolioId);
 		const seedPhrase = await decryptSeedPhrase(portfolio.encryptedSeedPhrase, password);
 		console.timeEnd('decrypt');
+
 		console.time('swap-db');
 		const swapDB = new SwapDB(portfolioId, seedPhrase);
 		appContainer.swapDB = swapDB;
@@ -146,15 +147,22 @@ class LoginContainer extends Container {
 		console.timeEnd('swap-db');
 
 		this.setActiveView('LoggingIn');
+
 		const api = await createApi(seedPhrase);
+
 		await appContainer.setEnabledCurrencies(portfolio.currencies);
+
 		await enableCurrencies(api);
+
 		// Depends on the data from `enableCurrencies()`
 		await watchFiatPrice();
+
 		// Depends on the data from `enableCurrencies()` and `watchFiatPrice()`
 		await watchCurrencies();
+
 		// Depends on data from `enableCurrencies() and `watchFiatPrice()`
 		await watchAllCurrencyHistory();
+
 		config.set('lastActivePortfolioId', portfolio.id);
 		setAppWindowBounds();
 		appContainer.logIn(portfolio);

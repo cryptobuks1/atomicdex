@@ -18,7 +18,8 @@ PouchDB.plugin(cryptoPouch);
 
 class SwapDB {
 	constructor(portfolioId, seedPhrase) {
-		this.db = new PouchDB(`swaps-${portfolioId}`, {adapter: 'idb'});
+		// Using `2` so it won't conflict with HyperDEX versions using marketmaker v1.
+		this.db = new PouchDB(`swaps2-${portfolioId}`, {adapter: 'idb'});
 
 		this.db.crypto(seedPhrase);
 
@@ -90,14 +91,12 @@ class SwapDB {
 	}
 
 	updateSwapData = swapData => {
-		if (swapData && swapData.uuid) {
-			return this.queue(async () => {
-				const swap = await this._getSwapData(swapData.uuid);
+		return this.queue(async () => {
+			const swap = await this._getSwapData(swapData.uuid);
 
-				await this.db.upsert(swap._id, doc => {
-					doc.swapData = swapData;
-					return doc;
-				});
+			await this.db.upsert(swap._id, doc => {
+				doc.swapData = swapData;
+				return doc;
 			});
 		}
 	}
