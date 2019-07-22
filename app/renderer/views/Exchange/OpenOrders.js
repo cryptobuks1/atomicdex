@@ -106,10 +106,13 @@ class OpenOrders extends React.Component {
 									<span>Transaction</span>
 								</div>
 								<div className="item-cancel">
+								 { 
+									(item.status === 'pending' || !tradesContainer.state.isSwapCancelling[item.uuid]) &&
 									<Fail onClick={event => {
 										event.stopPropagation();
 										this.cancelSwap(item.uuid);
 									}}/>
+								}
 								</div>
 							</div>
 						)
