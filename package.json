@@ -48,6 +48,7 @@
 		"qrcode.react": "^0.8.0",
 		"randoma": "^1.2.0",
 		"react": "^16.8.6",
+		"react-circular-progressbar": "^2.0.1",
 		"react-day-picker": "^7.2.4",
 		"react-dom": "^16.8.6",
 		"react-extras": "^0.9.0",

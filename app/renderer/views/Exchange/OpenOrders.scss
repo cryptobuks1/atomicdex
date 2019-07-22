@@ -31,6 +31,9 @@
         .item-status {
             width: 20%;
             text-align: right;
+            .CircularProgressbar  {
+                width: 40px;
+            }
 
             span {
                 margin-left: 10px;

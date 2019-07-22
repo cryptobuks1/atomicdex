@@ -18,6 +18,11 @@ class ExchangeContainer extends SuperContainer {
 				askdepth: 0,
 			},
 			isSendingOrder: false,
+			exchangeInfo: {
+				sellAmount: '',
+				buyAmount: '',
+				exchangeRate: '',
+			}
 		};
 	}
 
@@ -71,6 +76,10 @@ class ExchangeContainer extends SuperContainer {
 		this.fetchOrderBook();
 	}
 
+	setExchangeInfo(data) {
+		this.setState({ exchangeInfo: data })
+	}
+	
 	setActiveSwapsView(activeSwapsView) {
 		this.setState({activeSwapsView});
 	}

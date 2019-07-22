@@ -13,47 +13,6 @@ import './Atomic.scss';
 import ExchangeList from './ExchangeList';
 
 const t = translate('exchange');
-const exchangeBuyData = [
-	{
-		fromCurrency: 'BTC',
-		fromAmount: "3.2",
-		toCurrency: 'LTC',
-		toAmount: "0.000000043"
-	},
-	{
-		fromCurrency: 'BTC',
-		fromAmount: "3.2",
-		toCurrency: 'LTC',
-		toAmount: "0.000000043"
-	},
-	{
-		fromCurrency: 'BTC',
-		fromAmount: "3.2",
-		toCurrency: 'LTC',
-		toAmount: "0.000000043"
-	},
-];
-
-const exchangeSellData = [
-	{
-		fromCurrency: 'LTC',
-		fromAmount: "1000",
-		toCurrency: 'BTC',
-		toAmount: "0.1"
-	},
-	{
-		fromCurrency: 'LTC',
-		fromAmount: "1000",
-		toCurrency: 'BTC',
-		toAmount: "0.1"
-	},
-	{
-		fromCurrency: 'LTC',
-		fromAmount: "1000",
-		toCurrency: 'BTC',
-		toAmount: "0.1"
-	},
-]
 
 class Atomic extends React.Component {
 	constructor(props) {
@@ -74,8 +33,23 @@ class Atomic extends React.Component {
 		const {state} = exchangeContainer;
 		if (state.baseCurrency && state.quoteCurrency && (state.baseCurrency !== state.quoteCurrency)) {
 			const selectedCurrency = this.getSelectedCurrency();
-			this.setState({selectedCurrency, sellSymbol: state.baseCurrency, buySymbol: state.quoteCurrency});
+			this.setState({
+				selectedCurrency,
+				sellSymbol: state.baseCurrency,
+				buySymbol: state.quoteCurrency,
+				sellAmount: state.exchangeInfo.sellAmount,
+				buyAmount: state.exchangeInfo.buyAmount,
+				exchangeRate: state.exchangeInfo.exchangeRate,
+			});
 		}
+	}
+
+	setExchangeInfo = () => {
+		exchangeContainer.setExchangeInfo({
+			sellAmount: this.state.sellAmount,
+			buyAmount: this.state.buyAmount,
+			exchangeRate: this.state.exchangeRate,
+		})
 	}
 
 	handleSellAmountChange = value => {
@@ -85,7 +59,9 @@ class Atomic extends React.Component {
 				this.setState({isValidSellAmount : false});
 			} else {
 				this.setState({ sellAmount: value, isValidSellAmount: true }, () => {
-					this.setState({ buyAmount:  String(roundTo(Number(this.state.sellAmount) * Number(this.state.exchangeRate), 8))})
+					this.setState({ buyAmount:  String(roundTo(Number(this.state.sellAmount) * Number(this.state.exchangeRate), 8))}, () => {
+						this.setExchangeInfo();
+					})
 				});
 			}
 		}
@@ -94,7 +70,9 @@ class Atomic extends React.Component {
 	handleBuyAmountChange = value => {
 		this.setState({ buyAmount: value }, () => {
 			if (Number(this.state.exchangeRate) > 0) {
-				this.setState({sellAmount: String(roundTo(Number(this.state.buyAmount) / Number(this.state.exchangeRate), 8))});
+				this.setState({sellAmount: String(roundTo(Number(this.state.buyAmount) / Number(this.state.exchangeRate), 8))}, () => {
+					this.setExchangeInfo();
+				});
 			}
 		});
 	}
@@ -102,11 +80,15 @@ class Atomic extends React.Component {
 	handleRateChange = value => {
 		this.setState({ exchangeRate: value }, () => {
 			if (this.state.sellAmount !== '') {
-				this.setState({ buyAmount:  String(roundTo(Number(this.state.sellAmount) * Number(this.state.exchangeRate), 8))})
+				this.setState({ buyAmount:  String(roundTo(Number(this.state.sellAmount) * Number(this.state.exchangeRate), 8))}, () => {
+					this.setExchangeInfo();
+				})
 			}
 			else {
 				if (Number(this.state.exchangeRate) > 0) {
-					this.setState({sellAmount: String(roundTo(Number(this.state.buyAmount) / Number(this.state.exchangeRate), 8))});
+					this.setState({sellAmount: String(roundTo(Number(this.state.buyAmount) / Number(this.state.exchangeRate), 8))}, () => {
+						this.setExchangeInfo();
+					});
 				}
 			}
 		});
@@ -283,8 +265,8 @@ class Atomic extends React.Component {
 						</TabButton>
 					</nav>
 					<main>
-						{this.state.tabType === 'buy' && <ExchangeList type="buy" exchangeData={exchangeBuyData} />}
-						{this.state.tabType === 'sell' && <ExchangeList type="sell" exchangeData={exchangeSellData} />}
+						{this.state.tabType === 'buy' && <ExchangeList type="buy" />}
+						{this.state.tabType === 'sell' && <ExchangeList type="sell" />}
 					</main>
 				</div>
 			</div>
