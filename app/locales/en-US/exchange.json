@@ -12,6 +12,7 @@
 		"buy": "Buy",
 		"buyOrders": "Buy Orders",
 		"failedTrade": "Failed to {{type}} {{baseCurrency}}",
+		"successOrder": "Exchange order is sent successfully",
 		"maxOnePendingSwap": "Only one pending swap at a time, try again in {{wait}} seconds.",
 		"maxPrice": "MAX",
 		"maxVolume": "Max Volume",

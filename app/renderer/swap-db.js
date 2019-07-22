@@ -98,7 +98,7 @@ class SwapDB {
 				doc.swapData = swapData;
 				return doc;
 			});
-		}
+		})
 	}
 
 	// TODO: We should refactor this into a seperate file

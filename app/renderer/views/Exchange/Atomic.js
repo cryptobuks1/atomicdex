@@ -66,6 +66,7 @@ class Atomic extends React.Component {
 			buySymbol: "",
 			sellSymbol: "",
 			selectedCurrency: null,
+			isValidSellAmount: true,
 		}
 	}
 
@@ -78,9 +79,16 @@ class Atomic extends React.Component {
 	}
 
 	handleSellAmountChange = value => {
-		this.setState({ sellAmount: value }, () => {
-			this.setState({ buyAmount:  String(roundTo(Number(this.state.sellAmount) * Number(this.state.exchangeRate), 8))})
-		});
+		let balance = this.state.selectedCurrency ? roundTo(this.state.selectedCurrency.balance, 8) : 0;
+		if (value !== 0) {
+			if (roundTo(Number(value), 8) > balance) {
+				this.setState({isValidSellAmount : false});
+			} else {
+				this.setState({ sellAmount: value, isValidSellAmount: true }, () => {
+					this.setState({ buyAmount:  String(roundTo(Number(this.state.sellAmount) * Number(this.state.exchangeRate), 8))})
+				});
+			}
+		}
 	}
 
 	handleBuyAmountChange = value => {
@@ -147,7 +155,7 @@ class Atomic extends React.Component {
 		};
 		let swap;
 		
-		if (baseCurrency && quoteCurrency && baseCurrency !== quoteCurrency) {
+		if (baseCurrency && quoteCurrency && baseCurrency !== quoteCurrency && this.state.isValidSellAmount) {
 			exchangeContainer.setIsSendingOrder(true);
 			try {
 				swap = await api.order(requestOpts);
@@ -163,6 +171,7 @@ class Atomic extends React.Component {
 			const {swapDB} = appContainer;
 			await swapDB.insertSwapData(swap, requestOpts);
 			exchangeContainer.setIsSendingOrder(false);
+			new Notification(t('order.successOrder'));
 		}
 	}
 
@@ -186,6 +195,7 @@ class Atomic extends React.Component {
 								value={this.state.sellAmount}
 								onChange={this.handleSellAmountChange}
 							/>
+							{!this.state.isValidSellAmount && <p className="error_msg">Amount should be less than balance</p> }
 						</div>
 						<div className="form-group">
 							<Select
