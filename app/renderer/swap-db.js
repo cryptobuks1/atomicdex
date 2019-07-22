@@ -92,12 +92,14 @@ class SwapDB {
 
 	updateSwapData = swapData => {
 		return this.queue(async () => {
-			const swap = await this._getSwapData(swapData.uuid);
+			if (swapData && swapData.uuid) {
+				const swap = await this._getSwapData(swapData.uuid);
 
-			await this.db.upsert(swap._id, doc => {
-				doc.swapData = swapData;
-				return doc;
-			});
+				await this.db.upsert(swap._id, doc => {
+					doc.swapData = swapData;
+					return doc;
+				});
+			}
 		})
 	}
 
