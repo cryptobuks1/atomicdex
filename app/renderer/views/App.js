@@ -6,6 +6,7 @@ import appContainer from 'containers/App';
 import AppView from 'components/AppView';
 import Home from './Home';
 import CreatePortfolio from './CreatePortfolio';
+import RestorePortfolio from './RestorePortfolio';
 import Login from './Login';
 import AppSettings from './AppSettings';
 import Dashboard from './Dashboard';
@@ -22,6 +23,7 @@ const App = () => (
 			<>
 				<AppView component={Home}/>
 				<AppView component={CreatePortfolio}/>
+				<AppView component={RestorePortfolio}/>
 				<AppView component={Login}/>
 				<AppView component={AppSettings}/>
 				<AppView component={Dashboard}/>

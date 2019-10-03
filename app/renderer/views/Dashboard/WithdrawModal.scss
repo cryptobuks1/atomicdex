@@ -1,6 +1,11 @@
 @import '../../styles/variables';
 
 .WithdrawModal main {
+	.error-msg {
+		text-align: center;
+		color: var(--red-color);
+	}
+	
 	.section {
 		display: flex;
 
@@ -222,7 +227,7 @@
 	.withdraw-button,
 	.confirm-button {
 		align-self: center;
-		width: 176px;
+		width: 200px;
 		margin-top: 30px;
 	}
 }

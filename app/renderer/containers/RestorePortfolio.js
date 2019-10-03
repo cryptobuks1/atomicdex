@@ -3,7 +3,7 @@ import {Container} from 'unstated';
 import {translate} from '../translate';
 import loginContainer from './Login';
 
-const {createPortfolio} = remote.require('./portfolio-util');
+const {getPortfolios, changePortfolioPassword} = remote.require('./portfolio-util');
 const t = translate('portfolio');
 
 class RestorePortfolioContainer extends Container {
@@ -13,7 +13,14 @@ class RestorePortfolioContainer extends Container {
 		portfolioPassword: '',
 		confirmedPassword: '',
 		confirmedPasswordError: null,
+		portfolioNameError: null,
+		isCreatingPortfolio: false,
+		step: 1,
 	};
+
+	backStep = step => {
+		this.setState({ step });
+	}
 
 	handleSeedPhraseInputChange = value => {
 		this.setState({seedPhrase: value});
@@ -26,8 +33,9 @@ class RestorePortfolioContainer extends Container {
 			return;
 		}
 
-		loginContainer.setActiveView('RestorePortfolioStep2');
-		loginContainer.setProgress(0.66);
+		this.setState({step: 2});
+		// loginContainer.setActiveView('RestorePortfolioStep2');
+		// loginContainer.setProgress(0.66);
 	};
 
 	handlePortfolioNameInputChange = value => {
@@ -55,18 +63,39 @@ class RestorePortfolioContainer extends Container {
 		}
 
 		this.setState({confirmedPasswordError: null});
-
-		const portfolioId = await createPortfolio({
-			name: this.state.portfolioName,
-			password: this.state.portfolioPassword,
-			seedPhrase: this.state.seedPhrase,
+		await this.setState({isCreatingPortfolio: true});
+		
+		const portfolios = await getPortfolios();
+		const currentPortfolio = portfolios.filter(portfolio => {
+			return portfolio && portfolio.name === this.state.portfolioName;
 		});
 
-		loginContainer.setActiveView('RestorePortfolioStep3');
-		loginContainer.setProgress(1);
+		if (currentPortfolio.length === 0) {
+			usernameError
+			this.setState({
+				portfolioName: '',
+				portfolioNameError: t('restore.confirmPasswordNoMatch'),
+			});
+			return;
+		}
+
+		await changePortfolioPassword({
+			id: currentPortfolio[0].id,
+			seedPhrase: this.state.seedPhrase,
+			newPassword: this.state.portfolioPassword,
+		});
+
+		// const portfolioId = await createPortfolio({
+		// 	name: this.state.portfolioName,
+		// 	password: this.state.portfolioPassword,
+		// 	seedPhrase: this.state.seedPhrase,
+		// });
+
+		// loginContainer.setActiveView('RestorePortfolioStep3');
+		// loginContainer.setProgress(1);
 
 		await loginContainer.loadPortfolios();
-		await loginContainer.handleLogin(portfolioId, this.state.portfolioPassword);
+		await loginContainer.handleLogin(currentPortfolio[0].id, this.state.portfolioPassword);
 	};
 }
 

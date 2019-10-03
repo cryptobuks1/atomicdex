@@ -138,7 +138,8 @@ h6 {
 
 			.title {
 				font-size: 14px;
-    			margin-left: 10px;
+				margin-left: 10px;
+				margin-top: -12px;
 			}
 
 			[data-theme='light'] & {
@@ -162,5 +163,6 @@ h6 {
 	.content {
 		grid-area: content;
 		overflow: hidden;
+		padding: 0px 2px 0px 20px;
 	}
 }

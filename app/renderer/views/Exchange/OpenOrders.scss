@@ -29,13 +29,25 @@
         }
 
         .item-status {
-            width: 30%;
-            text-align: right;
+            width: 20%;
+            text-align: left;
+            .CircularProgressbar  {
+                width: 40px;
+            }
 
             span {
                 margin-left: 10px;
                 font-size: 12px;
                 color: rgba(255,255,255,0.7);
+            }
+        }
+
+        .item-cancel {
+            width: 10%;
+            text-align: right;
+            svg {
+                cursor: pointer;
+                width: 38px;
             }
         }
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import {remote} from 'electron';
 import roundTo from 'round-to';
 import Modal from 'components/Modal';
 import Button from 'components/Button';
@@ -6,35 +7,41 @@ import Input from 'components/Input';
 import appContainer from 'containers/App';
 import CopiedIcon from 'icons/Copied';
 import dashboardContainer from 'containers/Dashboard';
+import loginContainer from 'containers/Login';
 import CurrencyIcon from 'components/CurrencyIcon';
-import { formatCurrency } from '../../util';
-import { getCurrency } from '../../../marketmaker/supported-currencies';
-import { translate } from '../../translate';
+import {formatCurrency} from '../../util';
+import {getCurrency} from '../../../marketmaker/supported-currencies';
+import {translate} from '../../translate';
 import './WithdrawModal.scss';
+
+const {decryptSeedPhrase} = remote.require('./portfolio-util');
 
 const t = translate('dashboard');
 const t_login = translate('login');
 
-const getInitialProps = () => ({
+const getInitialState = () => ({
 	isOpen: false,
 	recipientAddress: '',
 	amount: '',
 	amountInUsd: '',
 	password: '',
 	isShowPassword: false,
+	passwordError: null,
 	isWithdrawing: false,
 	isBroadcasting: false,
+	symbol: '',
+	address: '',
 	txFeeCurrencySymbol: '',
 	txFee: 0,
 	txFeeUsd: 0,
+	txHex: '',
 	broadcast: false,
-	isConfirmWithdraw: false,
 	confirmCode: '',
 	isSuccessWithdraw: false,
 });
 
 class WithdrawModal extends React.Component {
-	state = getInitialProps();
+	state = getInitialState();
 
 	constructor(props) {
 		super(props);
@@ -42,47 +49,82 @@ class WithdrawModal extends React.Component {
 	}
 
 	open = () => {
-		this.setState({ isOpen: true });
+		this.resetState();
+		this.setState({isOpen: true});
 	};
 
 	close = () => {
-		this.setState(getInitialProps());
+		this.resetState();
 	};
 
+	resetState = () => {
+		this.setState(getInitialState());
+	};
+
+	cancelWithdraw = () => {
+		this.setState({ isWithdrawing: false, broadcast: false });
+	}
+
 	withdrawButtonHandler = async () => {
-		this.setState({ isWithdrawing: true });
+		const { selectedPortfolio } = loginContainer;
+		try {
+			const seedPhrase = await decryptSeedPhrase(selectedPortfolio.encryptedSeedPhrase, this.state.password);
+			if (seedPhrase) {
+				this.setState({
+					passwordError: '',
+				});
+			}
+		} catch	(error) {
+			this.setState({
+				passwordError: 'password is not correct',
+			});
+		}
+		
+		if (this.state.passwordError === '') {
+			this.setState({isWithdrawing: true});
 
-		// const {symbol} = dashboardContainer.activeCurrency;
-		const { symbol } = this.props.currencyInfo;
-		const { recipientAddress: address, amount } = this.state;
+			const {symbol} = dashboardContainer.activeCurrency;
+			const {recipientAddress: address, amount} = this.state;
+			const {
+				fee_details: feeDetails,
+				tx_hex: txHex,
+			} = await appContainer.api.withdraw({
+				symbol,
+				address,
+				amount: Number(amount),
+				// TODO: Support `max` option
+				max: false,
+			});
 
-		const { txFee, broadcast } = await appContainer.api.withdraw({
-			symbol,
-			address,
-			amount: Number(amount),
-		});
+			const txFee = 'amount' in feeDetails ? feeDetails.amount : feeDetails.total_fee;
 
-		const currency = getCurrency(symbol);
-		const txFeeCurrencySymbol = currency.etomic ? 'ETH' : symbol;
-		const { cmcPriceUsd } = appContainer.getCurrencyPrice(txFeeCurrencySymbol);
-		const txFeeUsd = formatCurrency(txFee * cmcPriceUsd);
+			const currency = getCurrency(symbol);
+			const txFeeCurrencySymbol = currency.contractAddress ? 'ETH' : symbol;
+			const {cmcPriceUsd} = appContainer.getCurrencyPrice(txFeeCurrencySymbol);
+			const txFeeUsd = formatCurrency(txFee * cmcPriceUsd);
 
-		this.setState({ txFeeCurrencySymbol, txFee, txFeeUsd, broadcast });
+			// TODO: For ETH-based currencies, show the gas amount and gas price.
+
+			this.setState({symbol, address, txFeeCurrencySymbol, txFee, txFeeUsd, txHex});
+		}
 	};
 
 	confirmButtonHandler = async () => {
-		this.setState({ isBroadcasting: true });
-		const { txid, amount, symbol, address } = await this.state.broadcast();
-		console.log({ txid, amount, symbol, address });
+		this.setState({isSuccessWithdraw: true, isBroadcasting: true});
+		const {symbol, address, amount, txFee, txFeeUsd, txHex} = this.state;
+		console.log('Raw transaction details', {symbol, address, amount, txFee, txFeeUsd, txHex});
+
+		const broadcastTxHash = await appContainer.api.sendRawTransaction({symbol, txHex});
+
+		// TODO: Show the user the broadcast tx hash
+		console.log('Broadcast TX hash', broadcastTxHash);
 
 		// TODO: The notification should be clickable and open a block explorer for the currency.
 		// We'll need to have a list of block explorers for each currency.
 		// eslint-disable-next-line no-new
 		new Notification(t('withdraw.successTitle'), {
-			body: t('withdraw.successDescription', { address, amount, symbol }),
+			body: t('withdraw.successDescription', {address, amount, symbol}),
 		});
-
-		this.close();
 	};
 
 	showPassword = () => {
@@ -94,8 +136,8 @@ class WithdrawModal extends React.Component {
 		// const currencyInfo = dashboardContainer.activeCurrency;
 		const { currencyInfo } = this.props;
 		const maxAmount = currencyInfo.balance;
-		const remainingBalance = roundTo(maxAmount - (Number(this.state.amount) + this.state.txFee), 8);
-
+		const remainingBalance = roundTo(maxAmount - (Number(this.state.amount) + (this.state.txFee || 0)), 8);
+		
 		const setAmount = value => {
 			this.setState({
 				amount: String(value),
@@ -117,7 +159,7 @@ class WithdrawModal extends React.Component {
 					open={this.state.isOpen}
 					onClose={this.close}
 				>
-					{!this.state.isConfirmWithdraw && (
+					{!this.state.isWithdrawing && (
 						<>
 							<p className="symbol-name">
 								{t('withdraw.symbolName', { symbol: currencyInfo.symbol })}
@@ -160,8 +202,11 @@ class WithdrawModal extends React.Component {
 									type={this.state.isShowPassword ? 'text' : 'password'}
 									placeholder={t_login('passwordPlaceHolder')}
 									value={this.state.password}
-									showpassword={this.showPassword}
+									showPassword={this.showPassword}
 									suffixString="SHOW"
+									onChange={value => {
+										this.setState({ password: value });
+									}}
 								/>
 							</div>
 
@@ -171,41 +216,32 @@ class WithdrawModal extends React.Component {
 							</div>
 							<div className="withdraw-total">
 								<span>Total:</span>
-								<span>3.214998</span>
+								<span>{remainingBalance}</span>
 							</div>
-
-							{/* {this.state.broadcast ? (
-							<Button
-								className="confirm-button"
-								color="transparent"
-								value={t('withdraw.confirmNetworkFee')}
-								disabled={this.state.isBroadcasting}
-								onClick={this.confirmButtonHandler}
-							/>
-						) : (
-								<Button
-									className="withdraw-button"
-									color="transparent"
-									value={t('withdraw.label')}
-									disabled={
-										!this.state.recipientAddress ||
-										!this.state.amount ||
-										remainingBalance < 0 ||
-										this.state.isWithdrawing
-									}
-									onClick={this.withdrawButtonHandler}
-								/>
-							)} */}
+							{this.state.passwordError && <p className="error-msg">{this.state.passwordError}</p>}
 							<div className="section--withdraw--btn">
 								<Button className="cancel-btn" color="transparent" value="Cancel" onClick={() => this.close()} />
-								<Button className="continue-btn" color="blue" value="Continue" onClick={() => this.setState({isConfirmWithdraw: true})} />
+								{!this.state.broadcast &&
+									<Button
+										className="continue-btn"
+										color="blue"
+										value="Continue"
+										disabled={
+											!this.state.recipientAddress ||
+											!this.state.amount ||
+											remainingBalance < 0 ||
+											this.state.isWithdrawing
+										}
+										onClick={this.withdrawButtonHandler}
+									/>
+								}
 							</div>
 						</>)
 					}
-					{this.state.isConfirmWithdraw && !this.state.isSuccessWithdraw && (
+					{this.state.isWithdrawing && !this.state.isSuccessWithdraw && (
 						<>
 							<p className="confirm-title">
-								{t('confirmWithdraw')}
+								{t('withdraw.confirm')}
 							</p>
 							<p className="confirm-description">{t('withdraw.confirmDescription')}</p>
 							<div className="section">
@@ -223,8 +259,16 @@ class WithdrawModal extends React.Component {
 								{t('withdraw.confirmCodeQuiz')}<span>{t('withdraw.confirmCodeResend')}</span>
 							</p>
 							<div className="section--withdraw--btn">
-								<Button className="cancel-btn" color="transparent" value="Cancel" onClick={() => this.setState({isConfirmWithdraw: false})} />
-								<Button className="continue-btn" color="blue" value="Submit" onClick={() => this.setState({isSuccessWithdraw: true})} />
+								<Button className="cancel-btn" color="transparent" value="Cancel" onClick={() => this.cancelWithdraw()} />
+								{this.state.broadcast &&
+									<Button
+									className="continue-btn"
+									color="blue"
+									value="Submit"
+									disabled={this.state.isBroadcasting}
+									onClick={this.confirmButtonHandler}
+									/>
+								}
 							</div>
 						</>)						
 					}

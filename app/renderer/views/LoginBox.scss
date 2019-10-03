@@ -1,6 +1,13 @@
 .LoginBox {
 	margin-top: 50px;
 
+	.LoggingIn {
+		position: absolute;
+		width: 100%;
+		left: 0px;
+		top: 120px;
+	}
+	
 	.form-group {
 		margin-bottom: 0px;
 	}

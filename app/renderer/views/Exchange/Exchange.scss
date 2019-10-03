@@ -3,7 +3,6 @@
 
 .content {
 	background-color: var(--widget-background-color);
-	padding: 0px 20px;
 }
 
 .Exchange {
@@ -20,6 +19,18 @@
 	background-color: var(--widget-background-color);
 	overflow: auto;
 	
+	&::before {
+		content: ' ';
+		position: absolute;
+		width: 425px;
+		height: 100%;
+		background-image: url('../../assets/Wave.svg');
+		top: 0px;
+		right: 30px;
+		background-size: cover;
+		pointer-events: none;
+	}
+
 	main {
 		height: 100%;
 	}

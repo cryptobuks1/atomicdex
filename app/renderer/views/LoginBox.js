@@ -42,10 +42,8 @@ class LoginBox extends React.Component {
 
 		const {usernameInputValue, passwordInputValue} = this.state;
 		const {portfolios} = loginContainer.state;
-		const selectData = portfolios.map(portfolio => {
-			if (portfolio.name === usernameInputValue) {
-				return portfolio;
-			}
+		const selectData = portfolios.filter(portfolio => {
+			return portfolio && portfolio.name === usernameInputValue;
 		});
 		loginContainer.setSelectedPortfolioId(selectData[0] ? selectData[0].id : null);
 		try {
@@ -114,14 +112,14 @@ class LoginBox extends React.Component {
 							value={this.state.passwordInputValue}
 							disabled={this.state.isLoggingIn}
 							onChange={this.handlePasswordInputChange}
-							showpassword={this.showPassword}
+							showPassword={this.showPassword}
 							suffixString="SHOW"
 						/>
 					</div>
 					<p className="error-msg">{this.state.passwordError}</p>
 					<div className="form-group form-group-2">
 						<Button className="signin-btn" fullwidth type="submit" color="blue" value={t('login')} disabled={!this.state.passwordInputValue || this.state.isLoggingIn}/>
-						{/* <Link
+						<Link
 							disabled={this.state.isLoggingIn}
 							style={{
 								fontSize: '12px',
@@ -130,12 +128,12 @@ class LoginBox extends React.Component {
 								color: '#54A1DA',
 							}}
 							onClick={() => {
-								loginContainer.setActiveView('ForgotPasswordStep1');
-								loginContainer.setProgress(0.33);
+								appContainer.setActiveView('RestorePortfolio');
+								// loginContainer.setProgress(0.33);
 							}}
 						>
 							{t('forgotPassword')}
-						</Link> */}
+						</Link>
 					</div>
 				</form>
 			</div>

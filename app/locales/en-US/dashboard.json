@@ -56,7 +56,7 @@
 		"title": "UMBRELLA",
 		"symbolName": "Withdrawal {{symbol}}",
 		"balance": "Balance: ",
-		"confirmWithdraw": "Confirm Withdrawal",
+		"confirm": "Confirm Withdrawal",
 		"confirmDescription": "You'll shortly receive a code in your inbox. Enter it in the field below to confirm your withdrawal.",
 		"confirmCode": "Enter code",
 		"confirmCodeQuiz": "Didn’t get the code? ",

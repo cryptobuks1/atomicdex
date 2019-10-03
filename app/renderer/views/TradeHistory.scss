@@ -33,6 +33,7 @@
             text-align: left;
             svg {
                 width: 14px;
+                height: 14px;
                 margin-right: 3px;
             }
 
@@ -61,11 +62,18 @@
                 }
             }
 
-            .success {
+            .pending {
+                border: 1px solid #FFFF33;
+            }
+
+            .swapping {
+                border: 1px solid #0000FF;
+            }
+            .completed, .matched {
                 border: 1px solid #72CE56;
             }
 
-            .fail {
+            .failed {
                 border: 1px solid #EA3055;
             }
         }

@@ -1,13 +1,9 @@
 /* eslint-disable react/no-access-state-in-setstate */
 import EventEmitter from 'events';
-import {is, api, activeWindow, appLaunchTimestamp} from 'electron-util';
 import _ from 'lodash';
 import SuperContainer from 'containers/SuperContainer';
 import appContainer from 'containers/App';
-import {translate} from '../translate';
 import fireEvery from '../fire-every';
-
-const t = translate('exchange');
 
 class ExchangeContainer extends SuperContainer {
 	getInitialState() {
@@ -22,6 +18,11 @@ class ExchangeContainer extends SuperContainer {
 				askdepth: 0,
 			},
 			isSendingOrder: false,
+			exchangeInfo: {
+				sellAmount: '',
+				buyAmount: '',
+				exchangeRate: '',
+			}
 		};
 	}
 
@@ -35,14 +36,18 @@ class ExchangeContainer extends SuperContainer {
 				const newBaseCurrency = appContainer.state.enabledCoins.find(enabledCoin => {
 					return enabledCoin !== this.state.quoteCurrency;
 				});
-				this.setBaseCurrency(newBaseCurrency);
+				
+				if (newBaseCurrency)
+					this.setBaseCurrency(newBaseCurrency);
 			}
 
 			if (!appContainer.state.enabledCoins.includes(this.state.quoteCurrency)) {
 				const newQuoteCurrency = appContainer.state.enabledCoins.find(enabledCoin => {
 					return enabledCoin !== this.state.baseCurrency;
 				});
-				this.setQuoteCurrency(newQuoteCurrency);
+
+				if (newQuoteCurrency)
+					this.setQuoteCurrency(newQuoteCurrency);
 			}
 		});
 	}
@@ -54,7 +59,6 @@ class ExchangeContainer extends SuperContainer {
 		if (baseCurrency === this.state.quoteCurrency) {
 			this.setState({quoteCurrency: this.state.baseCurrency});
 		}
-
 		const {orderBook} = this.getInitialState();
 		this.setState({baseCurrency, orderBook});
 		this.fetchOrderBook();
@@ -72,25 +76,30 @@ class ExchangeContainer extends SuperContainer {
 		this.fetchOrderBook();
 	}
 
+	setExchangeInfo(data) {
+		this.setState({ exchangeInfo: data })
+	}
+	
 	setActiveSwapsView(activeSwapsView) {
 		this.setState({activeSwapsView});
 	}
 
 	async fetchOrderBook() {
-		const orderBook = await appContainer.api.orderBook(
-			this.state.baseCurrency,
-			this.state.quoteCurrency,
-		);
+		if (this.state.baseCurrency && this.state.quoteCurrency && this.state.baseCurrency !== this.state.quoteCurrency) {
+			const orderBook = await appContainer.api.orderBook(
+				this.state.baseCurrency,
+				this.state.quoteCurrency,
+			);
 
-		if (
-			orderBook.baseCurrency !== this.state.baseCurrency ||
-			orderBook.quoteCurrency !== this.state.quoteCurrency
-		) {
-			return;
-		}
-
-		if (!_.isEqual(this.state.orderBook, orderBook)) {
-			this.setState({orderBook});
+			if (
+				orderBook.baseCurrency !== this.state.baseCurrency ||
+				orderBook.quoteCurrency !== this.state.quoteCurrency
+			) {
+				return;
+			}
+			if (!_.isEqual(this.state.orderBook, orderBook)) {
+				this.setState({orderBook});
+			}
 		}
 	}
 
@@ -110,37 +119,5 @@ class ExchangeContainer extends SuperContainer {
 }
 
 const exchangeContainer = new ExchangeContainer();
-
-// Warn the user if they try to quit when they have in-progress swaps
-window.addEventListener('beforeunload', event => {
-	// We never want this annoyance in actual development
-	if (is.development) {
-		return;
-	}
-
-	const hasInProgressSwaps = appContainer.state.swapHistory.find(swap => {
-		return swap.timeStarted > appLaunchTimestamp && swap.isActive;
-	});
-
-	if (hasInProgressSwaps) {
-		event.returnValue = true;
-
-		const selectedButtonIndex = api.dialog.showMessageBox(activeWindow(), {
-			type: 'question',
-			title: t('confirmQuitTitle'),
-			message: t('confirmQuitDescription'),
-			buttons: [
-				t('quit'),
-				t('cancel'),
-			],
-			defaultId: 0,
-			cancelId: 1,
-		});
-
-		if (selectedButtonIndex === 0) {
-			api.app.exit();
-		}
-	}
-});
 
 export default exchangeContainer;

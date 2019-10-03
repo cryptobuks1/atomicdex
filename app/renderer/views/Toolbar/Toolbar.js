@@ -8,9 +8,11 @@ class Toolbar extends React.Component {
 		return (
 			<div className="header_toolbar">
 				<div className="toolbar">
-					<div className="close_window" onClick={() => appContainer.closeWindow()}></div>
-					<div className="min_window" onClick={() => appContainer.miniumWindow()}></div>
-					<div className="max_window" onClick={() => appContainer.maxiumWindow()}></div>
+					<img className="close_window" src="/assets/toolbar/close.png" width="15" height="15" onClick={() => appContainer.closeWindow()} />
+					<img className="min_window" src="/assets/toolbar/min.png" width="15" height="15" onClick={() => appContainer.miniumWindow()}/>
+					<img className="max_window" src="/assets/toolbar/max.png" width="15" height="15" onClick={() => appContainer.maxiumWindow()}/>
+				</div>
+				<div className="drag_area">
 				</div>
 				{
 					online &&

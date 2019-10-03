@@ -5,6 +5,19 @@
 	border-radius: 4px;
 	background-color: var(--widget-background-color);
 
+	&::after {
+		content: ' ';
+		position: absolute;
+		width: 425px;
+		height: 100%;
+		background-image: url('../../assets/Wave.svg');
+		top: 0px;
+		right: 30px;
+		background-size: cover;
+		z-index: 999;
+		pointer-events: none;
+	}
+
 	header {
 		display: flex;
 		align-items: center;
@@ -80,8 +93,9 @@
 	padding-top: 60px;
 
 	main {
+		height: 100%;
 		.enabled-currencies {
-			--dropdown-max-height: 170px;
+			--dropdown-max-height: 60vh;
 			margin: 5px 0;
 
 			.SelectOption__label {

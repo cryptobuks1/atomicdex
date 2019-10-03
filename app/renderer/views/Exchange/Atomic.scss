@@ -1,15 +1,20 @@
+@import '../../styles/variables';
 .Atomic {
     display: flex;
     padding: 37px 95px 10px 0px;
     overflow: auto;
 
-    .buy-currency {
+    .sell-currency {
         width: 45%;
 
-        .buy-amount {
+        .sell-amount {
             input {
                 height: 44px;
             }
+        }
+
+        .error_msg {
+            color: var(--error-color);
         }
     }
     
@@ -42,10 +47,10 @@
         }
     }
 
-    .sell-currency {
+    .buy-currency {
         width: 45%;
 
-        .sell-amount {
+        .buy-amount {
             input {
                 height: 44px;
             }

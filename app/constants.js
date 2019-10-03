@@ -25,24 +25,23 @@ exports.appViews = [
 ];
 
 exports.defaultEnabledCurrencies = [
-	'BCH',
-	'BEER',
+	// 'BCH',
 	'BTC',
-	'CHIPS',
-	'DASH',
-	'DOGE',
-	'EQLI',
-	'HUSH',
-	'KMD',
+	// 'CHIPS',
+	// 'DASH',
+	// 'DOGE',
+	// 'HUSH',
+	// 'KMD',
 	'LTC',
-	'MSHARK',
-	'MYTH',
-	'OOT',
-	'PIZZA',
-	'REVS',
-	'SUPERNET',
-	'VTC',
-	'ZEC',
+	// 'MORTY',
+	// 'MSHARK',
+	// 'MYTH',
+	// 'OOT',
+	// 'REVS',
+	// 'RICK',
+	// 'SUPERNET',
+	// 'VTC',
+	// 'ZEC',
 ];
 
 exports.alwaysEnabledCurrencies = [
@@ -51,16 +50,14 @@ exports.alwaysEnabledCurrencies = [
 ];
 
 exports.ignoreExternalPrice = new Set([
-	'REVS',
-	'SUPERNET',
-	'PIZZA',
-	'BEER',
 	'CALL',
+	'MORTY',
+	'REVS',
+	'RICK',
+	'SUPERNET',
 ]);
 
-exports.hiddenCurrencies = [
-	'ETOMIC',
-];
+exports.hiddenCurrencies = [];
 
 exports.appTimeStarted = Date.now();
 

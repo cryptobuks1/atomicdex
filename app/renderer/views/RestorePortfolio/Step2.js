@@ -1,9 +1,13 @@
 import React from 'react';
+import appContainer from 'containers/App';
 import Button from 'components/Button';
 import Input from 'components/Input';
+import BackTextButton from 'components/BackTextButton';
 import LoginBackButton from 'components/LoginBackButton';
 import container from 'containers/RestorePortfolio';
 import {translate} from '../../translate';
+import LoggingIn from '../LoggingIn';
+import Toolbar from '../Toolbar/Toolbar';
 
 const t = translate('portfolio');
 
@@ -12,22 +16,30 @@ const RestorePortfolioStep2 = () => {
 
 	return (
 		<div className="RestorePortfolio">
-			<LoginBackButton view="RestorePortfolioStep1" progress={0.33}/>
+			<Toolbar />
+			<BackTextButton
+				onClick={() => {
+					container.backStep(1);
+				}}
+			/>
+			{state.isCreatingPortfolio && <LoggingIn />}
 			<h1>{t('create.title')}</h1>
-			<form style={{marginTop: '20px'}} onSubmit={container.handleStep2Submit}>
+			<form  onSubmit={container.handleStep2Submit}>
 				<div className="form-group">
 					<Input
-						required
+						className="user-name"
 						autoFocus
+						required
 						placeholder={t('create.name')}
 						value={state.portfolioName}
 						maxLength="50"
-						iconName="person"
+						errorMessage={state.portfolioNameError}
 						onChange={container.handlePortfolioNameInputChange}
 					/>
 				</div>
 				<div className="form-group">
 					<Input
+						className="user-password"
 						required
 						type="password"
 						placeholder={t('create.password')}
@@ -37,6 +49,7 @@ const RestorePortfolioStep2 = () => {
 				</div>
 				<div className="form-group">
 					<Input
+						className="user-confirmpassword"
 						ref={input => {
 							container.confirmPasswordInput = input;
 						}}
@@ -50,10 +63,14 @@ const RestorePortfolioStep2 = () => {
 				</div>
 				<div className="form-group">
 					<Button
+						className="restore-btn"
 						type="submit"
-						value={t('create.next')}
+						value={t('restore.reset')}
 						disabled={!(state.portfolioName && state.portfolioPassword && state.confirmedPassword)}
-						style={{width: '170px', marginTop: '15px'}}
+						color="blue"
+						style={{
+							marginTop: '15px',
+						}}
 					/>
 				</div>
 			</form>

@@ -1,5 +1,16 @@
 .Dashboard--List {
 	flex-direction: column;
+	&::before {
+		content: ' ';
+		position: absolute;
+		width: 425px;
+		height: 100%;
+		background-image: url('../../assets/Wave.svg');
+		top: 0px;
+		right: 30px;
+		background-size: cover;
+		pointer-events: none;
+	}
 
 	.top {
 		align-items: start;
@@ -90,12 +101,7 @@
 		.currency {
 			display: flex;
 			width: 40%;
-
-			.right {
-				h2 {
-					margin-top: 10px;
-				}
-			}
+			align-items: center;
 		}
 
 		.balance {
