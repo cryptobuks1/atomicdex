@@ -94,7 +94,7 @@ const List = () => {
 							<div
 								key={currency.symbol}
 								className={`coin-button ${state.activeView === currency.symbol ? 'active' : ''}`}
-								onClick={() => dashboardContainer.setActiveView(currency.symbol)}
+								// onClick={() => dashboardContainer.setActiveView(currency.symbol)}
 							>
 								<div className="currency">
 									<div className="left">

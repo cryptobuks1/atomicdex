@@ -313,7 +313,7 @@ class AppContainer extends SuperContainer {
 	maxiumWindow () {
 		let window = remote.getCurrentWindow();
 		if (!window.isMaximized()) {
-			window.maximize();
+			window.maximize();          
 		} else {
 			window.unmaximize();
 		}
