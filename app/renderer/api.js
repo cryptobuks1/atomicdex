@@ -327,7 +327,7 @@ export default class Api {
 		}));
 
 		const {max = false} = options;
-
+		
 		return this.request({
 			method: 'withdraw',
 			coin: options.symbol,
